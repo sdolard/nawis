@@ -24,14 +24,13 @@ Build need
 5) Run build binarie
      This will create a defaut config file 
 
-5) Edit ~/.config/nawis/nawis.ini
-
-6) Set the web ui directory
-     > server def pub=<your ui absolute path>
+6) A demo web ui i available. 
+     You must set the web ui directory in nawis config file.
+     Edit ~/.config/nawis/nawis.ini
+     > server def webui=<your ui absolute path>
      Ex on my Mac:
        server def webui=/Users/sebastiend/Documents/dev/nawis/ui
      
-
 7) By defaut, nawis is listening on 6391 http port
     Open your favorite browser on http://localhost:6391
 
@@ -47,5 +46,12 @@ Build need
 
 10)Go in preference menu
      Add a directory to serve.
-     Wait time to get manage by nawis. it could take few minutes if there is a lot of big files.
-     Enjoy.
+     Wait time to get manage it by nawis. it could take few minutes if there is a lot of big files.
+     
+     Demo ui implement some api:
+       - music: mp3 (only) reading thought flash
+       - search
+       - duplicated file
+       - log
+       - conffiguration
+     
