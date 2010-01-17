@@ -118,6 +118,8 @@ private:
 	NResponse & svcGetMusicGenre(const NClientSession & session, NResponse & response);
 	NResponse & svcGetMusicTitle(const NClientSession & session, NResponse & response);
 	NResponse & svcGetMusicYear( const NClientSession & session, NResponse & response);
+	NResponse & svcGetMusicID3Picture(int *statusCode, const NClientSession & session,
+									  NResponse & response);
 
 	// @Return {bool} true, if auth test succeed and httpMethode test succeed
 	bool isServiceAvailable(int * statusCode, const NClientSession & session,

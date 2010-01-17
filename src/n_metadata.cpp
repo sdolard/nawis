@@ -11,7 +11,8 @@
 #include <QFile>
 #include <QtDebug>
 #include <QStringList>
-#include <QFileInfo>
+#include <QImage>
+#include <QBuffer>
 
 // tatglib
 #include <taglib/fileref.h>
@@ -23,6 +24,9 @@
 #include <exiv2/iptc.hpp>
 #include <iostream>
 #include <iomanip>
+#include <id3v2tag.h>
+#include <mpegfile.h>
+#include <attachedpictureframe.h>
 
 // App
 #include "n_log.h"
@@ -35,89 +39,34 @@ NMetadata::NMetadata(){
 void NMetadata::setFileName(const QString & fileName)
 {
 	clear();
-	
 	m_fileName = fileName;	
 	QFileInfo fi(m_fileName);
-	/*
-	 TagLib is a library for reading and editing the meta-data of several popular 
-	 audio formats. Currently it supports both ID3v1 and ID3v2 for MP3 files, 
-	 Ogg Vorbis comments and ID3 tags and Vorbis comments in 
-	 FLAC, MPC, Speex, WavPack and TrueAudio files.
-	 */
-	if ((fi.suffix().compare("mp3", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("mp4", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("wma", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("ogg", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("flac", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("mpc", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("wav", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("Wv", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("TTA", Qt::CaseInsensitive) == 0))
-	{
+
+
+	if (isTaglibCompat(fi))
 		getTaglibData();
-	}
 	
-	/*
-	 Supported_image_formats
-	 http://dev.exiv2.org/wiki/exiv2/Supported_image_formats
-	 Type  	 Exif mode  	 IPTC mode  	 XMP mode  	 Comment mode
-	 JPEG 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
-	 EXV 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
-	 CR2 	Read 	Read 	Read 	-
-	 CRW 	ReadWrite 	- 	- 	ReadWrite
-	 MRW 	Read 	Read 	Read 	-
-	 TIFF 	ReadWrite 	ReadWrite 	ReadWrite 	-
-	 DNG 	ReadWrite 	ReadWrite 	ReadWrite 	-
-	 NEF 	ReadWrite 	ReadWrite 	ReadWrite 	-
-	 PEF 	ReadWrite 	ReadWrite 	ReadWrite 	-
-	 ARW 	Read 	Read 	Read 	-
-	 SR2 	Read 	Read 	Read 	-
-	 ORF 	Read 	Read 	Read 	-
-	 RW2 	Read 	Read 	Read 	-
-	 PNG 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
-	 RAF 	Read 	Read 	Read 	-
-	 XMP 	- 	- 	ReadWrite 	-
-	 GIF 	- 	- 	- 	-
-	 PSD 	ReadWrite 	ReadWrite 	ReadWrite 	-
-	 TGA 	- 	- 	- 	-
-	 BMP 	- 	- 	- 	-
-	 JP2 	ReadWrite 	ReadWrite 	ReadWrite 	- 
-	 */
-	
-	if ((fi.suffix().compare("JPG", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("JPEG", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("EXV", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("CR2", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("CRW", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("MRW", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("TIFF", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("DNG", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("NEF", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("PEF", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("ARW", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("SR2", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("ORF", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("RW2", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("PNG", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("RAF", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("PSD", Qt::CaseInsensitive) == 0) ||
-		(fi.suffix().compare("JP2", Qt::CaseInsensitive) == 0))
+	if (isExiv2Compat(fi))
 	{
 		getExiv2Data();
+		//printExiv2Data();
+	}
+
+	if (isIptcCompat(fi))
+	{
 		getIptcData();
-		
-		/*printExiv2Data();
-		printIptcData();*/
+		//printIptcData();
 	}
 }
 
 void NMetadata::getTaglibData()
 {	
 	TagLib::FileRef f(QFile::encodeName(m_fileName));
-	
-	if(!f.isNull() && f.tag()) {
-		
-		TagLib::Tag *tag = f.tag();
+	if(f.isNull())
+		return;
+	// Tag
+	TagLib::Tag *tag = f.tag();
+	if(tag) {
 		m_title = TStringToQString(tag->title()).trimmed();
 		m_artist = TStringToQString(tag->artist()).trimmed();
 		m_album = TStringToQString(tag->album()).trimmed();
@@ -131,10 +80,13 @@ void NMetadata::getTaglibData()
 		m_trackNumber = tag->track();
 	}
 	
-	if(!f.isNull() && f.audioProperties()) {
-		TagLib::AudioProperties *properties = f.audioProperties();
+	// AudioProperties
+	TagLib::AudioProperties *properties = f.audioProperties();
+	if(properties)
 		m_duration = properties->length();
-	}
+
+	// Attached picture
+	m_hasID3Picture = hasAttachedPictureFrame(m_fileName);
 }
 
 void NMetadata::printTaglibData()
@@ -594,6 +546,11 @@ const QString & NMetadata::country() const
 	return m_countryName;
 }
 
+bool NMetadata::hasID3Picture() const
+{
+	return m_hasID3Picture;
+}
+
 void NMetadata::clear()
 {
 	m_fileName.clear();
@@ -602,14 +559,13 @@ void NMetadata::clear()
 	m_artist.clear();
 	m_comment.clear();
 	m_year = 0;
-	
-	// Id3 tags
 	m_album.clear();
 	m_title.clear();
 	m_genre.clear();
 	m_trackNumber = 0;
 	m_duration = 0;
-	
+	m_hasID3Picture = false;
+
 	// Exiv2
 	m_dateTimeOriginal = QDateTime();
 	m_copyright.clear();
@@ -634,3 +590,94 @@ void NMetadata::clear()
 	m_countryName.clear();
 }
 
+bool NMetadata::getID3Picture(const QString & fileName, QByteArray & ba, QString & mimeType)
+{
+	ba.clear();
+	mimeType.clear();
+
+	TagLib::MPEG::File f(QFile::encodeName(fileName));
+	if(!f.isValid() || !f.ID3v2Tag())
+		return false;
+
+	TagLib::ID3v2::FrameList l = f.ID3v2Tag()->frameList("APIC");
+	if(l.isEmpty())
+		return false;
+
+	TagLib::ID3v2::AttachedPictureFrame *frame =
+			static_cast<TagLib::ID3v2::AttachedPictureFrame *>(l.front());
+
+	mimeType = TStringToQString(frame->mimeType());
+	ba.append(QByteArray::fromRawData(frame->picture().data(), frame->picture().size()));
+	return true;
+}
+
+bool NMetadata::hasAttachedPictureFrame(const QString & fileName)
+{
+	TagLib::MPEG::File f(QFile::encodeName(fileName));
+
+	if(!f.isValid() || !f.ID3v2Tag())
+		return false;
+
+	TagLib::ID3v2::FrameList l = f.ID3v2Tag()->frameList("APIC");
+	if(l.isEmpty())
+		return false;
+
+	TagLib::ID3v2::AttachedPictureFrame *frame =
+			static_cast<TagLib::ID3v2::AttachedPictureFrame *>(l.front());
+	return frame->picture().size() > 0;
+}
+
+
+bool NMetadata::isTaglibCompat(QFileInfo &fi)
+{
+	/*
+	 TagLib is a library for reading and editing the meta-data of several popular
+	 audio formats. Currently it supports both ID3v1 and ID3v2 for MP3 files,
+	 Ogg Vorbis comments and ID3 tags and Vorbis comments in
+	 FLAC, MPC, Speex, WavPack and TrueAudio files.
+	 */
+	QStringList supportedSuffix;
+	supportedSuffix << "mp3" << "mp4" << "wma" << "ogg" << "flac" << "mpc" <<
+			"wav" << "wv" << "TTA";
+	return supportedSuffix.contains(fi.suffix().toLower());
+}
+
+bool NMetadata::isExiv2Compat(QFileInfo &fi)
+{
+	/*
+	 Supported_image_formats
+	 http://dev.exiv2.org/wiki/exiv2/Supported_image_formats
+	 Type  	 Exif mode  	 IPTC mode  	 XMP mode  	 Comment mode
+	 JPEG 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
+	 EXV 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
+	 CR2 	Read 	Read 	Read 	-
+	 CRW 	ReadWrite 	- 	- 	ReadWrite
+	 MRW 	Read 	Read 	Read 	-
+	 TIFF 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 DNG 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 NEF 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 PEF 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 ARW 	Read 	Read 	Read 	-
+	 SR2 	Read 	Read 	Read 	-
+	 ORF 	Read 	Read 	Read 	-
+	 RW2 	Read 	Read 	Read 	-
+	 PNG 	ReadWrite 	ReadWrite 	ReadWrite 	ReadWrite
+	 RAF 	Read 	Read 	Read 	-
+	 XMP 	- 	- 	ReadWrite 	-
+	 GIF 	- 	- 	- 	-
+	 PSD 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 TGA 	- 	- 	- 	-
+	 BMP 	- 	- 	- 	-
+	 JP2 	ReadWrite 	ReadWrite 	ReadWrite 	-
+	 */
+	QStringList supportedSuffix;
+	supportedSuffix << "JPG" << "JPEG" << "EXV"<< "CR2"<< "CRW" << "MRW" << "TIFF"
+			<< "DNG" << "NEF" << "PEF"<< "ARW" << "SR2" << "ORF" << "RW2" << "PNG"
+			<< "RAF" << "PSD"<< "JP2";
+	return supportedSuffix.contains(fi.suffix().toUpper());
+}
+
+bool NMetadata::isIptcCompat(QFileInfo &fi)
+{
+	return (isExiv2Compat(fi));
+}

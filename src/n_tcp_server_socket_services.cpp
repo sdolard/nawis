@@ -218,6 +218,9 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
  case SVC_API_MUSIC_GENRE:
 		return svcGetMusicGenre(session, response);
 
+ case SVC_API_MUSIC_ID3_PICTURE:
+		return svcGetMusicID3Picture(statusCode, session, response);
+
  case SVC_API_MUSIC_TITLE:
 		return svcGetMusicTitle(session, response);
 
@@ -1194,6 +1197,37 @@ NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & se
 	setJsonRootReponse(svRoot, totalCount, succeed);
 	response.setData(NJson::serializeToQByteArray(svRoot));
 	return response; 
+}
+
+NResponse & NTcpServerSocketServices::svcGetMusicID3Picture(int *statusCode,
+															const NClientSession & session,
+															NResponse & response)
+{
+	response.removeDefaultCharset();
+
+	QString fileHash = session.resource();
+	QFileInfo fileInfo = NDatabase::instance().file(fileHash);
+
+	// Cache
+	QString lastModified = NDate_n::toHTMLDateTime(fileInfo.lastModified());
+	response.httpHeader().setValue("Last-Modified", lastModified);
+	if (session.request().value("If-Modified-Since") == lastModified)
+	{
+		*statusCode = N_HTTP_NOT_MODIFIED;
+		return response;
+	}
+
+	// File
+	QByteArray ba;
+	QString mimeType;
+	if (NMetadata::getID3Picture(fileInfo.absoluteFilePath(), ba, mimeType))
+	{
+		response.setData(ba);
+		response.httpHeader().setContentType(mimeType);
+		response.add10yExpiresHttpHeader();
+	}
+
+	return response;
 }
 
 NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & session,

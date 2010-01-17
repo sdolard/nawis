@@ -270,7 +270,7 @@ KSMod.Search.Ui.load = function(){
     				disabledPlayerAction(true);
     				}*/
     				if (isPictureRecord(r)) {
-    					overwritePictureTemplate({
+    					KSMod.PicturePreview.Ui.overwrite({
     							hash: r.data.hash,
     							sizeString: KSLib.Convert.byteToHuman(parseInt(r.data.size, 10)),
     							name: r.data.fileName
@@ -507,57 +507,13 @@ KSMod.Search.Ui.load = function(){
     		items: [searchTextField, ' ', searchCategoryComboBox, ' ', searchAction, '->', searchDisplayedText]
     });
     
-    /**
-    * Picture preview template
-    */
-    var pictureTemplate = new Ext.XTemplate(
-    	'<div class="picture-panel-template">', 
-    	'<tpl for=".">', 
-    	'<div class="picture-panel-info">',
-    	'{name}<br>',  
-    	'<span>{sizeString}</span><br>', 
-    	'</div>', 
-    	'<div class="picture-panel-img">',
-    	'<img src="{url}" alt="{alt}" title="{title}"">', 
-    	'</div>', 
-    	'</tpl>', 
-    	'</div>');
-    pictureTemplate.compile();
-    var pictureTemplateEl = '';
     
-    
-    function initPictureTemplate(el){
-        pictureTemplateEl = el;
-        // Picture preview
-        pictureTemplate.overwrite(pictureTemplateEl, {
-        		url: Ext.BLANK_IMAGE_URL,
-        		title: '',
-        		name: '--',
-        		sizeString: '--',
-        		dateString: '--'
-        });
-    }
-    function clearPictureTemplate(){
-        initPictureTemplate(pictureTemplateEl);
-    }
-    
-    function overwritePictureTemplate(config){
-        pictureTemplate.overwrite(pictureTemplateEl, {
-        		url: KSLib.Path.root('api/picture/resize/' + config.hash) + '?height=163&width=262',
-        		title: config.name,
-        		alt: config.name,
-        		name: '<a href="' + KSLib.Path.root('api/picture/resize/' + config.hash) + '" target="_blank" >' + config.name + '</a>',
-        		sizeString: config.sizeString,
-        		dateString: config.dateString
-        });
-    }
     
     /**
     * Global Status bar
     */
     KSMod.Search.Ui.toolBar = searchToolBar;
     KSMod.Search.Ui.mainPanel = resultGrid;
-    KSMod.Search.Ui.initPictureTemplate = initPictureTemplate;
     
     return KSMod.Search.Ui;
 };

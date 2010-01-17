@@ -146,7 +146,13 @@ KSMod.MusicPlayer.Ui.load = function(){
     						updatePlayerInfoLabel();
     					}
     			});
-    			
+    		
+    			KSMod.PicturePreview.Ui.overwrite({
+    					isMusic: true,
+    					hash: currentMusic.hash,
+    					sizeString: '',
+    					name: currentMusic.album
+    			});
     		},
     		iconCls: 'ks-action-play-icon',
     		disabled: true

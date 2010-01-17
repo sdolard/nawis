@@ -383,8 +383,8 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"User command help", // returns
 		NULL
 	}*/,
-NService_n::nsServiceNone
-}; 
+	   NService_n::nsServiceNone
+   };
 
 /* 
  *nsAPICfgServices
@@ -633,6 +633,20 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"}</pre>", // returns
 		NULL
 	},{
+		SVC_API_MUSIC_ID3_PICTURE, // id
+		"id3picture", // service
+		true, // authRequired
+		AUTH_LEVEL_USER, // requiredLevel
+		"0.1.0", // history
+		"Return a thumbnail picture contains in id3 files", // comment
+		"api/music/id3picture/&lt;file hash&gt;", // fullService
+		"GET", // httpMethod
+		"Put &lt;music file hash&gt; at the end of the url<br>"\
+		"Example: api/music/id3picture<b>/62f6287d95fafa0a8c56287e41760f33</b>", // params
+		"", // postData
+		"A picture", // returns
+		NULL
+	},{
 		SVC_API_MUSIC_TITLE, // id
 		"title", // service
 		true, // authRequired
@@ -670,7 +684,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"    \"genre\":\"&lt;music genre&gt;\", // string<br>"\
 		"    \"trackNumber\":&lt;trac number&gt;, // number<br>"\
 		"    \"duration\":&lt;duration in second&gt;, // number<br>"\
-		"    \"copyright\":\"&lt;music copyright&gt;\" // string<br>"\
+		"    \"copyright\":\"&lt;music copyright&gt;\", // string<br>"\
+		"    \"hasID3Picture\":true|false // boolean<br>"\
 		"  },<br>"\
 		"  ... // other items<br>"\
 		"  ]<br>"\
@@ -873,6 +888,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"    \"city\":\"&lt;picture city&gt;\", // string, only for picture category file<br>"\
 		"    \"provinceState\":\"&lt;picture state&gt;\", // string, only for picture category file<br>"\
 		"    \"coutry\":\"&lt;picture country&gt;\", // string, only for picture category file<br>"\
+		"    \"hasID3Picture\":true|false // boolean<br>"\
 		"  },<br>"\
 		"  ... // other items<br>"\
 		"  ]<br>"\
@@ -1308,7 +1324,7 @@ NService_n::nsServiceNone
  * toService
  */
 NService_n::NService NService_n::getHTTPMethodService(NService* rootServices, const QStringList & paths,
-														 const QString & httpMethod, int level)
+													  const QString & httpMethod, int level)
 {
 	if (paths.count() == 0)
 		return NService_n::nsServiceNone;
@@ -1338,7 +1354,7 @@ NService_n::NService NService_n::getHTTPMethodService(NService* rootServices, co
 }
 
 void NService_n::getServices(NService* rootServices, const QStringList & paths,
-							  NService* services, int * size, int level)
+							 NService* services, int * size, int level)
 
 {
 	if (paths.count() == 0)

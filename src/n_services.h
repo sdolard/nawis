@@ -35,9 +35,10 @@
 #define     SVC_API_MUSIC_ALBUM                     (SVC_API_MUSIC | 0x00001000)
 #define     SVC_API_MUSIC_ARTIST                    (SVC_API_MUSIC | 0x00002000)
 #define     SVC_API_MUSIC_GENRE                     (SVC_API_MUSIC | 0x00003000)
-//#define     SVC_API_MUSIC_LYRIC                     (SVC_API_MUSIC | 0x00004000) // TODO
-#define     SVC_API_MUSIC_TITLE                     (SVC_API_MUSIC | 0x00005000)
-#define     SVC_API_MUSIC_YEAR                      (SVC_API_MUSIC | 0x00006000)
+#define     SVC_API_MUSIC_ID3_PICTURE               (SVC_API_MUSIC | 0x00004000)
+//#define     SVC_API_MUSIC_LYRIC                     (SVC_API_MUSIC | 0x00005000) // TODO
+#define     SVC_API_MUSIC_TITLE                     (SVC_API_MUSIC | 0x00006000)
+#define     SVC_API_MUSIC_YEAR                      (SVC_API_MUSIC | 0x00007000)
 #define   SVC_API_NOP                                     (SVC_API | 0x00000080)
 #define   SVC_API_PICTURE                                 (SVC_API | 0x00000090)
 #define     SVC_API_PICTURE_RESIZE                (SVC_API_PICTURE | 0x00001000)

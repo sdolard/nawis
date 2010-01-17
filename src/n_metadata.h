@@ -13,6 +13,8 @@
 // Qt
 #include <QString>
 #include <QDateTime>
+#include <QByteArray>
+#include <QFileInfo>
 
 class NMetadata {
 public:
@@ -33,7 +35,8 @@ public:
 	uint trackNumber() const;
 	// return duraton in ms
 	uint duration() const;
-	
+	bool hasID3Picture() const;
+
 	// Exiv2
 	const QDateTime & dateTimeOriginal() const;
 	const QString & copyright() const;
@@ -53,7 +56,14 @@ public:
 	const QString & provinceState() const;
 	const QString & country() const;
 
-	
+	/* return an empty QByteArray if failed
+	*/
+	static bool getID3Picture(const QString & fileName, QByteArray & ba, QString & mimeType);
+
+	static bool isTaglibCompat(QFileInfo &fi);
+	static bool isExiv2Compat(QFileInfo &fi);
+	static bool isIptcCompat(QFileInfo &fi);
+
 private:
 	QString   m_fileName;
 	
@@ -68,6 +78,7 @@ private:
 	QString   m_genre;
 	uint      m_trackNumber;
 	uint      m_duration;
+	bool      m_hasID3Picture;
 	
 	// Exiv2
 	QDateTime m_dateTimeOriginal;
@@ -114,6 +125,8 @@ private:
 	
 	void printIptcData();
 	void getIptcData();
+
+	bool hasAttachedPictureFrame(const QString & fileName);
 };
 
 #endif //N_METADATA_H

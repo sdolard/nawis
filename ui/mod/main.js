@@ -228,7 +228,8 @@ KSMod.Main.Ui.load = function(){
 	
 	
 	// Picture preview init
-	KSMod.Search.Ui.initPictureTemplate('picturePanelPreview');
+	KSMod.PicturePreview.Ui.load();
+	KSMod.PicturePreview.Ui.init('picturePanelPreview');
 	
 	
 	setTimeout(function(){

@@ -1,3 +1,5 @@
+!!! DEPRECATED !!!
+
 protocol: REST modele
 	request > GET
 		cmd/.../param?<token>=["]<value>["]&[...]

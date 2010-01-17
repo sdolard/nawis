@@ -112,6 +112,7 @@ void NDatabase::create()
 			"genre TEXT,"\
 			"trackNumber INTEGER,"\
 			"duration INTEGER,"\
+			"hasID3Picture BOOLEAN DEFAULT 0 NOT NULL,"\
 			"dateTimeOriginal TIMESTAMP,"\
 			"copyright TEXT,"\
 			"width INTEGER,"\
@@ -515,11 +516,11 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
 	if (!query.prepare("INSERT INTO metadata (file_id, artist, comment, year, album, "\
 					   "title, genre, trackNumber, duration,  dateTimeOriginal,"\
 					   "copyright, width, height, make, model, latitude,"\
-					   "longitude, altitude, city, provinceState, country) " \
+					   "longitude, altitude, city, provinceState, country, hasID3Picture) " \
 					   "VALUES(:file_id, :artist, :comment, :year, :album, "\
 					   ":title, :genre, :trackNumber, :duration,  :dateTimeOriginal,"\
 					   ":copyright, :width, :height, :make, :model, :latitude,"\
-					   ":longitude, :altitude, :city, :provinceState, :country)"))
+					   ":longitude, :altitude, :city, :provinceState, :country, :hasID3Picture)"))
 	{
 		debugLastQuery("setMetadata prepare failed", query);
 		return false;
@@ -534,6 +535,7 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
 	query.bindValue(":genre", metadata.genre());
 	query.bindValue(":trackNumber", metadata.trackNumber());
 	query.bindValue(":duration", metadata.duration());
+	query.bindValue(":hasID3Picture", metadata.hasID3Picture());
 	query.bindValue(":dateTimeOriginal", metadata.dateTimeOriginal().toString(SQLITE_DATETIME));
 	query.bindValue(":copyright", metadata.copyright());
 	query.bindValue(":width", metadata.width());
@@ -569,7 +571,6 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
 	return true;
 }
 
-
 bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const QString & search, int start,
 							 int limit, NFileCategory_n::FileCategory fc,
 							 const QString & sort, const QString & dir)
@@ -583,7 +584,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 				  "metadata.title, metadata.genre, metadata.trackNumber, metadata.duration, "\
 				  "metadata.dateTimeOriginal, metadata.copyright, metadata.width, metadata.height, "\
 				  "metadata.make, metadata.model, metadata.latitude, metadata.longitude, metadata.altitude, "\
-				  "metadata.city, metadata.provinceState, metadata.country "\
+				  "metadata.city, metadata.provinceState, metadata.country, metadata.hasID3Picture "\
 				  "FROM files, metadata " \
 				  "WHERE files.metadata_id = metadata.id "\
 				  "AND files.hash <> '' ";
@@ -670,6 +671,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 	int fieldGenre = query.record().indexOf("genre");
 	int fieldTrackNumber = query.record().indexOf("trackNumber");
 	int fieldDuration = query.record().indexOf("duration");
+	bool hasID3Picture = query.record().indexOf("hasID3Picture");
 	
 	int fieldDateTimeOriginal = query.record().indexOf("dateTimeOriginal");
 	int fieldCopyright = query.record().indexOf("copyright");
@@ -700,6 +702,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 		svfile.setProperty("added", query.value(fieldAdded).toString());
 		svfile.setProperty("size", query.value(fieldSize).toInt());
 		svfile.setProperty("lastModified", query.value(fieldLastModified).toString());
+
 		
 		if (category == NFileCategory_n::fcMusic)
 		{
@@ -712,6 +715,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 			svfile.setProperty("genre", query.value(fieldGenre).toString());
 			svfile.setProperty("trackNumber", query.value(fieldTrackNumber).toInt());
 			svfile.setProperty("duration", query.value(fieldDuration).toInt());
+			svfile.setProperty("hasID3Picture", query.value(hasID3Picture).toString());
 		}
 
 		if (category == NFileCategory_n::fcPicture)
@@ -2081,7 +2085,7 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 	QString sql = "SELECT files.id id, files.fileName, files.hash, files.size, "\
 				  "metadata.artist, metadata.comment, metadata.year, metadata.album, "\
 				  "metadata.title, metadata.genre, metadata.trackNumber, metadata.duration, "\
-				  "metadata.copyright "\
+				  "metadata.copyright, metadata.hasID3Picture "\
 				  "FROM files, metadata " \
 				  "WHERE files.metadata_id = metadata.id "\
 				  "AND files.hash <> '' ";
@@ -2160,6 +2164,8 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 	int fieldTrackNumber = query.record().indexOf("trackNumber");
 	int fieldDuration = query.record().indexOf("duration");
 	int fieldCopyright = query.record().indexOf("copyright");
+	int hasID3Picture = query.record().indexOf("hasID3Picture");
+
 	
 	int i = 0;
 	while (query.next()) {
@@ -2182,6 +2188,7 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 		svTitle.setProperty("trackNumber", query.value(fieldTrackNumber).toInt());
 		svTitle.setProperty("duration", query.value(fieldDuration).toInt());
 		svTitle.setProperty("copyright", query.value(fieldCopyright).toString());
+		svTitle.setProperty("hasID3Picture", query.value(hasID3Picture).toString());
 	}
 	
 	return true;
