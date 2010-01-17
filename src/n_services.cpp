@@ -124,16 +124,19 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"api/auth", // fullService
 		"POST", // httpMethod
 		"", // params
-		"JSON</br>"\
-		"<pre>{</br>"\
-		"  \"login\":\"&lt;login&gt;\", // string </br>"\
-		"  \"pwd\":\"&lt;password&gt;\" // string </br>"\
-		"}</pre>", // postData
+		"Support JSON and FORM<br>"\
+		"JSON:<pre>{<br>"\
+		"  \"username\":\"&lt;username&gt;\", // string <br>"\
+		"  \"password\":\"&lt;password&gt;\" // string <br>"\
+		"}</pre>"\
+		"or FORM:<pre><br>"\
+		"  username=&lt;username&gt;, // string <br>"\
+		"  password=&lt;password&gt; // string</pre>", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;login message&gt;\", // string</br>"\
-		"  \"level\":\"&lt;level&gt;\"// string: contains levels separated by space \" \" char</br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;login message&gt;\", // string<br>"\
+		"  \"level\":\"&lt;level&gt;\"// string: contains levels separated by space \" \" char<br>"\
 		"}</pre>"\
 		"In case of success, server will set \"nawis_sessionId\" cookie.<br>"\
 		"Available levels are:<ul>"\
@@ -153,9 +156,9 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"", // params
 		"", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;logout message&gt;\", // string</br>"
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;logout message&gt;\", // string<br>"
 		"}</pre>"\
 		"In case of success, server will clear value of \"nawis_sessionId\" cookie", // returns
 		NULL
@@ -184,7 +187,7 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"GET", // httpMethod
 		"[help]", // params
 		"", // postData
-		"The file</br>"\
+		"The file<br>"\
 		"&lt;file hash&gt; is a md5 hash of file to download", // returns
 		NULL
 	},{
@@ -224,21 +227,21 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"Return logs. Various thing a logged.", // comment
 		"api/log", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"date\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"date\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;load message&gt;\", // string</br>"\
-		"  \"data\":[{</br>"\
-		"    \"id\":&lt;id&gt;, // number: id is set by server</br>"\
-		"    \"date\":\"&lt;log date time&gt;\", // format: \"yyyy-MM-dd hh:mm:ss.zzz\", string </br>"\
-		"    \"log\":\"&lt;log message&gt;\" // string </br>"\
-		"  },...</br>"
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;load message&gt;\", // string<br>"\
+		"  \"data\":[{<br>"\
+		"    \"id\":&lt;id&gt;, // number: id is set by server<br>"\
+		"    \"date\":\"&lt;log date time&gt;\", // format: \"yyyy-MM-dd hh:mm:ss.zzz\", string <br>"\
+		"    \"log\":\"&lt;log message&gt;\" // string <br>"\
+		"  },...<br>"
 		"]}</pre>", // returns
 		NULL
 	},
@@ -254,9 +257,9 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"[help]", // params
 		"", // postData
 		"JSON"
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;delete message&gt;\" // string </br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;delete message&gt;\" // string <br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -285,10 +288,10 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"[help]", // params
 		"", // postData
 		"JSON"
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;nop message&gt;\", // string </br>"\
-		"  \"status\":\"&lt;SERVER_STATUS&gt;\" // string </br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;nop message&gt;\", // string <br>"\
+		"  \"status\":\"&lt;SERVER_STATUS&gt;\" // string <br>"\
 		"}</pre>"\
 		"SERVER_STATUS are:<ul>"\
 		"<li>JT_NONE: server is ready</li>"\
@@ -400,19 +403,19 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 		"[help]", // params
 		"", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;load message&gt;\", // string</br>"\
-		"  \"totalcount\":&lt;number of element&gt;,// number, here equal to data array size</br>"\
-		"  \"data\":[{ // array</br>"\
-		"    \"id\":&lt;id&gt;, // number</br>"\
-		"    \"path\":\"&lt;absolute directory path&gt;\", // string: absolute directory path</br>"\
-		"    \"recursive\":true|false, // boolean: true to shared contained directories</br>"\
-		"    \"shared\":true|false, // boolean: true if directory is shared</br>"\
-		"    \"exists\":true|false // boolean: true if directory exists on server</br>"\
-		"  },</br>"\
-		"  {... // others shared directory objects, if exists...</br>"\
-		"  }]</br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;load message&gt;\", // string<br>"\
+		"  \"totalcount\":&lt;number of element&gt;,// number, here equal to data array size<br>"\
+		"  \"data\":[{ // array<br>"\
+		"    \"id\":&lt;id&gt;, // number<br>"\
+		"    \"path\":\"&lt;absolute directory path&gt;\", // string: absolute directory path<br>"\
+		"    \"recursive\":true|false, // boolean: true to shared contained directories<br>"\
+		"    \"shared\":true|false, // boolean: true if directory is shared<br>"\
+		"    \"exists\":true|false // boolean: true if directory exists on server<br>"\
+		"  },<br>"\
+		"  {... // others shared directory objects, if exists...<br>"\
+		"  }]<br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -425,14 +428,14 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 		"Remove a directory from shared list", // comment
 		"api/cfg/shareddir/&lt;id&gt;", // fullService
 		"DELETE", // httpMethod
-		"[help]</br>"\
-		"Just put id to delete at the end of the url</br>"\
+		"[help]<br>"\
+		"Just put id to delete at the end of the url<br>"\
 		"Example: api/cfg/shareddir<b>/4</b>", // params
 		"", // postData
 		"JSON"
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;delete message&gt;\" // string </br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;delete message&gt;\" // string <br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -447,25 +450,25 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 		"POST", // httpMethod
 		"[help]", // params
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"data\": // an object with a data property</br>"\
-		"  {</br>"\
-		"    \"path\":\"&lt;absolute directory path&gt;\", // string</br>"\
-		"    \"shared\":true|false, // boolean</br>"\
-		"    \"recursive\":true|false // boolean</br>"\
-		"  }</br>"\
+		"<pre>{<br>"\
+		"  \"data\": // an object with a data property<br>"\
+		"  {<br>"\
+		"    \"path\":\"&lt;absolute directory path&gt;\", // string<br>"\
+		"    \"shared\":true|false, // boolean<br>"\
+		"    \"recursive\":true|false // boolean<br>"\
+		"  }<br>"\
 		"}</pre>", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;post message&gt;\", // string</br>"\
-		"  \"data\":[{</br>"\
-		"    \"id\":&lt;id&gt;, // number: id is set by server</br>"\
-		"    \"path\":\"&lt;absolute directory path&gt;\", // string </br>"\
-		"    \"recursive\":true|false, // boolean</br>"\
-		"    \"shared\":true|false, // boolean</br>"\
-		"    \"exists\":true|false // boolean</br>"\
-		"  }</br>"
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;post message&gt;\", // string<br>"\
+		"  \"data\":[{<br>"\
+		"    \"id\":&lt;id&gt;, // number: id is set by server<br>"\
+		"    \"path\":\"&lt;absolute directory path&gt;\", // string <br>"\
+		"    \"recursive\":true|false, // boolean<br>"\
+		"    \"shared\":true|false, // boolean<br>"\
+		"    \"exists\":true|false // boolean<br>"\
+		"  }<br>"
 		"]}</pre>", // returns
 		NULL
 	},
@@ -478,29 +481,29 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 		"Used to modify shared directory properties", // comment
 		"api/cfg/shareddir/&lt;id&gt;", // fullService
 		"PUT", // httpMethod
-		"[help]</br>"\
-		"Add id to update at the end of the url</br>"\
+		"[help]<br>"\
+		"Add id to update at the end of the url<br>"\
 		"Example: api/cfg/shareddir<b>/4</b>", // params
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"data\":{</br>"\
-		"    \"path\":\"&lt;absolute directory path&gt;\", // optionnal, string</br>"\
-		"    \"shared\":true|false, // optionnal, boolean</br>"\
-		"    \"recursive\":true|false, // optionnal, boolean</br>"\
-		"    \"id\":&lt;id to update&gt; // number </br>"\
-		"  }</br>"\
+		"<pre>{<br>"\
+		"  \"data\":{<br>"\
+		"    \"path\":\"&lt;absolute directory path&gt;\", // optionnal, string<br>"\
+		"    \"shared\":true|false, // optionnal, boolean<br>"\
+		"    \"recursive\":true|false, // optionnal, boolean<br>"\
+		"    \"id\":&lt;id to update&gt; // number <br>"\
+		"  }<br>"\
 		"}</pre>", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"message\":\"&lt;put message&gt;\", // string</br>"\
-		"  \"data\":[{ // array</br>"\
-		"    \"id\":&lt;id&gt;, // number</br>"\
-		"    \"path\":\"&lt;absolute directory path&gt;\",  // string</br>"\
-		"    \"recursive\":true|false, // boolean</br>"\
-		"    \"shared\":true|false, // boolean</br>"\
-		"    \"exists\":true|false // boolean</br>"\
-		"  }]</br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"message\":\"&lt;put message&gt;\", // string<br>"\
+		"  \"data\":[{ // array<br>"\
+		"    \"id\":&lt;id&gt;, // number<br>"\
+		"    \"path\":\"&lt;absolute directory path&gt;\",  // string<br>"\
+		"    \"recursive\":true|false, // boolean<br>"\
+		"    \"shared\":true|false, // boolean<br>"\
+		"    \"exists\":true|false // boolean<br>"\
+		"  }]<br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -519,18 +522,18 @@ NService_n::NService NService_n::nsAPIFileServices[] =
 		true, // authRequired
 		AUTH_LEVEL_ADMIN, // requiredLevel
 		"0.1.0", // history
-		"Look for new files and modification then update database with collected</br>"\
-		"data and metadata(id3, IPCT, exif...).</br>"\
-		"First time this operation is done, it could take a long time.</br>"\
+		"Look for new files and modification then update database with collected<br>"\
+		"data and metadata(id3, IPCT, exif...).<br>"\
+		"First time this operation is done, it could take a long time.<br>"\
 		"See <b>api/nop</b> to retreive pending server operation status.", // comment
 		"api/file/updatedb", // fullService
 		"GET", // httpMethod
 		"[help]", // params
 		"", // postData
 		"JSON"\
-		"<pre>{</br>"\
-		"  \"success\":true|false, // boolean </br>"\
-		"  \"message\":\"&lt;update message&gt;\" // string</br>"\
+		"<pre>{<br>"\
+		"  \"success\":true|false, // boolean <br>"\
+		"  \"message\":\"&lt;update message&gt;\" // string<br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -551,25 +554,25 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"Album list", // comment
 		"api/music/album", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
-		"limit: &lt;result limit&gt; // optionnal, default \"25\"</br>"\
-		"year:  &lt;music year&gt; // optionnal</br>"\
-		"genre: &lt;music genre&gt; // optionnal</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
+		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+		"year:  &lt;music year&gt; // optionnal<br>"\
+		"genre: &lt;music genre&gt; // optionnal<br>"\
 		"artist: &lt;music artist&gt; // optionnal", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"album\":\"&lt;album name&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"album\":\"&lt;album name&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -581,24 +584,24 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"Album list", // comment
 		"api/music/artist", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
-		"limit: &lt;result limit&gt; // optionnal, default \"25\"</br>"\
-		"year:  &lt;music year&gt; // optionnal</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
+		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+		"year:  &lt;music year&gt; // optionnal<br>"\
 		"genre: &lt;music genre&gt; // optionnal", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"artist\":\"&lt;artist name&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"artist\":\"&lt;artist name&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -610,23 +613,23 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"Genre list", // comment
 		"api/music/genre", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
-		"limit: &lt;result limit&gt; // optionnal, default \"25\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
+		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
 		"year:  &lt;music year&gt; // optionnal", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"genre\":\"&lt;genre name&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"genre\":\"&lt;genre name&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -638,39 +641,39 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"Title list", // comment
 		"api/music/title", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"album\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
-		"limit: &lt;result limit&gt; // optionnal, default \"25\"</br>"\
-		"year:  &lt;music year&gt; // optionnal</br>"\
-		"genre: &lt;music genre&gt; // optionnal</br>"\
-		"artist: &lt;music artist&gt; // optionnal</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"album\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
+		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+		"year:  &lt;music year&gt; // optionnal<br>"\
+		"genre: &lt;music genre&gt; // optionnal<br>"\
+		"artist: &lt;music artist&gt; // optionnal<br>"\
 		"album: &lt;music album&gt; // optionnal", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;music filename&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;music file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"artist\":\"&lt;artist name&gt;\", // string</br>"\
-		"    \"comment\":\"&lt;music comment&gt;\", // string</br>"\
-		"    \"year\":&lt;music year&gt;, // number</br>"\
-		"    \"album\":\"&lt;album name&gt;\", // string</br>"\
-		"    \"title\":\"&lt;music title&gt;\", // string</br>"\
-		"    \"genre\":\"&lt;music genre&gt;\", // string</br>"\
-		"    \"trackNumber\":&lt;trac number&gt;, // number</br>"\
-		"    \"duration\":&lt;duration in second&gt;, // number</br>"\
-		"    \"copyright\":\"&lt;music copyright&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;music filename&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;music file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"artist\":\"&lt;artist name&gt;\", // string<br>"\
+		"    \"comment\":\"&lt;music comment&gt;\", // string<br>"\
+		"    \"year\":&lt;music year&gt;, // number<br>"\
+		"    \"album\":\"&lt;album name&gt;\", // string<br>"\
+		"    \"title\":\"&lt;music title&gt;\", // string<br>"\
+		"    \"genre\":\"&lt;music genre&gt;\", // string<br>"\
+		"    \"trackNumber\":&lt;trac number&gt;, // number<br>"\
+		"    \"duration\":&lt;duration in second&gt;, // number<br>"\
+		"    \"copyright\":\"&lt;music copyright&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -682,22 +685,22 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"Year list", // comment
 		"api/music/year", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"",  // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"year\":\"&lt;album year&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"year\":\"&lt;album year&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -718,10 +721,10 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
 		"Return a resized jpeg picture", // comment
 		"api/picture/resize/&lt;file hash&gt;", // fullService
 		"GET", // httpMethod
-		"Put &lt;picture file hash&gt; to resize at the end of the url</br>"\
-		"Example: api/picture/resize<b>/62f6287d95fafa0a8c56287e41760f33</b></br>"
-		"width: &lt;required picture width&gt; // optionnal, default \"800\"</br>"\
-		"height: &lt;required picture height&gt; // optionnal, default \"600\"</br>"\
+		"Put &lt;picture file hash&gt; to resize at the end of the url<br>"\
+		"Example: api/picture/resize<b>/62f6287d95fafa0a8c56287e41760f33</b><br>"
+		"width: &lt;required picture width&gt; // optionnal, default \"800\"<br>"\
+		"height: &lt;required picture height&gt; // optionnal, default \"600\"<br>"\
 		"Resize is always proportional.", // params
 		"", // postData
 		"A jpeg picture", // returns
@@ -735,7 +738,7 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
 		"Return a thumbnail jpeg picture", // comment
 		"api/picture/thumb/&lt;file hash&gt;", // fullService
 		"GET", // httpMethod
-		"Put &lt;picture file hash&gt; at the end of the url</br>"\
+		"Put &lt;picture file hash&gt; at the end of the url<br>"\
 		"Example: api/picture/thumb<b>/62f6287d95fafa0a8c56287e41760f33</b>", // params
 		"", // postData
 		"A jpeg picture", // returns
@@ -759,30 +762,30 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search archives", // comment
 		"api/search/archive", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -794,30 +797,30 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search document", // comment
 		"api/search/document", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -829,50 +832,50 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search files", // comment
 		"api/search/file", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"    \"artist\":\"&lt;music artist name&gt;\", // string, only for music category file</br>"\
-		"    \"comment\":\"&lt;music file comment&gt;\", // string, only for music category file</br>"\
-		"    \"year\":&lt;music year&gt;, // number, only for music category file</br>"\
-		"    \"album\":\"&lt;music album name&gt;\", // string, only for music category file</br>"\
-		"    \"title\":\"&lt;music title&gt;\", // string, only for music category file</br>"\
-		"    \"genre\":\"&lt;music genre&gt;\", // string, only for music category file</br>"\
-		"    \"trackNumber\":&lt;music trac number&gt;, // number, only for music category file</br>"\
-		"    \"duration\":&lt;music duration in second&gt;, // number, only for music category file</br>"\
-		"    \"copyright\":\"&lt;music copyright&gt;\" // string, only for music category file</br>"\
-		"    \"dateTimeOriginal\":\"&lt;picture date and time when the original image data was generated&gt;\", // string, only for picture category file</br>"\
-		"    \"width\":&lt;picture width&gt;, // number, only for picture category file</br>"\
-		"    \"height\":&lt;picture height&gt;, // number, only for picture category file</br>"\
-		"    \"make\":\"&lt;picture manufacturer of the recording equipment&gt;\", // string, only for picture category file</br>"\
-		"    \"model\":\"&lt;picture model name or model number of the equipment&gt;\", // string, only for picture category file</br>"\
-		"    \"longitude\":\"&lt;picture longiture&gt;\", // string, only for picture category file</br>"\
-		"    \"latitude\":\"&lt;picture latitude&gt;\", // string, only for picture category file</br>"\
-		"    \"altitude\":&lt;picture altitude&gt;, // number, only for picture category file</br>"\
-		"    \"city\":\"&lt;picture city&gt;\", // string, only for picture category file</br>"\
-		"    \"provinceState\":\"&lt;picture state&gt;\", // string, only for picture category file</br>"\
-		"    \"coutry\":\"&lt;picture country&gt;\", // string, only for picture category file</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"    \"artist\":\"&lt;music artist name&gt;\", // string, only for music category file<br>"\
+		"    \"comment\":\"&lt;music file comment&gt;\", // string, only for music category file<br>"\
+		"    \"year\":&lt;music year&gt;, // number, only for music category file<br>"\
+		"    \"album\":\"&lt;music album name&gt;\", // string, only for music category file<br>"\
+		"    \"title\":\"&lt;music title&gt;\", // string, only for music category file<br>"\
+		"    \"genre\":\"&lt;music genre&gt;\", // string, only for music category file<br>"\
+		"    \"trackNumber\":&lt;music trac number&gt;, // number, only for music category file<br>"\
+		"    \"duration\":&lt;music duration in second&gt;, // number, only for music category file<br>"\
+		"    \"copyright\":\"&lt;music copyright&gt;\" // string, only for music category file<br>"\
+		"    \"dateTimeOriginal\":\"&lt;picture date and time when the original image data was generated&gt;\", // string, only for picture category file<br>"\
+		"    \"width\":&lt;picture width&gt;, // number, only for picture category file<br>"\
+		"    \"height\":&lt;picture height&gt;, // number, only for picture category file<br>"\
+		"    \"make\":\"&lt;picture manufacturer of the recording equipment&gt;\", // string, only for picture category file<br>"\
+		"    \"model\":\"&lt;picture model name or model number of the equipment&gt;\", // string, only for picture category file<br>"\
+		"    \"longitude\":\"&lt;picture longiture&gt;\", // string, only for picture category file<br>"\
+		"    \"latitude\":\"&lt;picture latitude&gt;\", // string, only for picture category file<br>"\
+		"    \"altitude\":&lt;picture altitude&gt;, // number, only for picture category file<br>"\
+		"    \"city\":\"&lt;picture city&gt;\", // string, only for picture category file<br>"\
+		"    \"provinceState\":\"&lt;picture state&gt;\", // string, only for picture category file<br>"\
+		"    \"coutry\":\"&lt;picture country&gt;\", // string, only for picture category file<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -884,30 +887,30 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search movie", // comment
 		"api/search/movie", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -919,39 +922,39 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search music", // comment
 		"api/search/music", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"    \"artist\":\"&lt;music artist name&gt;\", // string</br>"\
-		"    \"comment\":\"&lt;music file comment&gt;\", // string</br>"\
-		"    \"year\":&lt;music year&gt;, // number</br>"\
-		"    \"album\":\"&lt;music album name&gt;\", // string</br>"\
-		"    \"title\":\"&lt;music title&gt;\", // string</br>"\
-		"    \"genre\":\"&lt;music genre&gt;\", // string</br>"\
-		"    \"trackNumber\":&lt;music trac number&gt;, // number</br>"\
-		"    \"duration\":&lt;music duration in second&gt;, // number</br>"\
-		"    \"copyright\":\"&lt;music copyright&gt;\" // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"    \"artist\":\"&lt;music artist name&gt;\", // string<br>"\
+		"    \"comment\":\"&lt;music file comment&gt;\", // string<br>"\
+		"    \"year\":&lt;music year&gt;, // number<br>"\
+		"    \"album\":\"&lt;music album name&gt;\", // string<br>"\
+		"    \"title\":\"&lt;music title&gt;\", // string<br>"\
+		"    \"genre\":\"&lt;music genre&gt;\", // string<br>"\
+		"    \"trackNumber\":&lt;music trac number&gt;, // number<br>"\
+		"    \"duration\":&lt;music duration in second&gt;, // number<br>"\
+		"    \"copyright\":\"&lt;music copyright&gt;\" // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -963,30 +966,30 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search other format (see server config file)", // comment
 		"api/search/other", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -998,41 +1001,41 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"Search picture", // comment
 		"api/search/picture", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;item id&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"hash\":\"&lt;file md5 hash&gt;\", // string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number</br>"\
-		"    \"relativePath\":\"&lt;file relative path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type</br>"\
-		"    \"added\":\"&lt;Date time added in server database&gt;\", // string</br>"\
-		"    \"lastModified\":\"&lt;last file edition&gt;\", // string</br>"\
-		"    \"dateTimeOriginal\":\"&lt;picture date and time when the original image data was generated&gt;\", // string</br>"\
-		"    \"width\":&lt;picture width&gt;, // number</br>"\
-		"    \"height\":&lt;picture height&gt;, // number</br>"\
-		"    \"make\":\"&lt;picture manufacturer of the recording equipment&gt;\", // string</br>"\
-		"    \"model\":\"&lt;picture model name or model number of the equipment&gt;\", // string</br>"\
-		"    \"longitude\":\"&lt;picture longiture&gt;\", // string</br>"\
-		"    \"latitude\":\"&lt;picture latitude&gt;\", // string</br>"\
-		"    \"altitude\":&lt;picture altitude&gt;, // number</br>"\
-		"    \"city\":\"&lt;picture city&gt;\", // string</br>"\
-		"    \"provinceState\":\"&lt;picture state&gt;\", // string</br>"\
-		"    \"coutry\":\"&lt;picture country&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;item id&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number<br>"\
+		"    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;other|movie|music|picture|archive|document&gt;\", // string, file category type<br>"\
+		"    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
+		"    \"lastModified\":\"&lt;last file edition&gt;\", // string<br>"\
+		"    \"dateTimeOriginal\":\"&lt;picture date and time when the original image data was generated&gt;\", // string<br>"\
+		"    \"width\":&lt;picture width&gt;, // number<br>"\
+		"    \"height\":&lt;picture height&gt;, // number<br>"\
+		"    \"make\":\"&lt;picture manufacturer of the recording equipment&gt;\", // string<br>"\
+		"    \"model\":\"&lt;picture model name or model number of the equipment&gt;\", // string<br>"\
+		"    \"longitude\":\"&lt;picture longiture&gt;\", // string<br>"\
+		"    \"latitude\":\"&lt;picture latitude&gt;\", // string<br>"\
+		"    \"altitude\":&lt;picture altitude&gt;, // number<br>"\
+		"    \"city\":\"&lt;picture city&gt;\", // string<br>"\
+		"    \"provinceState\":\"&lt;picture state&gt;\", // string<br>"\
+		"    \"coutry\":\"&lt;picture country&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},
@@ -1054,31 +1057,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated archives", // comment
 		"api/duplicated/archive", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1090,30 +1093,30 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated document", // comment
 		"api/duplicated/document", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1125,31 +1128,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated files", // comment
 		"api/duplicated/file", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1161,31 +1164,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated movie", // comment
 		"api/duplicated/movie", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1197,31 +1200,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated music", // comment
 		"api/duplicated/music", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1233,31 +1236,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated other format (see server config file)", // comment
 		"api/duplicated/other", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},{
@@ -1269,31 +1272,31 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"Return duplicated picture", // comment
 		"api/duplicated/picture", // fullService
 		"GET", // httpMethod
-		"search: &lt;text to search&gt; // optionnal</br>"\
-		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection</br>"\
-		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"</br>"\
-		"start: &lt;start offset&gt; // optionnal, default \"0\"</br>"\
+		"search: &lt;text to search&gt; // optionnal<br>"\
+		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+		"dir: &lt;ASQ|DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
-		"JSON<pre>{</br>"\
-		"  \"success\":true|false, // boolean</br>"\
-		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number</br>"\
-		"              // This value is not in relation to limit params.</br>"\
-		"              // data.length is the number of items in relation to search and limit.</br>"\
-		"  \"message\":\"&lt;loaded message&gt;\",</br>"\
-		"  \"data\":[{ // array of result</br>"\
-		"    \"id\":&lt;id of item&gt;, // number</br>"\
-		"    \"fileName\":\"&lt;file name&gt;\", // string</br>"\
-		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string</br>"\
-		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string</br>"\
-		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain</br>"\
-		"    \"hash\":\"&lt;md5 file hash&gt;\",</br>"\
-		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string</br>"\
-		"    \"size\":&lt;file size in octet&gt;, // number </br>"\
-		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string</br>"\
-		"  },</br>"\
-		"  ... // other items</br>"\
-		"  ]</br>"\
+		"JSON<pre>{<br>"\
+		"  \"success\":true|false, // boolean<br>"\
+		"  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+		"              // This value is not in relation to limit params.<br>"\
+		"              // data.length is the number of items in relation to search and limit.<br>"\
+		"  \"message\":\"&lt;loaded message&gt;\",<br>"\
+		"  \"data\":[{ // array of result<br>"\
+		"    \"id\":&lt;id of item&gt;, // number<br>"\
+		"    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
+		"    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
+		"    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
+		"    \"category\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
+		"    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
+		"    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
+		"    \"size\":&lt;file size in octet&gt;, // number <br>"\
+		"    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
+		"  },<br>"\
+		"  ... // other items<br>"\
+		"  ]<br>"\
 		"}</pre>", // returns
 		NULL
 	},

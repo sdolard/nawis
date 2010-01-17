@@ -109,7 +109,7 @@ const QString NJson::serializeString(const QScriptValue & sv)
 	*/
 	Q_ASSERT(sv.isString());
 	QString value = sv.toString().replace(QString("\""), QString("\\\""));
-	value = value.replace(QString("\r\n"), QString("</br>"));
+	value = value.replace(QString("\r\n"), QString("<br>"));
 	return QString("\"%1\"").arg(value);
 }
 
