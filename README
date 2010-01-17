@@ -1,0 +1,20 @@
+Build need 
+----------
+1) All platform
+  - Qt 4.5.x
+  - wget
+  - unzip
+  - unrar
+
+2) On Windows:
+  - install cygwin
+    - wget
+    - unzip
+  - unrar will be downloaded by script, you do not have anything to do
+  
+3) run update.sh script
+
+4) run build_$YOUR_PLATFORM$_$BUILD_TYPE$
+  On windows, for debug build, run "build_windows_mingw_debug.bat"
+  On Mac, for release build, run "build_mac_release.sh"
+  Binaries are created in out/ directory

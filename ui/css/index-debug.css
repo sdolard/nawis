@@ -1,0 +1,198 @@
+
+
+#class .loading-indicator {
+ font-size: 18px;
+ height: 18px;
+}
+
+.loading-indicator {
+ font-size: 11px;
+ background-image: url(../res/loading....gif);
+ background-repeat: no-repeat;
+ background-position: top left;
+ padding-left: 20px;
+ height: 18px;
+ text-align: left;
+}
+
+#doc-body .loading-indicator {
+ font: bold 13px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+ position: absolute;
+ top: 35%;
+ left: 43%;
+ color: #444;
+ background-image: url(../res/loading....gif);
+ background-repeat: no-repeat;
+ background-position: left 5px;
+ padding: 10px 10px 10px 38px;
+ text-align: left;
+}
+
+#loading-mask {
+ position: absolute;
+ left: 0;
+ top: 0;
+ width: 100%;
+ height: 100%;
+ z-index: 20000;
+ background-color: white;
+}
+
+#loading {
+ position: absolute;
+ left: 45%;
+ top: 40%;
+ padding: 2px;
+ z-index: 20001;
+ height: auto;
+}
+
+#loading img {
+ margin-bottom: 5px;
+}
+
+#loading .loading-indicator {
+ background: white;
+ color: #555;
+ font: bold 13px tahoma, arial, helvetica;
+ padding: 10px;
+ margin: 0;
+ text-align: center;
+ height: auto;
+}
+
+#search .loading-indicator {
+ position: static !important;
+}
+
+.controlBtn img {
+ padding-left: 4px;
+ cursor: pointer;
+}
+
+a:link, a:visited, a:active {
+ color: #0464BB;
+ text-decoration: none;
+}
+
+a:hover {
+ color: #1C417C;
+ text-decoration: underline;
+}
+
+/*
+* Picture widget
+*/
+.search-result-preview-img {
+ text-align:center;
+ width: 32px;
+ height: 24px;
+}
+.search-result-preview-img img {
+ max-height: 24px;
+ max-width: 32px;
+}
+/*
+* End Picture widget
+*/
+
+/*
+* Picture widget
+*/
+.picture-panel-template {
+ height: 200px;
+}
+.picture-panel-img {
+ text-align:center;
+}
+.picture-panel-img img {
+ max-height: 163px;
+}
+/*
+* End Picture widget
+*/
+
+/*
+* Windows resources
+*/
+.ks-window-preference-icon {
+ background: url(../res/famfamfam_silk_icons_v013/icons/server_edit.png) 0 6px no-repeat !important;
+}
+
+.ks-window-about-icon {
+ background: url(../res/famfamfam_silk_icons_v013/icons/help.png) 0 6px no-repeat !important;
+}
+
+.ks-window-login-icon {
+ background: url(../res/famfamfam_silk_icons_v013/icons/key.png) 0 6px no-repeat !important;
+}
+/*
+* End windows resources
+*/
+
+/**
+* Ext action css
+*/
+.ks-action-view-preference-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/server_edit.png) !important;
+}
+
+.ks-action-add-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/add.png) !important;
+}
+
+.ks-action-delete-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/delete.png) !important;
+}
+
+.ks-action-play-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/control_play.png) !important;
+}
+
+.ks-action-stop-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/control_stop.png) !important;
+}
+
+.ks-action-pause-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/control_pause.png) !important;
+}
+
+.ks-action-search-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/world.png) !important;
+}
+
+.ks-action-next-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/control_end.png) !important;
+}
+
+.ks-action-previous-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/control_start.png) !important;
+}
+
+.ks-action-loading-icon {
+ background-image: url(../res/loader.gif) !important;
+}
+
+.ks-action-mute-sound-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/sound_mute.png) !important;
+}
+
+.ks-action-sound-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/sound.png) !important;
+}
+
+.ks-action-logout-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/door_out.png) !important;
+}
+
+.ks-action-refresh-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/arrow_refresh.png) !important;
+}
+
+.ks-action-search-music-icon {
+ background-image: url(../res/famfamfam_silk_icons_v013/icons/music.png) !important;
+}
+
+/**
+* End -- Ext action css
+*/ 

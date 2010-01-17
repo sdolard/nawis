@@ -1,0 +1,35 @@
+KISSHARE=$(pwd)
+CONTRIB="$KISSHARE/contrib"
+TOOLS="$KISSHARE/tools"
+UI="$KISSHARE/ui"
+UI_LIB="$UI/lib"
+UI_RES="$UI/res"
+
+if [ $TERM = "cygwin" ] ; then
+{
+	KISSHARE=`cygpath -d "$KISSHARE"` 
+	CONTRIB=`cygpath -d "$CONTRIB"`
+	TOOLS=`cygpath -d "$TOOLS"`
+	UI=`cygpath -d "$UI"`
+	UI_LIB=`cygpath -d "$UI_LIB"`
+	UI_RES=`cygpath -d "$UI_RES"`
+}  
+fi
+
+# HTTP proxy configuration        
+PROXY="" #  if no proxy
+#PROXY="http://10.2.0.83:3128"  # if proxy PROXY="http://ipaddress:port"
+[ "$PROXY" != "" ] && export http_proxy="$PROXY"
+
+# Tools: unrar
+UNRAR="unrar"
+if [ $TERM = "cygwin" ] ; then
+{
+	cd "$TOOLS"
+	[ ! -f unrar-3.4.3-bin.zip ] && wget http://kent.dl.sourceforge.net/sourceforge/gnuwin32/unrar-3.4.3-bin.zip
+	[ ! -d unrar-3.4.3-bin ] && unzip unrar-3.4.3-bin.zip -d unrar-3.4.3-bin
+	UNRAR=`cygpath -up "$(pwd)/unrar-3.4.3-bin/bin/unrar.exe"`
+}  
+fi
+
+cd "$KISSHARE"

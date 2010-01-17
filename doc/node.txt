@@ -1,0 +1,11 @@
+1) présentation
+	- création session
+
+--> Communication , collaboration et auto-organisation et partage 
+--> Identification, nomage , adressage des ressources 
+-->  publication de l'existance des ressources (publish) 
+-->  découverte, recherche, localisation (discover, research, find ) 
+-->  accéder aux ressources (get ) 
+-->  utiliser et exploiter les ressources (use) 
+--> publication des recherches (node, requete...)
+--> DHT: distributed hash table

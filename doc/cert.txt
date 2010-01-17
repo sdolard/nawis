@@ -1,0 +1,52 @@
+X509 certificate self signed generation
+
+http://www.ipsec-howto.org/x595.html
+http://www.imacat.idv.tw/tech/sslcerts.html
+http://sial.org/howto/openssl/self-signed/
+
+1)	Créer un fichier avec un mot de passe provenant de l'utilisateur:
+		echo <password> > mypassword.txt
+
+2)	On génère une clef rsa à partie de ce fichier et à l'aide d'openssl
+	Cette clef sera la clef privé servant de base aux echanges entre les peers
+	Pour une version chiffrée:
+		Le mot de passe sera saisie en ligne de commande
+			openssl genrsa -des3 1024 > $USERNAME.key
+		Le mot de passe utilisé sera celui se trouvant dans le ficher mypassword.txt
+			openssl genrsa -des3 -passout file:mypassword.txt 1024 > $USERNAME.key
+	Pour une version non chiffrée:
+		openssl genrsa > $USERNAME.key
+	Dans tous les cas, il faut rendre la clef invisible aux autres utilsiateur
+	du systeme:
+		chmod 400 $USERNAME.key
+		
+3) On génère la clef public, un certificat X509:
+	Si la clef privée ($USERNAME.key) est signée, alors son mot de passe sera demandé.
+		En ligne de commande:
+			openssl req -new -x509 -nodes -sha1 -days 3650 -key $USERNAME.key > $USERNAME.cert
+		Celui se trouvant dans le fichier mypassword.txt sera utilisé
+			openssl req -new -x509 -nodes -sha1 -days 3650 -key $USERNAME.key -passin file:mypassword.txt > $USERNAME.cert
+	Un ensemble de questions servant a identifier le propriétaire du certificat 
+	sont demandés:
+		Country Name (2 letter code) [AU]:FR
+		State or Province Name (full name) [Some-State]:France
+		Locality Name (eg, city) []:Wattrelos
+		Organization Name (eg, company) [Internet Widgits Pty Ltd]:  
+		Organizational Unit Name (eg, section) []:
+		Common Name (eg, YOUR name) []:Sébastien Dolard
+		Email Address []:sdolard@free.fr
+	Il est possible de passer ces infos à l'aide d'un fichier passé en paramètre:
+		TODO
+		openssl req -new -x509 -nodes -sha1 -days 3650 -key $USERNAME.key -passin file:mypassword.txt > $USERNAME.cert
+		
+4)	Extraire les données d'un certificat
+	openssl x509 -noout -fingerprint -text < $USERNAME.cert > $USERNAME.info
+	
+5)	Combiner clef et certificat > un pem
+	Cette opération n'est à effecteur que si votre clef est protégé par un mot
+	de passe.
+	Certaines applications ont besoin de ce format pour fonctionner.
+		cat $USERNAME.cert $USERNAME.key > $USERNAME.pem 
+		rm $USERNAME.key
+		chmod 400  $USERNAME.pem
+	

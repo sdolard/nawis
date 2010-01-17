@@ -1,0 +1,5 @@
+classer les fichiers comptés
+Créer des références vers les fichiers
+Associer des tags aux fichiers
+Générer un identifiant unique par fichier
+	

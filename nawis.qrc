@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>images/nawis.ico</file>
+        <file>images/no_preview.png</file>
+        <file>ui/res/famfamfam_silk_icons_v013/icons/music.png</file>
+        <file>ui/res/famfamfam_silk_icons_v013/icons/film.png</file>
+        <file>ui/res/famfamfam_silk_icons_v013/icons/compress.png</file>
+        <file>ui/res/famfamfam_silk_icons_v013/icons/page_white_text.png</file>
+        <file>ui/res/famfamfam_silk_icons_v013/icons/page_white.png</file>
+    </qresource>
+</RCC>

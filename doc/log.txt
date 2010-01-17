@@ -1,0 +1,22 @@
+Syslog  
+	wikipedia:
+		http://en.wikipedia.org/wiki/Syslog     
+		
+	There are 3 different log system:
+		* prompt
+		* file
+		* udp syslog 
+		
+    
+    format
+		* la date a laquelle a été émis le log
+			ex: Sep 14 14:09:09
+		* le nom de l'équipement ayant généré le log (hostname)
+			ex: "machine de test"
+		* une information sur le processus qui a déclenché cette émission
+			ex: dhcp service
+		* le niveau de gravité du log
+			ex: [warning]
+		* un identifiant du processus ayant généré le log    
+			ex:110
+		* un corps de message

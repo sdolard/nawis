@@ -1,0 +1,42 @@
+protocol: REST modele
+	request > GET
+		cmd/.../param?<token>=["]<value>["]&[...]
+		Ex: file/list/param?filter="*toto"&regex=wildcard
+		    file/download/param?id="804e30a0ecb4455aa6c2367438b31eb37895fbe1"&sliceid="10b48ea53e3a61a411f471a95cf16f645d023f10"&start=4096
+
+	response
+		"Content-Type: text/xml;"
+		<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+		<dataset>
+			<response>
+				<success>[true|false]</success>
+				<message>[TEXT]</message>
+				[<totalcount>[NUMBER]</totalcount>]
+				<data>
+					[DATA]
+				</data>
+			</response>
+		</dataset>
+
+		[DATA] lines
+			<result>[DATA]</result>	
+			<result>[DATA]</result>
+			...
+
+		[DATA] token
+			<a>[DATA]</a>	
+			<b>[DATA]</b>
+			...
+
+		[DATA] value
+
+
+	ADD > POST
+		Renvoie le record
+	
+	MODIFY > PUT 1
+		Renvoie le record
+
+	DELETE > DELETE 1
+		Ne renvoie pas les données supprimées
+		
