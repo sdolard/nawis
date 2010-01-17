@@ -4,6 +4,7 @@ TOOLS="$KISSHARE/tools"
 UI="$KISSHARE/ui"
 UI_LIB="$UI/lib"
 UI_RES="$UI/res"
+UI_CSS="$UI/css"
 
 if [ $TERM = "cygwin" ] ; then
 {

@@ -101,12 +101,16 @@ KSMod.Login.Ui.load = function(){
 				align: 'middle',
 				pack: 'center'
 			},
+			//bodyCssClass: 'n-background',
 			items: loginButton
 	});
 	
 	var loginFormPanel = new Ext.form.FormPanel({
 			id: 'login-form-panel',
-			style: "background-color:#CCCCCC;",
+			/*bodyCssClass: 'n-background',
+			defaults: {
+				bodyCssClass: 'n-background'
+			},*/
 			border: false,
 			labelAlign: 'right',
     		width: 350,

@@ -483,11 +483,11 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 		"Example: api/cfg/shareddir<b>/4</b>", // params
 		"JSON"\
 		"<pre>{</br>"\
-		"  \"id\":&lt;id to update&gt;, // number </br>"\
 		"  \"data\":{</br>"\
 		"    \"path\":\"&lt;absolute directory path&gt;\", // optionnal, string</br>"\
 		"    \"shared\":true|false, // optionnal, boolean</br>"\
-		"    \"recursive\":true|false // optionnal, boolean</br>"\
+		"    \"recursive\":true|false, // optionnal, boolean</br>"\
+		"    \"id\":&lt;id to update&gt; // number </br>"\
 		"  }</br>"\
 		"}</pre>", // postData
 		"JSON"\

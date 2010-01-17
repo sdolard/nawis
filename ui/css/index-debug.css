@@ -126,6 +126,11 @@ a:hover {
 .ks-window-login-icon {
  background: url(../res/famfamfam_silk_icons_v013/icons/key.png) 0 6px no-repeat !important;
 }
+
+.n-background {
+ background-color:#CCCCCC;
+}
+
 /*
 * End windows resources
 */

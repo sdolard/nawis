@@ -51,9 +51,3 @@ if [ $OSTYPE = darwin9.0 -o $OSTYPE = darwin10.0 ]; then
 } 
 fi
 
-# JSON in JavaScript
-# for server
-echo "Downloadinf JSON in JavaScript..."
-[ ! -f json2.js ] && wget http://json.org/json2.js 
-
-

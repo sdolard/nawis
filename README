@@ -1,20 +1,51 @@
 Build need 
 ----------
+
 1) All platform
-  - Qt 4.5.x
-  - wget
-  - unzip
-  - unrar
+    an access to the net is required
+    Qt 4.5.x or more
+    wget
+    unzip
 
 2) On Windows:
-  - install cygwin
-    - wget
-    - unzip
-  - unrar will be downloaded by script, you do not have anything to do
+    install cygwin
+      wget
+      unzip
   
-3) run update.sh script
+3) Run update.sh script
 
-4) run build_$YOUR_PLATFORM$_$BUILD_TYPE$
-  On windows, for debug build, run "build_windows_mingw_debug.bat"
-  On Mac, for release build, run "build_mac_release.sh"
-  Binaries are created in out/ directory
+4) Run build_$YOUR_PLATFORM$_$BUILD_TYPE$
+    On windows, for debug build, run "build_windows_mingw_debug.bat"
+    On Mac, for release build, run "build_mac_release.sh"
+    On linux, for release build, run "build_linux_release.sh"
+  
+  Binaries are created in . directory
+  
+5) Run build binarie
+     This will create a defaut config file 
+
+5) Edit ~/.config/nawis/nawis.ini
+
+6) Set the web ui directory
+     > server def pub=<your ui absolute path>
+     Ex on my Mac:
+       server def webui=/Users/sebastiend/Documents/dev/nawis/ui
+     
+
+7) By defaut, nawis is listening on 6391 http port
+    Open your favorite browser on http://localhost:6391
+
+8) Defaut auth is:
+     login: admin
+     pwd: admin
+     
+     You can change them in ~/.config/nawis/nawis.ini
+     > server def admin_password=admin
+     > server def admin_user=admin
+     
+9) Login
+
+10)Go in preference menu
+     Add a directory to serve.
+     Wait time to get manage by nawis. it could take few minutes if there is a lot of big files.
+     Enjoy.

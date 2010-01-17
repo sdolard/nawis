@@ -36,7 +36,7 @@
 
 #define NCONFIG_GENERAL                           "general"
 #define NCONFIG_GENERAL_VERSION_KEY               "version"
-#define NCONFIG_GENERAL_VERSION_VALUE             5
+#define NCONFIG_GENERAL_VERSION_VALUE             1
 
 #define NCONFIG_SERVER                            "server"
 #define NCONFIG_SERVER_PORT_KEY                   "port"
@@ -47,7 +47,7 @@
 #define NCONFIG_SERVER_SSL_PRIVATE_KEY_KEY        "ssl_privare_key"
 #define NCONFIG_SERVER_SSL_PRIVATE_KEY_PWD_KEY    "ssl_privare_key_password"
 #define NCONFIG_SERVER_SSL_LOCAL_CERTIFICATE_KEY  "ssl_local_certificate"
-#define NCONFIG_SERVER_PUB_KEY                    "pub"
+#define NCONFIG_SERVER_WEB_UI_KEY                 "webui"
 #define NCONFIG_SERVER_ADMIN_USER_KEY             "admin_user"
 #define NCONFIG_SERVER_ADMIN_USER_VALUE           "admin"
 #define NCONFIG_SERVER_ADMIN_PASSWORD_KEY         "admin_password"
@@ -174,7 +174,7 @@ bool NConfig::load()
 	 */
 	m_serverPort = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY,
 									NCONFIG_SERVER_PORT_VALUE).toInt();
-	m_serverPub.setPath(m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PUB_KEY).toString());
+	m_serverPub.setPath(m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY).toString());
 	m_serverAdminUser =  m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY,
 										  NCONFIG_SERVER_ADMIN_USER_VALUE).toString();
 	m_serverAdminPassword =  m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_PASSWORD_KEY,
@@ -324,8 +324,8 @@ void NConfig::writeDefaultConfigFile()
 	// port
 	if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY, -1).toInt() == -1)
 		m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY, NCONFIG_SERVER_PORT_VALUE);
-	if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PUB_KEY).toString().isEmpty())
-		m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_PUB_KEY, "");
+	if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY).toString().isEmpty())
+		m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY, "");
 	//Login & pwd
 	if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY, "").toString().isEmpty() )
 		m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY, NCONFIG_SERVER_ADMIN_USER_VALUE);
