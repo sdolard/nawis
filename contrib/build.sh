@@ -41,9 +41,9 @@ fi
 if [ $OSTYPE = darwin9.0 -o $OSTYPE = darwin10.0 ]; then
 {
 	echo "Building taglib..."
-	[ ! -f taglib-1.6.tar.gz ] && wget http://developer.kde.org/~wheeler/files/src/taglib-1.6.tar.gz 
-	[ ! -d taglib-1.6 ] && tar -zxvf taglib-1.6.tar.gz
-	cd taglib-1.6 && ./configure && make && sudo make install 
+	[ ! -f taglib-1.6.1.tar.gz ] && wget http://developer.kde.org/~wheeler/files/src/taglib-1.6.1.tar.gz
+	[ ! -d taglib-1.6.1 ] && tar -zxvf taglib-1.6.1.tar.gz
+	cd taglib-1.6.1 && ./configure && make && sudo make install 
 	cd "$CONTRIB_DIR"
 	echo "taglib build done."
 } else {
