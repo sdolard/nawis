@@ -63,7 +63,8 @@ bool NHasherThread::hashFile()
 	const QFileInfo fi = NDB.fileToHash();
 	if (!fi.exists())
 	{
-		Q_ASSERT_X(fi.fileName().isEmpty(), "hashFile", "invalid filename");
+		Q_ASSERT_X(fi.fileName().isEmpty(), "hashFile",
+				   QString("invalid filename: %1").arg(fi.fileName())); // This mean that there was a problem during last update ?
 		NDB.removeDeletedFiles();
 		NDB.removeDeletedDuplicatedFiles();
 		emit hashingDone();
