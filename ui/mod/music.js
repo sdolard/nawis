@@ -486,6 +486,9 @@ KSMod.Music.Ui.load = function() {
 	}, {
 		name: 'year',
 		type: 'int'
+	}, {
+		name: 'hasID3Picture',
+		type: 'bool'
 	}]);
 	
 	/**

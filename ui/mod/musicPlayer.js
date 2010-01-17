@@ -146,13 +146,17 @@ KSMod.MusicPlayer.Ui.load = function(){
     						updatePlayerInfoLabel();
     					}
     			});
-    		
-    			KSMod.PicturePreview.Ui.overwrite({
-    					isMusic: true,
-    					hash: currentMusic.hash,
-    					sizeString: '',
-    					name: currentMusic.album
-    			});
+    			
+    			if (currentMusic.hasID3Picture) { 
+    				KSMod.PicturePreview.Ui.overwrite({
+    						isMusic: true,
+    						hash: currentMusic.hash,
+    						sizeString: '',
+    						name: currentMusic.album
+    				});
+    			} else {
+    				KSMod.PicturePreview.Ui.clear();
+    			}
     		},
     		iconCls: 'ks-action-play-icon',
     		disabled: true
@@ -345,7 +349,8 @@ KSMod.MusicPlayer.Ui.load = function(){
             title: record.data.title,
             album: record.data.album,
             artist: record.data.artist,
-            hash: record.data.hash
+            hash: record.data.hash,
+            hasID3Picture: record.data.hasID3Picture
             // TODO duration ?
         };
     }
@@ -411,7 +416,8 @@ KSMod.MusicPlayer.Ui.load = function(){
         record.data.title !== undefined &&
         record.data.album !== undefined &&
         record.data.artist !== undefined &&
-        record.data.hash !== undefined;
+        record.data.hash !== undefined &&
+        record.data.hasID3Picture !== undefined;
     }
     
     

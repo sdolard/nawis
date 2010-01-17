@@ -638,13 +638,13 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		true, // authRequired
 		AUTH_LEVEL_USER, // requiredLevel
 		"0.1.0", // history
-		"Return a thumbnail picture contains in id3 files", // comment
+		"Return a thumbnail picture contained in id3 files", // comment
 		"api/music/id3picture/&lt;file hash&gt;", // fullService
 		"GET", // httpMethod
 		"Put &lt;music file hash&gt; at the end of the url<br>"\
 		"Example: api/music/id3picture<b>/62f6287d95fafa0a8c56287e41760f33</b>", // params
 		"", // postData
-		"A picture", // returns
+		"A picture. Format is in mimeType response.", // returns
 		NULL
 	},{
 		SVC_API_MUSIC_TITLE, // id

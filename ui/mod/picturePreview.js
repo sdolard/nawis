@@ -40,9 +40,9 @@ KSMod.PicturePreview.Ui.load = function(){
         pictureTemplate.overwrite(pictureTemplateEl, {
         		url: Ext.BLANK_IMAGE_URL,
         		title: '',
-        		name: '--',
-        		sizeString: '--',
-        		dateString: '--'
+        		name: '',
+        		sizeString: '',
+        		dateString: ''
         });
     }
     
