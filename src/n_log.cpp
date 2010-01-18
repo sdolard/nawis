@@ -192,8 +192,8 @@ void NLogThread::run()
 			&logger, SLOT(log(const QString &, const QStringList &, NLog::LogType)),
 			Qt::QueuedConnection);
 	connect(m_log, SIGNAL(directLogString(const QString &, const QString &, NLog::LogType)),
-			&logger, SLOT(log(const QString &, const QString &, NLog::LogType)));
+			&logger, SLOT(log(const QString &, const QString &, NLog::LogType)), Qt::DirectConnection);
 	connect(m_log, SIGNAL(directLogList(const QString &, const QStringList &, NLog::LogType)),
-			&logger, SLOT(log(const QString &, const QStringList &, NLog::LogType)));
+			&logger, SLOT(log(const QString &, const QStringList &, NLog::LogType)), Qt::DirectConnection);
 	exec();
 }

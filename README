@@ -19,11 +19,13 @@ Build need
     On Mac, for release build, run "build_mac_release.sh"
     On linux, for release build, run "build_linux_release.sh"
   
-  Binaries are created in . directory
+   Binaries are created in . directory
   
-5) Run build binarie
+5) Run build binary
      This will create a defaut config file 
-
+     "nawis" for release version.
+     "nawis_debug" for debug version
+     
 6) A demo web ui i available. 
      You must set the web ui directory in nawis config file.
      Edit ~/.config/nawis/nawis.ini
@@ -34,7 +36,7 @@ Build need
 7) By defaut, nawis is listening on 6391 http port
     Open your favorite browser on http://localhost:6391
 
-8) Defaut auth is:
+8) Default auth is:
      login: admin
      pwd: admin
      
