@@ -666,6 +666,25 @@ KSMod.Music.Ui.load = function() {
 		return record.data.year;
 	}
 	
+	/**
+	* Album Renderer
+	*/
+	function albumRenderer(val, p, record){
+		var preview = '<img src="';
+		if (record.data.hasID3Picture) {
+			preview += KSLib.Path.root('api/music/id3picture/' + record.data.hash);
+		} else {
+			preview += Ext.BLANK_IMAGE_URL;
+		}
+		preview += '" height="16" alt="Thumb" title="Thumb">';
+		if (Ext.isIE) {
+            return '<table><tr><td width="32">' + preview + '</td><td width="100%">' + record.data.album + '</td></tr></table>';
+        }
+        else {
+            return '<table><tr><td>' + preview + '</td><td>' + record.data.album + '</td></tr></table>';
+        }
+	}
+	
 	
 	
 	/** 
@@ -688,7 +707,8 @@ KSMod.Music.Ui.load = function() {
 				header: "Album",
 				width: 180,
 				sortable: true,
-				dataIndex: 'album'
+				dataIndex: 'album',
+				renderer: albumRenderer
 			}, {
 				header: "Artist",
 				width: 70,

@@ -671,7 +671,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 	int fieldGenre = query.record().indexOf("genre");
 	int fieldTrackNumber = query.record().indexOf("trackNumber");
 	int fieldDuration = query.record().indexOf("duration");
-	bool hasID3Picture = query.record().indexOf("hasID3Picture");
+	int hasID3Picture = query.record().indexOf("hasID3Picture");
 	
 	int fieldDateTimeOriginal = query.record().indexOf("dateTimeOriginal");
 	int fieldCopyright = query.record().indexOf("copyright");

@@ -48,7 +48,7 @@ Build need
 
 10)Go in preference menu
      Add a directory to serve.
-     Wait time to get manage it by nawis. it could take few minutes if there is a lot of big files.
+     Wait time to get it managed by nawis. it could take few minutes if there is a lot of big files.
      
      Demo ui implement some api:
        - music: mp3 (only) reading thought flash

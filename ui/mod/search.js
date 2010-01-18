@@ -76,6 +76,9 @@ KSMod.Search.Ui.load = function(){
     			name: 'width'
     		}, {
     			name: 'year'
+    		}, {
+    			name: 'hasID3Picture',
+    			type: 'bool'
     		}]
     });
     
@@ -199,7 +202,11 @@ KSMod.Search.Ui.load = function(){
         	preview += KSLib.Path.res("page_white");
         	break;
         case "music":
-        	preview += KSLib.Path.res("music");
+        	if (record.data.hasID3Picture) {
+        		preview += KSLib.Path.root('api/music/id3picture/' + record.data.hash);
+        	} else {
+        		preview += KSLib.Path.res("music");
+        	}
         	break;
         case "other":
         	preview += KSLib.Path.res("page_white_text");
