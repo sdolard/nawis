@@ -10,8 +10,8 @@ cd "$PREVIOUS_DIR"
 #export http_proxy="$PROXY"
 
 echo "Updating ui libs..."
-[ ! -f ext-3.1.0.zip ] && wget "http://www.extjs.com/deploy/ext-3.1.0.zip" 
-[ ! -d ext-3.1.0 ] && unzip ext-3.1.0.zip
+[ ! -f ext-$UI_LIB_EXTJS_VERSION.zip ] && wget "http://extjs.cachefly.net/ext-$UI_LIB_EXTJS_VERSION.zip" 
+[ ! -d ext-$UI_LIB_EXTJS_VERSION ] && unzip ext-$UI_LIB_EXTJS_VERSION.zip
 
 [ ! -f livegrid_branches_Ext3.0_trunk-r62.zip ] && wget "http://wiki.ext-livegrid.com/changeset/62/branches/Ext3.0/trunk?old_path=%2F&format=zip" && mv "trunk?old_path=%2F&format=zip" livegrid_branches_Ext3.0_trunk-r62.zip
 [ ! -d livegrid_branches_Ext3.0_trunk-r62 ] && unzip livegrid_branches_Ext3.0_trunk-r62.zip -d livegrid_branches_Ext3.0_trunk-r62

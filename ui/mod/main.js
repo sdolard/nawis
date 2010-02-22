@@ -1,5 +1,5 @@
 
-Ext.BLANK_IMAGE_URL = 'lib/ext-3.1.0/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = 'lib/ext-3.1.1/resources/images/default/s.gif';
 
 /**
 *
