@@ -105,6 +105,7 @@ KSMod.Search.Ui.load = function(){
     				if (searchValue === emptySearchText) {
     					searchValue = "";
     				}
+    				//searchValue = searchValue.replace(" ", "+");
     				
     				var categoryValue = document.getElementById("searchCategoryComboBox").value;
     				if (categoryValue === "all") {

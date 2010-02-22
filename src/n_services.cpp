@@ -229,7 +229,7 @@ NService_n::NService NService_n::nsAPIServices[] =
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"date\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -555,7 +555,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"api/music/album", // fullService
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
 		"year:  &lt;music year&gt; // optionnal<br>"\
@@ -585,7 +585,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"api/music/artist", // fullService
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
 		"year:  &lt;music year&gt; // optionnal<br>"\
@@ -614,7 +614,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"api/music/genre", // fullService
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
 		"year:  &lt;music year&gt; // optionnal", // params
@@ -657,7 +657,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"album\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
 		"year:  &lt;music year&gt; // optionnal<br>"\
@@ -701,7 +701,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
 		"api/music/year", // fullService
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"",  // params
 		"", // postData
@@ -779,7 +779,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -814,7 +814,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -849,7 +849,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -905,7 +905,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -940,7 +940,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -984,7 +984,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1019,7 +1019,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1075,7 +1075,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1111,7 +1111,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1146,7 +1146,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1182,7 +1182,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1218,7 +1218,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1254,7 +1254,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
@@ -1290,7 +1290,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
 		"GET", // httpMethod
 		"search: &lt;text to search&gt; // optionnal<br>"\
 		"sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
-		"dir: &lt;ASQ&#124;DESC&gt; // sort direction, optionnal, default \"ASQ\"<br>"\
+                "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
 		"start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
 		"limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
 		"", // postData
