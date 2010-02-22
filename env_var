@@ -5,6 +5,8 @@ UI="$KISSHARE/ui"
 UI_LIB="$UI/lib"
 UI_RES="$UI/res"
 UI_CSS="$UI/css"
+LIB_EXIV2_VERSION=0.19
+LIB_TAGLIB_VERSION=1.6.1
 
 if [ $TERM = "cygwin" ] ; then
 {

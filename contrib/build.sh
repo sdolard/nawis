@@ -26,9 +26,15 @@ fi
 if [ $OSTYPE = darwin9.0 -o $OSTYPE = darwin10.0 -o $OSTYPE = cygwin ]; then
 {
 	echo "Building exiv2..."	
-	[ ! -f exiv2-0.18.2.tar.gz ] && wget http://www.exiv2.org/exiv2-0.18.2.tar.gz
-	[ ! -d exiv2-0.18.2 ] && tar -zxvf exiv2-0.18.2.tar.gz  
-	cd exiv2-0.18.2 && ./configure --build=i686-apple-darwin10.0.0 && make && sudo make install
+	[ ! -f exiv2-$LIB_EXIV2_VERSION.tar.gz ] && wget http://www.exiv2.org/exiv2-$LIB_EXIV2_VERSION.tar.gz
+	[ ! -d exiv2-$LIB_EXIV2_VERSION ] && tar -zxvf exiv2-$LIB_EXIV2_VERSION.tar.gz  
+	cd exiv2-$LIB_EXIV2_VERSION 
+	#next line for native platform build
+	#./configure && make && sudo make install
+	#next line for 32-bit build
+	./configure CXXFLAGS="-m32 -arch i386" CFLAGS="-m32 -arch i386" LDFLAGS="-arch i386" && make && sudo make install
+       
+	
 	cd "$CONTRIB_DIR"
 	echo "exiv2 build done."
 } else {
@@ -41,9 +47,15 @@ fi
 if [ $OSTYPE = darwin9.0 -o $OSTYPE = darwin10.0 ]; then
 {
 	echo "Building taglib..."
-	[ ! -f taglib-1.6.1.tar.gz ] && wget http://developer.kde.org/~wheeler/files/src/taglib-1.6.1.tar.gz
-	[ ! -d taglib-1.6.1 ] && tar -zxvf taglib-1.6.1.tar.gz
-	cd taglib-1.6.1 && ./configure && make && sudo make install 
+	[ ! -f taglib-$LIB_TAGLIB_VERSION.tar.gz ] && wget http://developer.kde.org/~wheeler/files/src/taglib-$LIB_TAGLIB_VERSION.tar.gz
+	[ ! -d taglib-$LIB_TAGLIB_VERSION ] && tar -zxvf taglib-$LIB_TAGLIB_VERSION.tar.gz
+        
+	cd taglib-$LIB_TAGLIB_VERSION
+	#next line for native platform build
+	#./configure && make && sudo make install
+	#next line for 32-bit build
+	./configure CXXFLAGS="-m32 -arch i386" CFLAGS="-m32 -arch i386" LDFLAGS="-arch i386" && make && sudo make install
+	
 	cd "$CONTRIB_DIR"
 	echo "taglib build done."
 } else {
