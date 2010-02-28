@@ -5,7 +5,6 @@
 
 TEMPLATE = app
 # for 64 bits build, replace x86 with x86_64
-#CONFIG += x86 console qt thread
 CONFIG += x86 console qt thread
 
 CONFIG-=app_bundle
@@ -21,7 +20,7 @@ CONFIG(debug, debug|release) {
 CONFIG(release, debug|release) {
 	TARGET = nawis
 	CONFIG += warn_off
-	DEFINES += QT_NO_DEBUG_OUTPUT 
+        #DEFINES += QT_NO_DEBUG_OUTPUT #comment until http://bugreports.qt.nokia.com/browse/QTSOLBUG-72 is fixed
 	message(Release build)
 }
 

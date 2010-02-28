@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#With linux, put this file in /ets/init.d/
+#Rename "sebastien" user name to the correcte user config file.
+
+case "$1" in
+        start)
+                su -c '/home/sebastien/dev/nawis/nawis' sebastien   
+                ;;
+        stop)
+                su -c '/home/sebastien/dev/nawis/nawis -t' sebastien      
+                ;;
+        status)
+                su -c '/home/sebastien/dev/nawis/nawis -v' sebastien    
+                ;;
+esac
+
