@@ -26,13 +26,17 @@
 
 #include <QSharedMemory>
 
-class KsSingleApplication
+class NSingleApplication
 {
 public:
-	KsSingleApplication();
-	bool attach(const QString & appName);
+    NSingleApplication(const QString & appName);
+    ~NSingleApplication();
+
+    bool alreadyExistsAnInstance();
+    bool attach();
+    bool detach();
 
 private:
-	QSharedMemory m_sharedMemory;
+    QSharedMemory m_sharedMemory;
 };
 #endif // N_SINGLE_APPLICATION_H

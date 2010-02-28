@@ -44,11 +44,17 @@ macx{
 	INCLUDEPATH += /user/local/include/
 }
 
-# zlib Sources
-include(zlib.pro)
+# zlib sources
+include(zlib.pri)
 
-# exiv2 Sources
-include(exiv2.pro)
+# exiv2 sources
+include(exiv2.pri)
 
-# taglib Sources
-include(taglib.pro)
+# taglib sources
+include(taglib.pri)
+
+# qtservice sources
+include(contrib/qtservice-2.6_1-opensource/src/qtservice.pri)
+
+# qtsingleapplication sources
+include(contrib/qtsingleapplication-2.6_1-opensource/src/qtsinglecoreapplication.pri)

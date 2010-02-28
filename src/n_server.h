@@ -24,52 +24,55 @@
 
 class NServer: public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	static NServer & instance(QObject *parent = NULL/* first instance params must be application*/);
-	static void deleteInstance();
-	
-	~NServer();
+    static NServer & instance(QObject *parent = NULL/* first instance params must be application*/);
+    static void deleteInstance();
+
+    ~NServer();
 
     bool start();
-	QString & errorMessage();
+    bool stop();
+    bool pause();
+    bool resume();
+    QString & errorMessage();
 
-	int jobStatus() const;
-	static const QString jobToString(int job);
+    int jobStatus() const;
+    static const QString jobToString(int job);
 
 public slots:
-	void onConfigFileChanged();
+    void onConfigFileChanged();
 
 private:
-	NServer(QObject *parent);
-	
-	static NServer         *m_instance;
-	int                     m_currentJob;
-	NTcpServer             *m_server;
-	NDirWatcherThreadItems  m_dirs;
-	NDbUpdaterThread       *m_dbUpdaterJob;
-	NDirWatcherThread      *m_dirWatcherJob;
-	NHasherThread          *m_hasherJob;
-	NMetadataUpdaterThread *m_metadataUpdaterJob;
-	QString                  m_errorMessage;
-	QTimer                   m_jobTimer;
-	NDirList                m_sharedDirectories;
-	NFileSuffixList         m_fileSuffixes;
-	bool                     m_configFileChanged;
-		
-	bool startTcpServer(); 
-	bool restartTcpServer();
-	void stopTcpServer();
-	
-	void stopJobs();
-	void stopJob(int job);
-	void startJobs();
-	void startJob(int job);
+    NServer(QObject *parent);
+
+    static NServer         *m_instance;
+    int                     m_currentJob;
+    NTcpServer             *m_server;
+    NDirWatcherThreadItems  m_dirs;
+    NDbUpdaterThread       *m_dbUpdaterJob;
+    NDirWatcherThread      *m_dirWatcherJob;
+    NHasherThread          *m_hasherJob;
+    NMetadataUpdaterThread *m_metadataUpdaterJob;
+    QString                  m_errorMessage;
+    QTimer                   m_jobTimer;
+    NDirList                m_sharedDirectories;
+    NFileSuffixList         m_fileSuffixes;
+    bool                     m_configFileChanged;
+
+    bool startTcpServer();
+    bool restartTcpServer();
+    void stopTcpServer();
+
+    void stopJobs();
+    void stopJob(int job);
+    void startJobs();
+    void startJob(int job);
 
 private slots:
-	void onJobTimerTimeout();
-	void onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs);
-	void onJobTerminated();
+    void onJobTimerTimeout();
+    void onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs);
+    void onJobTerminated();
 };
 
 

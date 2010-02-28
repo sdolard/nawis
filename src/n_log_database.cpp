@@ -58,7 +58,7 @@ NLogDatabase::NLogDatabase()
 
 	m_db = QSqlDatabase::addDatabase("QSQLITE", "LOG");
 
-	m_db.setDatabaseName(QString("%1%2_log.dbg").arg(NPath_n::userConfig()).
+        m_db.setDatabaseName(QString("%1%2_log.dbg").arg(NPath_n::config()).
 						 arg(qApp->applicationName()));
 
 	if (!m_db.open())

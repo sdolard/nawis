@@ -37,81 +37,81 @@
 
 class NConfig: public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	static NConfig & instance();
-	static void deleteInstance();
-	~NConfig();
+    static NConfig & instance();
+    static void deleteInstance();
+    ~NConfig();
 
-	// TODO: set server compression optionnal
-	// TODO: disable auth, but listen only on localhost/127.0.0.1
-	int serverPort();
-	const QDir serverPub();
-	bool isSslServer();
-	const QString AdminUser();
-	const QString AdminPassword();
-	const NDirList sharedDirectories();
-	int addSharedDirectory(const NDir & dir);
-	const NDir modifySharedDirectory(int id, const NDir & dir);
-	void removeSharedDirectory(int id);
-	void dumpSharedDirectoriesConfig();
+    // TODO: set server compression optionnal
+    // TODO: disable auth, but listen only on localhost/127.0.0.1
+    int serverPort();
+    const QDir serverPub();
+    bool isSslServer();
+    const QString AdminUser();
+    const QString AdminPassword();
+    const NDirList sharedDirectories();
+    int addSharedDirectory(const NDir & dir);
+    const NDir modifySharedDirectory(int id, const NDir & dir);
+    void removeSharedDirectory(int id);
+    void dumpSharedDirectoriesConfig();
 
-	const NFileSuffixList & fileSuffixes();
-	const QString & referenceServer();
-	
-	int dirUpdateDelay();
-	const QDateTime lastDirUpdate();
-	void setLastDirUpdateDone();
-	void invalidLastDirUpdate();
-	bool isLastDirUpdateValid();
-	
-	const QString dirFingerPrint();
-	void setDirFingerPrint(const QString & fp);
-	void clearDirUpdateData();
-	
-	const QByteArray & dbPwdHashKey();
-	
-	const QSslConfiguration & sslCfg();
-	quint64 fileBufferSize();
+    const NFileSuffixList & fileSuffixes();
+    const QString & referenceServer();
+
+    int dirUpdateDelay();
+    const QDateTime lastDirUpdate();
+    void setLastDirUpdateDone();
+    void invalidLastDirUpdate();
+    bool isLastDirUpdateValid();
+
+    const QString dirFingerPrint();
+    void setDirFingerPrint(const QString & fp);
+    void clearDirUpdateData();
+
+    const QByteArray & dbPwdHashKey();
+
+    const QSslConfiguration & sslCfg();
+    quint64 fileBufferSize();
 
 signals:
-	void configFileChanged();
+    void configFileChanged();
 
 private:
-	static NConfig        *m_instance;
-	NSettings              m_settings;
-	int                    m_version;
-	int                    m_serverPort;
-	QDir                   m_serverPub;
-	bool                   m_serverSsl;
-	QString                m_serverSslCaCertificate;
-	QString                m_serverSslLocalCertificate;
-	QString                m_serverSslPrivateKey;
-	QString                m_serverSslPrivateKeyPwd;
-	QString                m_serverAdminUser;
-	QString                m_serverAdminPassword;
-	NDirList              m_sharedDirectories;
-	NFileSuffixList        m_fileSuffixes;
-	QMutex                 m_dataMutex;
-	QString                m_referenceServer;
-	int                    m_dirUpdateDelay;
-	int                    m_dirWatchDelay;
-	int                    m_dbFileDelay;
-	QDateTime              m_lastDirUpdate;
-	QString                m_dirFingerPrint;
-	bool                   m_fileLoaded;
-	QSslConfiguration      m_sslCfg;
-	QByteArray             m_dbPwdHashKey;
-	qint64                 m_fileBufferSize;
+    static NConfig        *m_instance;
+    NSettings              m_settings;
+    int                    m_version;
+    int                    m_serverPort;
+    QDir                   m_serverPub;
+    bool                   m_serverSsl;
+    QString                m_serverSslCaCertificate;
+    QString                m_serverSslLocalCertificate;
+    QString                m_serverSslPrivateKey;
+    QString                m_serverSslPrivateKeyPwd;
+    QString                m_serverAdminUser;
+    QString                m_serverAdminPassword;
+    NDirList               m_sharedDirectories;
+    NFileSuffixList        m_fileSuffixes;
+    QMutex                 m_dataMutex;
+    QString                m_referenceServer;
+    int                    m_dirUpdateDelay;
+    int                    m_dirWatchDelay;
+    int                    m_dbFileDelay;
+    QDateTime              m_lastDirUpdate;
+    QString                m_dirFingerPrint;
+    bool                   m_fileLoaded;
+    QSslConfiguration      m_sslCfg;
+    QByteArray             m_dbPwdHashKey;
+    qint64                 m_fileBufferSize;
 
-	NConfig();
-	bool load();
-	void save();
-	void writeDefaultConfigFile();
-	void genSslCfg();
+    NConfig();
+    bool load();
+    void save();
+    void writeDefaultConfigFile();
+    void genSslCfg();
 
 private slots:
-	void onConfigFileChanged();
+    void onConfigFileChanged();
 };
 
 #endif // N_CONFIG_H

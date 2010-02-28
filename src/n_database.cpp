@@ -64,7 +64,7 @@ NDatabase::NDatabase()
 	
 	m_db = QSqlDatabase::addDatabase("QSQLITE");
 	
-	m_db.setDatabaseName(QString("%1%2.dbg").arg(NPath_n::userConfig()).
+        m_db.setDatabaseName(QString("%1%2.dbg").arg(NPath_n::config()).
 						 arg(QCoreApplication::applicationName()));
 	
 	if (!m_db.open())
@@ -592,6 +592,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 	if (fc != NFileCategory_n::fcAll)
 		sql += "AND files.category_id = :category_id ";
 	
+        // TODO : remove " " (space) support, it has not to be
 	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
 	for (int i = 0; i < searches.count(); ++i)
 		sql += QString("AND (files.relativePath LIKE :relativePath%1 "\

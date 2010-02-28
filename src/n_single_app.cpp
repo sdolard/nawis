@@ -25,23 +25,56 @@
 
 #include "n_single_app.h"
 
-KsSingleApplication::KsSingleApplication(){}
+NSingleApplication::NSingleApplication(const QString & appName)
 
-bool KsSingleApplication::attach(const QString & appName)
 {
-	m_sharedMemory.setKey("n_single_application_" + appName);
-	if (m_sharedMemory.attach())
-	{
-		qDebug("Application instance already exists. Stopping...");
-		m_sharedMemory.detach();
-		return false;
-	}
-	// create shared memory.
-	if (!m_sharedMemory.create(1))
-	{
-		qDebug("Unable to create single application instance.\nError: %s\nStopping", 
-			   qPrintable(m_sharedMemory.errorString()));
-		return false;
-	}
-	return true;
+    m_sharedMemory.setKey("n_single_application_" + appName);
+}
+
+NSingleApplication::~NSingleApplication()
+{
+    detach();
+}
+
+bool NSingleApplication::attach()
+{
+    /*if (m_sharedMemory.attach())
+    {
+        if (detach())
+            return
+    }*/
+
+    // Create shared memory.
+    if (!m_sharedMemory.create(1))
+    {
+        qDebug("Unable to create single application instance.\nError: %s\nStopping",
+               qPrintable(m_sharedMemory.errorString()));
+        return false;
+    }
+    return true;
+}
+
+void NSingleApplication::detach()
+{
+    qDebug("Application instance already exists. Stopping...");
+    return m_sharedMemory.detach();
+}
+
+bool NSingleApplication::alreadyExistsAnInstance()
+{
+
+    if (m_sharedMemory.create(1))
+    {
+        return false;
+    }
+
+    if (m_sharedMemory.isAttached()) // This is the instance, return false
+        return false;
+
+    if (m_sharedMemory.attach())
+    {
+         qDebug("Application instance already exists.");
+         m_sharedMemory.detach();
+         return false;
+    }
 }

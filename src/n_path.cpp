@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QApplication>
 
+
 // Windows 
 #ifdef Q_OS_WIN32
 #include <windows.h>
@@ -16,25 +17,50 @@
 
 #include "n_path.h"
 
-QString NPath_n::userConfig()
+#ifdef Q_OS_UNIX
+QString unixPath()
 {
-	Q_ASSERT(!qApp->organizationDomain().isEmpty());
-	QString appDataPath;
+    if (QDir::homePath() == QDir::rootPath()) {
+        return "/etc";
+    }
+    return QString("%1/.config").arg(QDir::homePath());
+}
+#endif // Q_OS_UNIX
+
+#ifdef Q_OS_WIN32
+QString windowsPath()
+{
+    TCHAR szPath[MAX_PATH];
+    if(SUCCEEDED(SHGetFolderPath(NULL,
+                                 CSIDL_APPDATA,
+                                 NULL,
+                                 0,
+                                 szPath)))
+    {
+        return QTBASE_TCHAR_TO_QSTRING(szPath);
+    }
+    Q_ASSERT(false);
+    qFatal("An error occured");
+    return "";
+}
+#endif //Q_OS_UNIX
+
+QString NPath_n::config()
+{
+    Q_ASSERT(!qApp->organizationDomain().isEmpty());
+
+    QString appDataPath;
 #if defined(Q_OS_UNIX) // MAC included
-	appDataPath = QString("%1/.config").arg(QDir::homePath());
+    appDataPath = unixPath();
 #elif defined(Q_OS_WIN32)
-	TCHAR szPath[MAX_PATH];
-	if(SUCCEEDED(SHGetFolderPath(NULL,
-								 CSIDL_APPDATA,
-								 NULL,
-								 0,
-								 szPath)))
-		appDataPath = QTBASE_TCHAR_TO_QSTRING(szPath);
-	
+    appDataPath = windowsPath();
 #else
-	TO DO // For other platform
-#endif	
-	return QDir::toNativeSeparators(QString("%1/%2/").
-									arg(appDataPath).
-									arg(qApp->organizationDomain()));
+    TODO // For other platform
+#endif //
+
+            QString path = QDir::toNativeSeparators(QString("%1/%2/").
+                                                    arg(appDataPath).
+                                                    arg(qApp->organizationDomain()));
+    //qDebug("Application configuration path: %s", qPrintable(path));
+    return path;
 }
