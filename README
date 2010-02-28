@@ -25,6 +25,7 @@ Build need
      This will create a defaut config file 
      "nawis" for release version.
      "nawis_debug" for debug version
+     Read http://wiki.github.com/sdolard/nawis/start-nawis for details
      
 6) A demo web ui i available. 
      You must set the web ui directory in nawis config file.
