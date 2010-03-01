@@ -9,7 +9,7 @@
 
 namespace NVersion_n {
 
-	const QString namedVersion(bool os = true);
+    const QString namedVersion(bool os = true);
 };
 
 #endif // N_VERSION_H

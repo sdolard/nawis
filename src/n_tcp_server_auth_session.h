@@ -19,47 +19,47 @@
 class NTcpServerAuthSession
 {
 public: 
-	
-	NTcpServerAuthSession();
-	
-	// Five minutes ( 300 s )
-	bool isExpired() const;
-	
-	// reset used timer
-	void setUsed();
-	
-	const QString sessionId() const;
-	const QString address() const;
-	const QString login() const;
-	const QString userAgent() const;
-	
-	int level() const;
-	bool isLevelSet(int level) const;
-	static const QString levelToString(int level);
-	
-	// Cookie is generated here
-	void set(const QString & address, const QString & login, const QString & userAgent, int level);
-	
+
+    NTcpServerAuthSession();
+
+    // Five minutes ( 300 s )
+    bool isExpired() const;
+
+    // reset used timer
+    void setUsed();
+
+    const QString sessionId() const;
+    const QString address() const;
+    const QString login() const;
+    const QString userAgent() const;
+
+    int level() const;
+    bool isLevelSet(int level) const;
+    static const QString levelToString(int level);
+
+    // Cookie is generated here
+    void set(const QString & address, const QString & login, const QString & userAgent, int level);
+
 private:
-	QDateTime                     m_lastUsed;
-	QString                       m_address;
-	QString                       m_login;
-	QString                       m_sessionId;
-	int                           m_level;
-	QString                       m_userAgent;
+    QDateTime                     m_lastUsed;
+    QString                       m_address;
+    QString                       m_login;
+    QString                       m_sessionId;
+    int                           m_level;
+    QString                       m_userAgent;
 
 };
 
 class NTcpServerAuthSessionHash: public QHash<QString, NTcpServerAuthSession>
 {
 public:
-	const QString sessionId(const QString & address, const QString & login) const;
-	void removeExpired();
+    const QString sessionId(const QString & address, const QString & login) const;
+    void removeExpired();
 
-	bool isValid(const NClientSession & session, int requiredLevel = AUTH_LEVEL_USER);
+    bool isValid(const NClientSession & session, int requiredLevel = AUTH_LEVEL_USER);
 
-	bool isValid(const QString & sessionId, const QString address,
-				 const QString & userAgent, int requiredLevel = AUTH_LEVEL_USER);
+    bool isValid(const QString & sessionId, const QString address,
+                 const QString & userAgent, int requiredLevel = AUTH_LEVEL_USER);
 };
 
 #endif // N_TCP_SERVER_AUTH_SESSION_H

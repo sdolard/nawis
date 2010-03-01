@@ -26,18 +26,18 @@
 
 class NHasherThread: public NThread
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NHasherThread( QObject * parent = 0 );
+    NHasherThread( QObject * parent = 0 );
 
 protected:
-	void run();
+    void run();
 
 private:
-	bool hashFile();
-	
+    bool hashFile();
+
 signals:
-	void hashingDone();
+    void hashingDone();
 };
 
 #endif // N_HASHER_THREAD_H

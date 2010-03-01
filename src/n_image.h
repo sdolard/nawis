@@ -30,35 +30,35 @@
 
 class NImage {
 public: 
-	NImage(const QFileInfo & fi); // ctor
-	
-	// Return JPG data
-	const QByteArray getThumb();
-	// Return JPG data
-	const QByteArray resize(const QSize & size);
+    NImage(const QFileInfo & fi); // ctor
 
-	/*
+    // Return JPG data
+    const QByteArray getThumb();
+    // Return JPG data
+    const QByteArray resize(const QSize & size);
+
+    /*
 	 * Only available after preview call
 	 * return an empty string other wise 
 	 */
-	const QString mimeType() const;
-	
+    const QString mimeType() const;
+
 private:
-	QFileInfo m_fi;
-	QSize     m_defaultThumbSize;
-	QSize     m_defaultResizeSize;
-	QString   m_mimeType;
-	
-	// Return JPG data
-	const QByteArray notExistsImage(const QSize & size);
+    QFileInfo m_fi;
+    QSize     m_defaultThumbSize;
+    QSize     m_defaultResizeSize;
+    QString   m_mimeType;
 
-	// Return exiv thumbnail
-	// If many exist, and returnGreater is set to true, biggest one
-	// will be return.
-	const QByteArray exivThumb(bool returnGreater = true);
+    // Return JPG data
+    const QByteArray notExistsImage(const QSize & size);
 
-	// Return JPG data
-	const QByteArray pResize(const QSize & size);
+    // Return exiv thumbnail
+    // If many exist, and returnGreater is set to true, biggest one
+    // will be return.
+    const QByteArray exivThumb(bool returnGreater = true);
 
-	const QSize checkSize(const QSize & size) const;
+    // Return JPG data
+    const QByteArray pResize(const QSize & size);
+
+    const QSize checkSize(const QSize & size) const;
 };

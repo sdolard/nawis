@@ -9,6 +9,6 @@
 #include <QString>
 
 namespace NString_n {
-	int naturalCompare(const QString & a, const QString & b, 
-		Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    int naturalCompare(const QString & a, const QString & b,
+                       Qt::CaseSensitivity cs = Qt::CaseSensitive);
 };

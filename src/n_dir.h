@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
+
 #ifndef N_DIR_H
 #define N_DIR_H
-                 
+
 // Qt
 #include <QString>
 #include <QHash>                           
@@ -29,22 +29,22 @@
 
 class NDir {
 public:
-	NDir() {};
-	NDir(const QString & path, bool recursive, bool shared);
-	
-	bool recursive() const;  //default is true 
-	bool shared() const;     //default is true
-	const QDir & dir() const;
-	const QString & path() const;
-	
-	bool operator==(const NDir & dir) const;
-	
-	bool exists() const;
+    NDir() {};
+    NDir(const QString & path, bool recursive, bool shared);
+
+    bool recursive() const;  //default is true
+    bool shared() const;     //default is true
+    const QDir & dir() const;
+    const QString & path() const;
+
+    bool operator==(const NDir & dir) const;
+
+    bool exists() const;
 private:
-	QDir    m_dir;
-	bool    m_recursive;  //default is true 
-	bool    m_shared;     //default is true
-	QString m_path;
+    QDir    m_dir;
+    bool    m_recursive;  //default is true
+    bool    m_shared;     //default is true
+    QString m_path;
 };
 
 class NDirHash: public QHash<QString, NDir>
@@ -54,7 +54,7 @@ class NDirHash: public QHash<QString, NDir>
 class NDirList: public QList<NDir>
 {
 public:
-	const NDirHash getNotShared() const;
+    const NDirHash getNotShared() const;
 };
 
 #endif //N_DIR_H

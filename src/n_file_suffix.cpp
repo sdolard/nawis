@@ -31,65 +31,65 @@
 
 NFileSuffix::NFileSuffix()
 {
-	m_category = NFileCategory_n::fcAll;
-	m_shared   = true;
+    m_category = NFileCategory_n::fcAll;
+    m_shared   = true;
 }
 
 bool NFileSuffix::isValid() const
 {
-	return !m_name.isEmpty();
+    return !m_name.isEmpty();
 }
 
 bool NFileSuffix::operator==(const NFileSuffix & fileSuffix) const
 {
-	return m_name == fileSuffix.m_name &&
-		m_category == fileSuffix.m_category &&
-		m_shared == fileSuffix.m_shared;
+    return m_name == fileSuffix.m_name &&
+            m_category == fileSuffix.m_category &&
+            m_shared == fileSuffix.m_shared;
 }
 
 NFileSuffix NFileSuffixList::category(const QFileInfo & fi) const
 {
-	return value(fi.suffix().toLower());
+    return value(fi.suffix().toLower());
 }
 
 void NFileSuffixList::dump() const
 {
-	NLOGD("NFileSuffixList", "Managed suffix:");
-	QHashIterator<QString, NFileSuffix> i(*this);
-	while (i.hasNext()) {
-		i.next();
-		NFileSuffix suffix = i.value();
-		NLOGD("NFileSuffixList", QString("  key:%1").arg(i.key()));
-		NLOGD("NFileSuffixList", QString("  name:%1").arg(suffix.name()));
-		NLOGD("NFileSuffixList", QString("    shared:%1").arg(QVariant(suffix.shared()).toString()));
-		NLOGD("NFileSuffixList", QString("    category:%1").arg(NFileCategory_n::fileCategoryName(suffix.category())));
-	}
+    NLOGD("NFileSuffixList", "Managed suffix:");
+    QHashIterator<QString, NFileSuffix> i(*this);
+    while (i.hasNext()) {
+        i.next();
+        NFileSuffix suffix = i.value();
+        NLOGD("NFileSuffixList", QString("  key:%1").arg(i.key()));
+        NLOGD("NFileSuffixList", QString("  name:%1").arg(suffix.name()));
+        NLOGD("NFileSuffixList", QString("    shared:%1").arg(QVariant(suffix.shared()).toString()));
+        NLOGD("NFileSuffixList", QString("    category:%1").arg(NFileCategory_n::fileCategoryName(suffix.category())));
+    }
 
 }
 
 const QStringList NFileSuffixList::suffixList(NFileCategory_n::FileCategory fc) const
 {
-	QStringList suffixList;
-	QHashIterator<QString, NFileSuffix> i(*this);
-	while (i.hasNext()) {
-		i.next();
-		NFileSuffix suffix = i.value();
-		if (suffix.category() != fc)
-			continue;
-		suffixList << suffix.name();
-	}
+    QStringList suffixList;
+    QHashIterator<QString, NFileSuffix> i(*this);
+    while (i.hasNext()) {
+        i.next();
+        NFileSuffix suffix = i.value();
+        if (suffix.category() != fc)
+            continue;
+        suffixList << suffix.name();
+    }
 
-	return suffixList;
+    return suffixList;
 }
 
 const QStringList NFileSuffixList::toDirNameFilters() const
 {
-	QStringList filter;
-	QHashIterator<QString, NFileSuffix> i(*this);
-	while (i.hasNext()) {
-		i.next();
-		NFileSuffix suffix = i.value();
-		filter << "*."  + suffix.name();
-	}
-	return filter;
+    QStringList filter;
+    QHashIterator<QString, NFileSuffix> i(*this);
+    while (i.hasNext()) {
+        i.next();
+        NFileSuffix suffix = i.value();
+        filter << "*."  + suffix.name();
+    }
+    return filter;
 }

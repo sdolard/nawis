@@ -20,19 +20,19 @@
 // TODO delete this
 class KsStreamWriter{
 public:
-	
-	KsStreamWriter(QByteArray *data, const NClientSession & session);
-	~KsStreamWriter();
-	
-	void writeStartToken(const QString & token);
-	void writeToken(const QString & token, const QString & value = "");
-	void writeTokenBool(const QString & token, bool value);
-	void writeTokenInt(const QString & token, int value);
-	void writeEndToken();
-	
+
+    KsStreamWriter(QByteArray *data, const NClientSession & session);
+    ~KsStreamWriter();
+
+    void writeStartToken(const QString & token);
+    void writeToken(const QString & token, const QString & value = "");
+    void writeTokenBool(const QString & token, bool value);
+    void writeTokenInt(const QString & token, int value);
+    void writeEndToken();
+
 private:
-	QByteArray       *m_data;
-	QXmlStreamWriter *m_xsw;
+    QByteArray       *m_data;
+    QXmlStreamWriter *m_xsw;
 };
 
 #endif //N_STREAM_WRITER

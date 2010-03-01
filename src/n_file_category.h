@@ -17,33 +17,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
+
 #ifndef N_FILE_CATEGORY_H
 #define N_FILE_CATEGORY_H
-                         
+
 #include <QString>
 
 namespace NFileCategory_n {
-	enum FileCategory
-	{ 
-		fcAll,
-		fcOther,
-		fcMovie,
-		fcMusic,
-		fcPicture,
-		fcArchive,
-		fcDocument //Must be last one or look for it in source code to update "for loop"
-	};
-	inline FileCategory operator++( FileCategory &fc, int )
-	{
-		return fc = (NFileCategory_n::FileCategory)(fc + 1);
-	}
+    enum FileCategory
+    {
+        fcAll,
+        fcOther,
+        fcMovie,
+        fcMusic,
+        fcPicture,
+        fcArchive,
+        fcDocument //Must be last one or look for it in source code to update "for loop"
+    };
+    inline FileCategory operator++( FileCategory &fc, int )
+    {
+        return fc = (NFileCategory_n::FileCategory)(fc + 1);
+    }
 
-	
-	QString fileCategoryName(FileCategory fc);
-	int fileCategoryId(FileCategory fc);
-	FileCategory toFileCategory(int fc, FileCategory def = fcAll);
-	FileCategory toFileCategory(const QString & fc, FileCategory def = fcAll);
+
+    QString fileCategoryName(FileCategory fc);
+    int fileCategoryId(FileCategory fc);
+    FileCategory toFileCategory(int fc, FileCategory def = fcAll);
+    FileCategory toFileCategory(const QString & fc, FileCategory def = fcAll);
 };
 
 

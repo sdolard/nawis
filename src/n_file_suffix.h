@@ -33,33 +33,33 @@
 class NFileSuffix
 {
 public:
-	NFileSuffix();
+    NFileSuffix();
 
-	const QString & name() const { return m_name; }
-	NFileCategory_n::FileCategory category() const { return m_category; }
-	bool shared() const { return m_shared; } //default is true
+    const QString & name() const { return m_name; }
+    NFileCategory_n::FileCategory category() const { return m_category; }
+    bool shared() const { return m_shared; } //default is true
 
-	void setName(const QString & name) { m_name = name.toLower(); }
-	void setCategory(NFileCategory_n::FileCategory fc) { m_category = fc; }
-	void setShared(bool shared) { m_shared = shared; }
+    void setName(const QString & name) { m_name = name.toLower(); }
+    void setCategory(NFileCategory_n::FileCategory fc) { m_category = fc; }
+    void setShared(bool shared) { m_shared = shared; }
 
-	bool isValid() const;
+    bool isValid() const;
 
-	bool operator==(const NFileSuffix & fileSuffix) const;
+    bool operator==(const NFileSuffix & fileSuffix) const;
 private:
-	QString                          m_name;
-	NFileCategory_n::FileCategory   m_category;
-	bool                             m_shared;
+    QString                          m_name;
+    NFileCategory_n::FileCategory   m_category;
+    bool                             m_shared;
 
 };
 
 class NFileSuffixList: public QHash<QString, NFileSuffix>
 {
 public:
-	NFileSuffix category(const QFileInfo & fi) const;
-	void dump() const;
-	const QStringList suffixList(NFileCategory_n::FileCategory fc) const;
-	const QStringList toDirNameFilters() const;
+    NFileSuffix category(const QFileInfo & fi) const;
+    void dump() const;
+    const QStringList suffixList(NFileCategory_n::FileCategory fc) const;
+    const QStringList toDirNameFilters() const;
 };
 
 #endif // N_FILE_SUFFIX_H

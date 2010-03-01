@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
+
 // Qt
 #include <QTime>
 
@@ -30,33 +30,33 @@
 
 NFileHash::NFileHash(const QFileInfo & fi, QCryptographicHash::Algorithm algo)
 {
-	m_fi = fi;
-	m_algo = algo;
+    m_fi = fi;
+    m_algo = algo;
 }
 
 const QString NFileHash::hash()
 {
-	QCryptographicHash hash(m_algo);
-	QFile file(m_fi.absoluteFilePath());
-	if (!file.open(QIODevice::ReadOnly))
-		return "";
+    QCryptographicHash hash(m_algo);
+    QFile file(m_fi.absoluteFilePath());
+    if (!file.open(QIODevice::ReadOnly))
+        return "";
 
 #ifdef DEBUG
-	QTime t;
-	t.start();
+    QTime t;
+    t.start();
 #endif
-	while (!file.atEnd())
-		hash.addData(file.read(READ_SIZE));
+    while (!file.atEnd())
+        hash.addData(file.read(READ_SIZE));
 
 #ifdef DEBUG
-	qDebug("Full hash for %s: %s (%s for %s: %s)", 
-		qPrintable(m_fi.fileName()),
-		//qPrintable(m_fi.absoluteFilePath()), 
-		qPrintable(QString(hash.result().toHex())), 
-		qPrintable(NConvert_n::durationToHuman(t.elapsed())),
-		qPrintable(NConvert_n::byteToHuman(m_fi.size())),
-		qPrintable(NConvert_n::rateForOneSecToHuman(m_fi.size(), t.elapsed()))
-		);
+    qDebug("Full hash for %s: %s (%s for %s: %s)",
+           qPrintable(m_fi.fileName()),
+           //qPrintable(m_fi.absoluteFilePath()),
+           qPrintable(QString(hash.result().toHex())),
+           qPrintable(NConvert_n::durationToHuman(t.elapsed())),
+           qPrintable(NConvert_n::byteToHuman(m_fi.size())),
+           qPrintable(NConvert_n::rateForOneSecToHuman(m_fi.size(), t.elapsed()))
+           );
 #endif
-	return hash.result().toHex();
+    return hash.result().toHex();
 }

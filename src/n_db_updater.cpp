@@ -37,71 +37,71 @@
 
 
 NDbUpdaterThread::NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject * parent)
-	:NThread(parent)
+    :NThread(parent)
 {
-	m_dirs = dirs;
-	m_fileSuffixes = NCONFIG.fileSuffixes();
+    m_dirs = dirs;
+    m_fileSuffixes = NCONFIG.fileSuffixes();
 }
 
 void NDbUpdaterThread::run()
 {
-	Q_ASSERT_X(NDB.beginTransaction(), "NDbUpdaterThread::run()", "NDB.beginTransaction()");
-	NLOGM("NServer", tr("Updating database..."));
-	updateDB();
-	NDB.commitTransaction();
-	NLOGM("NServer", tr("Database update done."));
+    Q_ASSERT_X(NDB.beginTransaction(), "NDbUpdaterThread::run()", "NDB.beginTransaction()");
+    NLOGM("NServer", tr("Updating database..."));
+    updateDB();
+    NDB.commitTransaction();
+    NLOGM("NServer", tr("Database update done."));
 }
 
 
 void NDbUpdaterThread::updateDB()
 {
-	// Delete flag
-	NDB.setFilesAsDeleted();
-	NDB.setDuplicatedFilesAsDeleted();
-	
-	parseSharedFiles();
+    // Delete flag
+    NDB.setFilesAsDeleted();
+    NDB.setDuplicatedFilesAsDeleted();
+
+    parseSharedFiles();
 }
 
 void NDbUpdaterThread::parseSharedFiles()
 {
-	NLOGD("NDbUpdaterThread", "parseSharedFiles start");
-	m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
-	m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-	foreach(NDirWatcherThreadItem item, m_dirs)
-	{
-		parseFiles(item.path(), item.rootPath());
+    NLOGD("NDbUpdaterThread", "parseSharedFiles start");
+    m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
+    m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+    foreach(NDirWatcherThreadItem item, m_dirs)
+    {
+        parseFiles(item.path(), item.rootPath());
 
-		if (isStopping())
-			break;
-	}
-	NLOGD("NDbUpdaterThread", "parseSharedFiles stop");
+        if (isStopping())
+            break;
+    }
+    NLOGD("NDbUpdaterThread", "parseSharedFiles stop");
 }
 
 void NDbUpdaterThread::parseFiles(const QString & path, const QString & rootPath)
 {
-	m_dir.setPath(path);
-	
-	if (!m_dir.exists() || m_dir.dirName() == "." || m_dir.dirName() == "..")
-		return;
+    m_dir.setPath(path);
 
-	QFileInfoList list = m_dir.entryInfoList();
-	foreach(QFileInfo fi, list)
-	{
-		if (isStopping())
-			break;
+    if (!m_dir.exists() || m_dir.dirName() == "." || m_dir.dirName() == "..")
+        return;
 
-		NFileSuffix suffix = m_fileSuffixes.category(fi); // Optimized
-		if (!suffix.isValid())
-		{
-			//NLOGM("Not managed file", fi.fileName());
-			continue;
-		}
-		if (!suffix.shared())
-		{
-			//qDebug("!ext.shared");
-			continue;
-		}
-		NDB.addFile(fi, suffix, rootPath); // This flag file has not deleted if exists
-	}
+    QFileInfoList list = m_dir.entryInfoList();
+    foreach(QFileInfo fi, list)
+    {
+        if (isStopping())
+            break;
+
+        NFileSuffix suffix = m_fileSuffixes.category(fi); // Optimized
+        if (!suffix.isValid())
+        {
+            //NLOGM("Not managed file", fi.fileName());
+            continue;
+        }
+        if (!suffix.shared())
+        {
+            //qDebug("!ext.shared");
+            continue;
+        }
+        NDB.addFile(fi, suffix, rootPath); // This flag file has not deleted if exists
+    }
 }
 

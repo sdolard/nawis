@@ -7,17 +7,17 @@
 
 class NThread: public QThread
 {
-	Q_OBJECT   
+    Q_OBJECT
 public: 
-	NThread(QObject * parent = 0);
+    NThread(QObject * parent = 0);
 
-	void stop();
+    void stop();
 
 protected:
-	bool isStopping();
+    bool isStopping();
 
 private:
-	bool     m_stop;
-	QMutex   m_stopMutex;
+    bool     m_stop;
+    QMutex   m_stopMutex;
 };
 #endif // N_THREAD_H

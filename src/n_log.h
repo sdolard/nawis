@@ -42,71 +42,71 @@ class NLogThread;
 
 class NLog: public QObject
 { 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	enum LogType {
-		ltDebug,
-		ltMsg
-	};
-	static void start();
-	static void log(const QString & context, const QString & msg, NLog::LogType lt = ltMsg);
-	static void log(const QString & context, const QStringList & msgList, NLog::LogType lt = ltMsg);
-	static void directLog(const QString & context, const QString & msg, NLog::LogType lt = ltMsg);
-	static void directLog(const QString & context, const QStringList & msgList, NLog::LogType lt = ltMsg);
+    enum LogType {
+        ltDebug,
+        ltMsg
+    };
+    static void start();
+    static void log(const QString & context, const QString & msg, NLog::LogType lt = ltMsg);
+    static void log(const QString & context, const QStringList & msgList, NLog::LogType lt = ltMsg);
+    static void directLog(const QString & context, const QString & msg, NLog::LogType lt = ltMsg);
+    static void directLog(const QString & context, const QStringList & msgList, NLog::LogType lt = ltMsg);
 
 signals:
-	void logString(const QString & context, const QString & msg, NLog::LogType lt);
-	void logList(const QString & context, const QStringList & msgList, NLog::LogType lt);
-	void directLogString(const QString & context, const QString & msg, NLog::LogType lt);
-	void directLogList(const QString & context, const QStringList & msgList, NLog::LogType lt);
+    void logString(const QString & context, const QString & msg, NLog::LogType lt);
+    void logList(const QString & context, const QStringList & msgList, NLog::LogType lt);
+    void directLogString(const QString & context, const QString & msg, NLog::LogType lt);
+    void directLogList(const QString & context, const QStringList & msgList, NLog::LogType lt);
 
 private:
-	static NLog *m_instance;
-	NLogThread *m_logThread;
-	
-	NLog(QObject *parent = 0);
-	~NLog();
-	static NLog & instance();
-	static void deleteInstance();
+    static NLog *m_instance;
+    NLogThread *m_logThread;
 
-	void pLog(const QString & context, const QString & msg, NLog::LogType lt);
-	void pLog(const QString & context, const QStringList & msgList, NLog::LogType lt);
-	void pDirectLog(const QString & context, const QString & msg, NLog::LogType lt);
-	void pDirectLog(const QString & context, const QStringList & msgList, NLog::LogType lt);
+    NLog(QObject *parent = 0);
+    ~NLog();
+    static NLog & instance();
+    static void deleteInstance();
+
+    void pLog(const QString & context, const QString & msg, NLog::LogType lt);
+    void pLog(const QString & context, const QStringList & msgList, NLog::LogType lt);
+    void pDirectLog(const QString & context, const QString & msg, NLog::LogType lt);
+    void pDirectLog(const QString & context, const QStringList & msgList, NLog::LogType lt);
 };
 
 class NLogger: public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	void run();
+    void run();
 
 public slots:
-	void log(const QString & context, const QString & msg, NLog::LogType lt);
-	void log(const QString & context, const QStringList & msgList, NLog::LogType lt);
+    void log(const QString & context, const QString & msg, NLog::LogType lt);
+    void log(const QString & context, const QStringList & msgList, NLog::LogType lt);
 
 private:
-	//syslog date format
-	static const QString now();
+    //syslog date format
+    static const QString now();
 
-	void debug(const QString & context, const QString & msg);
-	void message(const QString & context, const QString & msg);
+    void debug(const QString & context, const QString & msg);
+    void message(const QString & context, const QString & msg);
 };
 
 class NLogThread: public QThread
 {
 public:
-	NLogThread(NLog * log)
-	 :m_log(log){
-		Q_ASSERT(m_log != NULL);
-	};
+    NLogThread(NLog * log)
+        :m_log(log){
+        Q_ASSERT(m_log != NULL);
+    };
 
 protected:
-	void run();
+    void run();
 
 private:
-	NLog *m_log;
+    NLog *m_log;
 };
 
 

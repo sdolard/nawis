@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
+
 #ifndef N_FILE_HASH_H
 #define N_FILE_HASH_H
 
@@ -28,14 +28,14 @@
 class NFileHash
 {
 public: 
-	NFileHash(const QFileInfo & fi,
-		QCryptographicHash::Algorithm algo = QCryptographicHash::Md5);
-	
-	const QString hash();
+    NFileHash(const QFileInfo & fi,
+              QCryptographicHash::Algorithm algo = QCryptographicHash::Md5);
+
+    const QString hash();
 
 private:
-	QFileInfo                     m_fi;
-	QCryptographicHash::Algorithm m_algo;
+    QFileInfo                     m_fi;
+    QCryptographicHash::Algorithm m_algo;
 };
 
 #endif // N_FILE_HASH_H

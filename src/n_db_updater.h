@@ -32,22 +32,22 @@
 
 class NDbUpdaterThread: public NThread
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject * parent = 0 );
+    NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject * parent = 0 );
 
 protected:
-	void run();
+    void run();
 
 private:
-	NDirWatcherThreadItems m_dirs;
-	NFileSuffixList        m_fileSuffixes;
-	QStringList             m_fileNameFilters;
-	QDir                    m_dir;
+    NDirWatcherThreadItems m_dirs;
+    NFileSuffixList        m_fileSuffixes;
+    QStringList             m_fileNameFilters;
+    QDir                    m_dir;
 
-	void updateDB();
-	void parseFiles(const QString & path, const QString & rootPath);
-	void parseSharedFiles();
+    void updateDB();
+    void parseFiles(const QString & path, const QString & rootPath);
+    void parseSharedFiles();
 };
 
 #endif // N_DB_UPDATER_H

@@ -1346,7 +1346,7 @@ int NDatabase::getUserListCount(const QStringList & searches)
     return query.value(0).toInt();
 }
 
-void NDatabase::setUserLevel(const QString & level)
+void NDatabase::setUserLevel(const QString &)
 {
     // TODO
 }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */  
- 
+
 #ifndef N_DATE_H
 #define N_DATE_H
 
@@ -32,8 +32,8 @@
 
 namespace NDate_n
 {
-	const QString toHTMLDateTime(const QDateTime & datetime);
-	QDateTime fromSQLiteDateTime(const QString & dateTime);
+    const QString toHTMLDateTime(const QDateTime & datetime);
+    QDateTime fromSQLiteDateTime(const QString & dateTime);
 };
 
 #endif // N_DATE_N

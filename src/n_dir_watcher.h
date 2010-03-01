@@ -40,59 +40,59 @@
 // NDirWatcherThreadItem
 class NDirWatcherThreadItem
 {
-friend class NDirWatcherThread;
+    friend class NDirWatcherThread;
 public:
-	NDirWatcherThreadItem(const QString & path, const QString & rootPath);
-	
-	QByteArray hash() const;
-	QByteArray previousHash() const;
-	QString path() const;
-	QString rootPath() const;
+    NDirWatcherThreadItem(const QString & path, const QString & rootPath);
 
-	bool hasChanged() const;
-	bool exists() const;
+    QByteArray hash() const;
+    QByteArray previousHash() const;
+    QString path() const;
+    QString rootPath() const;
+
+    bool hasChanged() const;
+    bool exists() const;
 
 private:
-	QByteArray          m_hash;
-	QByteArray          m_previousHash;
-	QString             m_path;
-	QString             m_rootPath;
+    QByteArray          m_hash;
+    QByteArray          m_previousHash;
+    QString             m_path;
+    QString             m_rootPath;
 };
 
 // NDirWatcherThreadItems
 class NDirWatcherThreadItems: public QHash<QString/*path*/, NDirWatcherThreadItem>
 {
 public:
-	void addDir(const QString & path, const QString & rootPath);
+    void addDir(const QString & path, const QString & rootPath);
 };
 
 // NDirWatcherThread
 class NDirWatcherThread:  public NThread
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NDirWatcherThread(QObject * parent = 0);
-	~NDirWatcherThread();
+    NDirWatcherThread(QObject * parent = 0);
+    ~NDirWatcherThread();
 
 protected:
-	void run();
+    void run();
 
 private:
-	NDirWatcherThreadItems m_dirs;
-	QByteArray              m_hash;
-	QCryptographicHash     *m_hasher;
-	QDir                    m_dir;
-	NDirList               m_sharedDirectories;
-	NDirHash               m_notSharedDirs;
-	NFileSuffixList        m_fileSuffixes;
+    NDirWatcherThreadItems m_dirs;
+    QByteArray              m_hash;
+    QCryptographicHash     *m_hasher;
+    QDir                    m_dir;
+    NDirList               m_sharedDirectories;
+    NDirHash               m_notSharedDirs;
+    NFileSuffixList        m_fileSuffixes;
 
-	void parseSharedDirs();
-	void parseDir(const QString & path, bool recursive, const QString & rootPath);
-	void updateHash();
-	void updateItemHash(NDirWatcherThreadItem & item);
+    void parseSharedDirs();
+    void parseDir(const QString & path, bool recursive, const QString & rootPath);
+    void updateHash();
+    void updateItemHash(NDirWatcherThreadItem & item);
 
 signals:
-	void hash(QString hash, NDirWatcherThreadItems dirWatcherThreadItems);
+    void hash(QString hash, NDirWatcherThreadItems dirWatcherThreadItems);
 };
 
 #endif // N_DIR_WATCHER_H

@@ -32,21 +32,21 @@
 #include "n_metadata.h"
 
 class NMetadataUpdaterThread: public NThread {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NMetadataUpdaterThread(QObject * parent = 0 );
-	~NMetadataUpdaterThread();
+    NMetadataUpdaterThread(QObject * parent = 0 );
+    ~NMetadataUpdaterThread();
 
 signals:
-	void metadataUpdateDone();
-	
+    void metadataUpdateDone();
+
 protected:
-	void run();
-	
+    void run();
+
 private:
-	NMetadata m_metadata;
-	
-	bool getFile();
+    NMetadata m_metadata;
+
+    bool getFile();
 };
 
 #endif // N_METADATA_UPDATER_THREAD_H

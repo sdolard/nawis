@@ -12,50 +12,50 @@ class NTcpServerThread;
 
 class NTcpServer : public QTcpServer
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NTcpServer(QObject *parent = 0);
-	~NTcpServer();
-	
-	bool start();
+    NTcpServer(QObject *parent = 0);
+    ~NTcpServer();
+
+    bool start();
 
 signals:
-	void newIncommingConnection(int socketDescriptor);
-	
+    void newIncommingConnection(int socketDescriptor);
+
 private:
-	NTcpServerThread *m_tcpServerThread;
-	
+    NTcpServerThread *m_tcpServerThread;
+
 protected:
     void incomingConnection(int socketDescriptor);
 };
 
 class NSocketManager: public QObject {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	NSocketManager(bool ssl):m_ssl(ssl){};
+    NSocketManager(bool ssl):m_ssl(ssl){};
 
 public slots:
-	void newConnection(int socketDescriptor);
-	void onTimeToChechAuth();
+    void newConnection(int socketDescriptor);
+    void onTimeToChechAuth();
 
 private:
-	bool m_ssl;
+    bool m_ssl;
 };
 
 class NTcpServerThread: public NThread
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	NTcpServerThread(QObject * parent, NTcpServer *tcpServer);
+    NTcpServerThread(QObject * parent, NTcpServer *tcpServer);
 
 protected:
-	void run();
+    void run();
 
 private:
-	bool             m_ssl;
-	NTcpServer     *m_tcpServer;
-	QTimer          *m_authExpirationTimer;
+    bool             m_ssl;
+    NTcpServer     *m_tcpServer;
+    QTimer          *m_authExpirationTimer;
 };
 
 

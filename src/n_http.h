@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
+
 // Qt
 #include <QString> 
 
@@ -77,10 +77,10 @@
 #define N_HTTP_SERVICE_UNAVAILABLE                  503
 #define N_HTTP_GATEWAY_TIME_OUT                     504
 #define N_HTTP_HTTP_VERSION_NOT_SUPPORTED           505
-	
+
 namespace NHttp_n
 {
-	extern const QString STATUS_CODE[];
-	const QString statusCodeToString(int code);
+    extern const QString STATUS_CODE[];
+    const QString statusCodeToString(int code);
 }
 

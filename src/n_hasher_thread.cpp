@@ -37,44 +37,44 @@
 
 
 NHasherThread::NHasherThread(QObject * parent)
-	:NThread(parent)
+    :NThread(parent)
 {
 }
 
 void NHasherThread::run()
 {
-	NLOGM("NServer", tr("Hashing files..."));
-	Q_ASSERT(NDB.beginTransaction());
-	forever	{
-		if (isStopping())
-			break;
+    NLOGM("NServer", tr("Hashing files..."));
+    Q_ASSERT(NDB.beginTransaction());
+    forever	{
+        if (isStopping())
+            break;
 
-		if (!hashFile())
-			break;
-	}
-	NDB.commitTransaction();
-	NLOGM("NServer", tr("Hashing done."));
-	NLOGM("NServer", tr("%1 data shared").arg(NConvert_n::byteToHuman(NDB.sharedSize())));
+        if (!hashFile())
+            break;
+    }
+    NDB.commitTransaction();
+    NLOGM("NServer", tr("Hashing done."));
+    NLOGM("NServer", tr("%1 data shared").arg(NConvert_n::byteToHuman(NDB.sharedSize())));
 }
 
 bool NHasherThread::hashFile()
 {
-	// Get a non hashed file in database
-	const QFileInfo fi = NDB.fileToHash();
-	if (!fi.exists())
-	{
-		Q_ASSERT_X(fi.fileName().isEmpty(), "hashFile",
-				   qPrintable(QString("invalid filename: %1").arg(fi.fileName()))); // This mean that there was a problem during last update ?
-		NDB.removeDeletedFiles();
-		NDB.removeDeletedDuplicatedFiles();
-		emit hashingDone();
-		return false;
-	}
+    // Get a non hashed file in database
+    const QFileInfo fi = NDB.fileToHash();
+    if (!fi.exists())
+    {
+        Q_ASSERT_X(fi.fileName().isEmpty(), "hashFile",
+                   qPrintable(QString("invalid filename: %1").arg(fi.fileName()))); // This mean that there was a problem during last update ?
+        NDB.removeDeletedFiles();
+        NDB.removeDeletedDuplicatedFiles();
+        emit hashingDone();
+        return false;
+    }
 
-	NFileHash fileHash(fi);
-	QString hash = fileHash.hash();
-	Q_ASSERT_X(!hash.isEmpty(),  "NHasherThread::hashFile", "hash.isEmpty()");
+    NFileHash fileHash(fi);
+    QString hash = fileHash.hash();
+    Q_ASSERT_X(!hash.isEmpty(),  "NHasherThread::hashFile", "hash.isEmpty()");
 
-	NDB.setFileHash(fi, hash);
-	return true;
+    NDB.setFileHash(fi, hash);
+    return true;
 }

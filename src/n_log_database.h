@@ -39,32 +39,32 @@
 class NLogDatabase
 {
 public:
-	static NLogDatabase & instance();
-	static void deleteInstance();
-	~NLogDatabase();
-	
-	QString lastDbError();
+    static NLogDatabase & instance();
+    static void deleteInstance();
+    ~NLogDatabase();
 
-	// log
-	bool addLog(const QString & log);
-	bool getLogList(QScriptEngine & se, QScriptValue & dataArray, const QString & search,
-					int start = 0, int limit = 25, const QString & sort = "",
-					const QString & dir = "");
-	int getLogListCount(const QString & search);
-	bool clearLogs();
-	
-	static QDateTime toDateTime(const QString & datetTime);
-	
+    QString lastDbError();
+
+    // log
+    bool addLog(const QString & log);
+    bool getLogList(QScriptEngine & se, QScriptValue & dataArray, const QString & search,
+                    int start = 0, int limit = 25, const QString & sort = "",
+                    const QString & dir = "");
+    int getLogListCount(const QString & search);
+    bool clearLogs();
+
+    static QDateTime toDateTime(const QString & datetTime);
+
 private:
-	static NLogDatabase   *m_instance;
-	QSqlDatabase         m_db;	
-	QMutex               m_dbMutex;
-	NLogDatabase();
-	void create();
-	void debugLastQuery(const QString & msg, const QSqlQuery & query);
-	QString & addAND(QString & sql, bool *AND);
-	void debug(const QString & context, const QString & msg);
-	QString stringToLogField(const QString & field);
+    static NLogDatabase   *m_instance;
+    QSqlDatabase         m_db;
+    QMutex               m_dbMutex;
+    NLogDatabase();
+    void create();
+    void debugLastQuery(const QString & msg, const QSqlQuery & query);
+    QString & addAND(QString & sql, bool *AND);
+    void debug(const QString & context, const QString & msg);
+    QString stringToLogField(const QString & field);
 };
 
 #endif //N_LOG_DATABASE_H

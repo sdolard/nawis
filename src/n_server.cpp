@@ -93,8 +93,8 @@ bool NServer::stop()
 
 bool NServer::pause()
 {
-     stopTcpServer();
-     return true;
+    stopTcpServer();
+    return true;
 }
 
 bool NServer::resume()

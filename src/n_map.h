@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
+
 #ifndef N_MAP_H
 #define N_MAP_H
 
@@ -30,5 +30,5 @@ class NStringMap: public QMap<QString, QString> {};
 
 class NStringMapList: public QList<NStringMap> {
 };
-	
+
 #endif // N_MAP_H

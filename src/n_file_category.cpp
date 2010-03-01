@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */ 
- 
- 
+
+
 // Qt
 #include <QtGlobal>
 #include <QCoreApplication>
@@ -44,79 +44,79 @@
 
 QString NFileCategory_n::fileCategoryName(NFileCategory_n::FileCategory fc)
 {
-	switch (fc) {
-		case fcAll: return FILE_CATEGORY_ALL;
-		case fcOther: return FILE_CATEGORY_OTHER;
-		case fcMovie: return FILE_CATEGORY_MOVIE;
-		case fcMusic: return FILE_CATEGORY_MUSIC;
-		case fcPicture: return FILE_CATEGORY_PICTURE;
-		case fcArchive: return FILE_CATEGORY_ARCHIVE;
-		case fcDocument: return FILE_CATEGORY_DOCUMENT;
-		default:
-			Q_ASSERT(false);
-			return FILE_CATEGORY_ALL;
-	}
+    switch (fc) {
+    case fcAll: return FILE_CATEGORY_ALL;
+    case fcOther: return FILE_CATEGORY_OTHER;
+    case fcMovie: return FILE_CATEGORY_MOVIE;
+    case fcMusic: return FILE_CATEGORY_MUSIC;
+    case fcPicture: return FILE_CATEGORY_PICTURE;
+    case fcArchive: return FILE_CATEGORY_ARCHIVE;
+    case fcDocument: return FILE_CATEGORY_DOCUMENT;
+    default:
+        Q_ASSERT(false);
+        return FILE_CATEGORY_ALL;
+    }
 } 
 
 int NFileCategory_n::fileCategoryId(NFileCategory_n::FileCategory fc)
 {
-	switch (fc) {
-		case fcAll: return FILE_CATEGORY_ALL_ID;
-		case fcOther: return FILE_CATEGORY_OTHER_ID;
-		case fcMovie: return FILE_CATEGORY_MOVIE_ID;
-		case fcMusic: return FILE_CATEGORY_MUSIC_ID;
-		case fcPicture: return FILE_CATEGORY_PICTURE_ID;
-		case fcArchive: return FILE_CATEGORY_ARCHIVE_ID;
-		case fcDocument: return FILE_CATEGORY_DOCUMENT_ID;
-		default:
-			Q_ASSERT(false);
-			return FILE_CATEGORY_ALL_ID;
-	}
+    switch (fc) {
+    case fcAll: return FILE_CATEGORY_ALL_ID;
+    case fcOther: return FILE_CATEGORY_OTHER_ID;
+    case fcMovie: return FILE_CATEGORY_MOVIE_ID;
+    case fcMusic: return FILE_CATEGORY_MUSIC_ID;
+    case fcPicture: return FILE_CATEGORY_PICTURE_ID;
+    case fcArchive: return FILE_CATEGORY_ARCHIVE_ID;
+    case fcDocument: return FILE_CATEGORY_DOCUMENT_ID;
+    default:
+        Q_ASSERT(false);
+        return FILE_CATEGORY_ALL_ID;
+    }
 } 
 
 
 NFileCategory_n::FileCategory NFileCategory_n::toFileCategory(int fc,
-	NFileCategory_n::FileCategory def)
+                                                              NFileCategory_n::FileCategory def)
 {
-	switch (fc) {
-		case FILE_CATEGORY_ALL_ID: return fcAll;
-		case FILE_CATEGORY_OTHER_ID: return fcOther;
-		case FILE_CATEGORY_MOVIE_ID: return fcMovie;
-		case FILE_CATEGORY_MUSIC_ID: return fcMusic;
-		case FILE_CATEGORY_PICTURE_ID: return fcPicture;
-		case FILE_CATEGORY_ARCHIVE_ID: return fcArchive;
-		case FILE_CATEGORY_DOCUMENT_ID: return fcDocument;
-		default:
-			Q_ASSERT(false);
-			return def;
-	}
+    switch (fc) {
+    case FILE_CATEGORY_ALL_ID: return fcAll;
+    case FILE_CATEGORY_OTHER_ID: return fcOther;
+    case FILE_CATEGORY_MOVIE_ID: return fcMovie;
+    case FILE_CATEGORY_MUSIC_ID: return fcMusic;
+    case FILE_CATEGORY_PICTURE_ID: return fcPicture;
+    case FILE_CATEGORY_ARCHIVE_ID: return fcArchive;
+    case FILE_CATEGORY_DOCUMENT_ID: return fcDocument;
+    default:
+        Q_ASSERT(false);
+        return def;
+    }
 }
 
 
 NFileCategory_n::FileCategory NFileCategory_n::toFileCategory(const QString & fc,
-	NFileCategory_n::FileCategory def)
+                                                              NFileCategory_n::FileCategory def)
 {
-	if (fc.compare(FILE_CATEGORY_ALL, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcAll;
-	
-	if (fc.compare(FILE_CATEGORY_OTHER, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcOther;
-	
-	if (fc.compare(FILE_CATEGORY_MOVIE, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcMovie;
-	
-	if (fc.compare(FILE_CATEGORY_MUSIC, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcMusic;
-	
-	if (fc.compare(FILE_CATEGORY_PICTURE, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcPicture;
-	
-	if (fc.compare(FILE_CATEGORY_ARCHIVE, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcArchive;
+    if (fc.compare(FILE_CATEGORY_ALL, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcAll;
 
-	if (fc.compare(FILE_CATEGORY_DOCUMENT, Qt::CaseInsensitive) == 0)
-		return NFileCategory_n::fcDocument;
+    if (fc.compare(FILE_CATEGORY_OTHER, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcOther;
 
-	Q_ASSERT(false);
-	return def;	
+    if (fc.compare(FILE_CATEGORY_MOVIE, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcMovie;
+
+    if (fc.compare(FILE_CATEGORY_MUSIC, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcMusic;
+
+    if (fc.compare(FILE_CATEGORY_PICTURE, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcPicture;
+
+    if (fc.compare(FILE_CATEGORY_ARCHIVE, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcArchive;
+
+    if (fc.compare(FILE_CATEGORY_DOCUMENT, Qt::CaseInsensitive) == 0)
+        return NFileCategory_n::fcDocument;
+
+    Q_ASSERT(false);
+    return def;
 }

@@ -58,44 +58,44 @@
 
 namespace NService_n
 {
-	struct NService
-	{
-		int      id;
-		QString  service;
-		bool     authRequired;
-		int      requiredLevel;
-		QString  history;
-		QString  comment;
-		QString  fullService;
-		QString  httpMethod;
-		QString  params;
-		QString  postData;
-		QString  returns;
-		NService* subServices;
-	};
+    struct NService
+    {
+        int      id;
+        QString  service;
+        bool     authRequired;
+        int      requiredLevel;
+        QString  history;
+        QString  comment;
+        QString  fullService;
+        QString  httpMethod;
+        QString  params;
+        QString  postData;
+        QString  returns;
+        NService* subServices;
+    };
 
-	extern NService nsServiceNone;
-	extern NService nsServices[];
-	extern NService nsAPIServices[];
-	extern NService nsAPICfgServices[];
-	extern NService nsAPIFileServices[];
-	extern NService nsAPIMusicServices[];
-	extern NService nsAPIPictureServices[];
-	extern NService nsAPISearchServices[];
-	extern NService nsAPIDuplicatedServices[];
+    extern NService nsServiceNone;
+    extern NService nsServices[];
+    extern NService nsAPIServices[];
+    extern NService nsAPICfgServices[];
+    extern NService nsAPIFileServices[];
+    extern NService nsAPIMusicServices[];
+    extern NService nsAPIPictureServices[];
+    extern NService nsAPISearchServices[];
+    extern NService nsAPIDuplicatedServices[];
 
-	// Return defined service for a path and one http method
-	NService getHTTPMethodService(NService* rootServices, const QStringList & paths,
-						const QString & httpMethod, int level = 0);
+    // Return defined service for a path and one http method
+    NService getHTTPMethodService(NService* rootServices, const QStringList & paths,
+                                  const QString & httpMethod, int level = 0);
 
-	// Set all services for a path in "services" array variable
-	// Size will set to  size of services array
-	void getServices(NService* rootServices, const QStringList & paths,
-							NService* services, int * size, int level = 0);
+    // Set all services for a path in "services" array variable
+    // Size will set to  size of services array
+    void getServices(NService* rootServices, const QStringList & paths,
+                     NService* services, int * size, int level = 0);
 
-	// Set all services in "services" array variable
-	// Size will set to  size of services array
-	void getAllServices(NService* rootServices, NService* services, int * size);
+    // Set all services in "services" array variable
+    // Size will set to  size of services array
+    void getAllServices(NService* rootServices, NService* services, int * size);
 };
 
 

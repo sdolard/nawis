@@ -7,20 +7,20 @@
 
 namespace NCompress_n {
 
-	enum CompressionType {
-		ctGZip,
-		ctDeflate
-	};
-	
-	/*
+    enum CompressionType {
+        ctGZip,
+        ctDeflate
+    };
+
+    /*
 	* Compress a QByteArray
 	*/
-	QByteArray deflateData(const QByteArray & data, bool ieCompat);
-	
-	/*
+    QByteArray deflateData(const QByteArray & data, bool ieCompat);
+
+    /*
 	* Return string value of a compression tpe
 	*/
-	QString toString(CompressionType ct);
+    QString toString(CompressionType ct);
 
 };
 

@@ -9,13 +9,13 @@
 // http://www.mimetype.org/
 
 namespace NMimeType_n {
-	// Return mime typ fx suffix
-	// Return "application/octet-stream" if suffix is not registered
-	const QString fileSuffixToMIME(const QString & suffix);
+    // Return mime typ fx suffix
+    // Return "application/octet-stream" if suffix is not registered
+    const QString fileSuffixToMIME(const QString & suffix);
 
-	// Return true if file format is note considered alreadey commressed
-	// If content type is not managed, return will be false, in order to limit server overload
-	bool contentTypeNeedCompression(const QString & contentType);
+    // Return true if file format is note considered alreadey commressed
+    // If content type is not managed, return will be false, in order to limit server overload
+    bool contentTypeNeedCompression(const QString & contentType);
 };
 
 #endif //N_MIME_TYPE_H

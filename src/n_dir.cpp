@@ -26,42 +26,42 @@
 
 NDir::NDir(const QString & path, bool recursive, bool shared)
 {
-	m_path = path;
-	m_dir.setPath(path);
-	m_recursive = recursive;
-	m_shared = shared;
+    m_path = path;
+    m_dir.setPath(path);
+    m_recursive = recursive;
+    m_shared = shared;
 }
-	
+
 bool NDir::recursive() const
 {
-	return m_recursive;
+    return m_recursive;
 }
 
 bool NDir::shared() const
 {
-	return m_shared;
+    return m_shared;
 }
 
 const QDir & NDir::dir() const
 {
-	return m_dir;
+    return m_dir;
 }
 
 const QString & NDir::path() const
 {
-	return m_path;
+    return m_path;
 }
 
 bool NDir::operator==(const NDir & dir) const
 {
-	return m_path == dir.m_path &&
-		m_recursive == dir.m_recursive &&
-		m_shared == dir.m_shared;
+    return m_path == dir.m_path &&
+            m_recursive == dir.m_recursive &&
+            m_shared == dir.m_shared;
 }
 
 bool NDir::exists() const
 {
-	return m_dir.exists();
+    return m_dir.exists();
 }
 
 /****************************************************************
@@ -69,12 +69,12 @@ bool NDir::exists() const
 ****************************************************************/
 const NDirHash NDirList::getNotShared() const
 {
-	NDirHash hashList;
-	for(int i = 0; i < count(); i++){
-		NDir dir = at(i);
-		if (dir.shared())
-			continue;
-		hashList[dir.path()] = dir;
-	}
-	return hashList;
+    NDirHash hashList;
+    for(int i = 0; i < count(); i++){
+        NDir dir = at(i);
+        if (dir.shared())
+            continue;
+        hashList[dir.path()] = dir;
+    }
+    return hashList;
 }
