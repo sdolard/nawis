@@ -4,16 +4,16 @@
 /**
 *
 */
-Ext.namespace('KSMod.PicturePreview.Ui');
+Ext.namespace('NMod.PicturePreview.Ui');
 
 /**
 *
 */
-KSMod.PicturePreview.Ui.load = function(){
-    if (KSMod.PicturePreview.Ui.loaded !== undefined) {
+NMod.PicturePreview.Ui.load = function(){
+    if (NMod.PicturePreview.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.PicturePreview.Ui.loaded = true;
+    NMod.PicturePreview.Ui.loaded = true;
     
     /**
     * Picture preview template
@@ -54,11 +54,11 @@ KSMod.PicturePreview.Ui.load = function(){
     * 
     */
     function overwritePictureTemplate(config){
-    	var url = KSLib.Path.root('api/picture/resize/' + config.hash) + '?height=163&width=262';
-    	var name = '<a href="' + KSLib.Path.root('api/picture/resize/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
+    	var url = NLib.Path.root('api/picture/resize/' + config.hash) + '?height=163&width=262';
+    	var name = '<a href="' + NLib.Path.root('api/picture/resize/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
     	if (config.isMusic) {
-    		url = KSLib.Path.root('api/music/id3picture/' + config.hash);
-    		name = '<a href="' + KSLib.Path.root('api/music/id3picture/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
+    		url = NLib.Path.root('api/music/id3picture/' + config.hash);
+    		name = '<a href="' + NLib.Path.root('api/music/id3picture/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
     	}
     	
         pictureTemplate.overwrite(pictureTemplateEl, {
@@ -71,7 +71,7 @@ KSMod.PicturePreview.Ui.load = function(){
         });
     }
     
-    KSMod.PicturePreview.Ui.init = initPictureTemplate;
-    KSMod.PicturePreview.Ui.overwrite = overwritePictureTemplate;
-    KSMod.PicturePreview.Ui.clear = clearPictureTemplate;
+    NMod.PicturePreview.Ui.init = initPictureTemplate;
+    NMod.PicturePreview.Ui.overwrite = overwritePictureTemplate;
+    NMod.PicturePreview.Ui.clear = clearPictureTemplate;
 };

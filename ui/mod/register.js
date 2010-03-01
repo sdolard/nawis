@@ -1,16 +1,16 @@
 /**
 * @author sebastiend
 */
-Ext.namespace('KSMod.Register.Ui');
+Ext.namespace('NMod.Register.Ui');
 
 /**
 *
 */
-KSMod.Register.Ui.load = function(){
-    if (KSMod.Register.Ui.loaded !== undefined) {
+NMod.Register.Ui.load = function(){
+    if (NMod.Register.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.Register.Ui.loaded = true;
+    NMod.Register.Ui.loaded = true;
     
     // First name
     var firstNameLabel = new Ext.form.TextField({
@@ -120,7 +120,7 @@ KSMod.Register.Ui.load = function(){
         return true;
     }
     
-    var ajaxConnection = KSLib.Ajax.newAjaxConnection(KSLib.Ajax.newWaitMask("Please wait..."));
+    var ajaxConnection = NLib.Ajax.newAjaxConnection(NLib.Ajax.newWaitMask("Please wait..."));
     
     // Register function
     function register(){
@@ -137,7 +137,7 @@ KSMod.Register.Ui.load = function(){
         				}]));
         				var registerResponse = xmlReader.read(response);
         				var data = registerResponse.records[0].data;
-        				if (KSLib.Convert.toBool(data.registered)) {
+        				if (NLib.Convert.toBool(data.registered)) {
         					Ext.MessageBox.show({
         							title: 'nawis: registeration succeed',
         							msg: 'This need a validation from administrator in order to be active.',
@@ -249,7 +249,7 @@ KSMod.Register.Ui.load = function(){
     });
     
     var registerWindow = new Ext.Window({
-    		title: KSVersion,
+    		title: NVersion,
     		iconCls: 'ks-window-login-icon',
     		closable: false,
     		resizable: false,

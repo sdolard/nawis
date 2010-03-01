@@ -1,25 +1,25 @@
 /**
 * Convert lib namespace
 */
-Ext.namespace('KSLib.Convert');
+Ext.namespace('NLib.Convert');
 
 // Data
-KSLib.Convert.KB = 1024;
-KSLib.Convert.MB = 1024 * KSLib.Convert.KB;
-KSLib.Convert.GB = 1024 * KSLib.Convert.MB;
-KSLib.Convert.TB = 1024 * KSLib.Convert.GB;
+NLib.Convert.KB = 1024;
+NLib.Convert.MB = 1024 * NLib.Convert.KB;
+NLib.Convert.GB = 1024 * NLib.Convert.MB;
+NLib.Convert.TB = 1024 * NLib.Convert.GB;
 
 // Time
-KSLib.Convert.SECOND = 1000;
-KSLib.Convert.MINUTE = 60 * KSLib.Convert.SECOND;
-KSLib.Convert.HOUR = 60 * KSLib.Convert.MINUTE;
-KSLib.Convert.DAY = 24 * KSLib.Convert.HOUR;
+NLib.Convert.SECOND = 1000;
+NLib.Convert.MINUTE = 60 * NLib.Convert.SECOND;
+NLib.Convert.HOUR = 60 * NLib.Convert.MINUTE;
+NLib.Convert.DAY = 24 * NLib.Convert.HOUR;
 
 /**
 * Convert byte to human readable form
 * @param {Object} bytes
 */
-KSLib.Convert.byteToHuman = function(bytes){
+NLib.Convert.byteToHuman = function(bytes){
 	if (bytes === undefined || typeof bytes !== "number") {
 		throw new Error("bytes must be a number");
 	}
@@ -42,23 +42,23 @@ KSLib.Convert.byteToHuman = function(bytes){
 	}
 	
 	
-	if (bytes < KSLib.Convert.KB) // less than 1 KB
+	if (bytes < NLib.Convert.KB) // less than 1 KB
 	{
 		return bytes.toString() + "B";
 	}
-	if (bytes < KSLib.Convert.MB) // less than 1 MB
+	if (bytes < NLib.Convert.MB) // less than 1 MB
 	{
-		return unitByteToHuman(KSLib.Convert.KB, "KB", bytes);
+		return unitByteToHuman(NLib.Convert.KB, "KB", bytes);
 	}
-	if (bytes < KSLib.Convert.GB) // less than 1 GB
+	if (bytes < NLib.Convert.GB) // less than 1 GB
 	{
-		return unitByteToHuman(KSLib.Convert.MB, "MB", bytes);
+		return unitByteToHuman(NLib.Convert.MB, "MB", bytes);
 	}
-	if (bytes < KSLib.Convert.TB) // less than 1 TB
+	if (bytes < NLib.Convert.TB) // less than 1 TB
 	{
-		return unitByteToHuman(KSLib.Convert.GB, "GB", bytes);
+		return unitByteToHuman(NLib.Convert.GB, "GB", bytes);
 	}
-	return unitByteToHuman(KSLib.Convert.TB, "TB", bytes);
+	return unitByteToHuman(NLib.Convert.TB, "TB", bytes);
 };
 
 
@@ -67,7 +67,7 @@ KSLib.Convert.byteToHuman = function(bytes){
 * @param {Object} milliseconds
 * THIS FUNCTION NEED A FIX...
 */
-KSLib.Convert.millisecondsToHuman = function(milliseconds, showMs){
+NLib.Convert.millisecondsToHuman = function(milliseconds, showMs){
 	if (milliseconds === undefined || typeof milliseconds !== "number") {
 		throw new Error("milliseconds must be a number");
 	}
@@ -81,26 +81,26 @@ KSLib.Convert.millisecondsToHuman = function(milliseconds, showMs){
 	
 	var result = "";
 	
-	var days = milliseconds / KSLib.Convert.DAY;
-	var remainder = milliseconds % KSLib.Convert.DAY;
+	var days = milliseconds / NLib.Convert.DAY;
+	var remainder = milliseconds % NLib.Convert.DAY;
 	if (days > 1) {
 		result += days.toFixed(0).toString() + "d ";
 	}
 	
-	var hours = remainder / KSLib.Convert.HOUR;
-	remainder = remainder % KSLib.Convert.HOUR;
+	var hours = remainder / NLib.Convert.HOUR;
+	remainder = remainder % NLib.Convert.HOUR;
 	if (hours > 1) {
 		result += hours.toFixed(0).toString() + ":";
 	}
 	
-	var minutes = remainder / KSLib.Convert.MINUTE;
-	remainder = remainder % KSLib.Convert.MINUTE;
+	var minutes = remainder / NLib.Convert.MINUTE;
+	remainder = remainder % NLib.Convert.MINUTE;
 	if (minutes > 1) {
 		result += prefix(minutes.toFixed(0).toString(), "0", (hours > 1 ? 2 : 1)) + ":";
 	}
 	
-	var seconds = remainder / KSLib.Convert.SECOND;
-	remainder = remainder % KSLib.Convert.SECOND;
+	var seconds = remainder / NLib.Convert.SECOND;
+	remainder = remainder % NLib.Convert.SECOND;
 	result += prefix(seconds.toFixed(0).toString(), "0", (minutes > 1 ? 2 : 1));
 	
 	if (showMs !== undefined && showMs) {
@@ -113,7 +113,7 @@ KSLib.Convert.millisecondsToHuman = function(milliseconds, showMs){
 	return result;
 };
 
-KSLib.Convert.toBool = function(value){
+NLib.Convert.toBool = function(value){
 	if (value === undefined) {
 		return false;
 	}
@@ -130,7 +130,7 @@ KSLib.Convert.toBool = function(value){
 	return false;
 };
 
-KSLib.Convert.toParamValue = function(value){
+NLib.Convert.toParamValue = function(value){
 	// query = *( pchar / "/" / "?" )
 	// pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
 	// sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
@@ -145,25 +145,29 @@ KSLib.Convert.toParamValue = function(value){
 	}
 	
 	// http://stackoverflow.com/questions/64904/parsings-strings-extracting-words-and-phrases-javascript
-	var valuePattern=/("[^"]+"|[^"\s]+)/g;
+	var valuePattern=/("[^"]*")|([^\s"]+)/g;
 	var valueArray = value.match(valuePattern);
+	if (valueArray === null)
+	{	
+		valueArray = [value]; // To manage '"+' value
+	}
 	
 	for(i = 0; i < valueArray.length; ++i)
 	{
 		var v = valueArray[i];
-		if (v.charAt(0) === '"' && v.charAt(v.length - 1) === '"')
+		if (v.charAt(0) === '"' && v.length > 2 && v.charAt(v.length - 1) === '"')
 		{
 			v = v.substring(1, v.length - 1); // we remove starting and ending " char
 		}
 		
-		valueArray[i] = KSLib.Convert.percentEncodeURIReservedChar(v);
+		valueArray[i] = NLib.Convert.percentEncodeURIReservedChar(v);
 	}
 	
 	
 	return valueArray.join("+");
 };
 
-KSLib.Convert.percentEncodeURIReservedChar = function(value){
+NLib.Convert.percentEncodeURIReservedChar = function(value){
 	//  gen-delims  = ":" / "/" / "?" / "#" / "[" / "]" / "@"
     //  sub-delims  = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
     

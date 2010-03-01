@@ -5,4 +5,4 @@
 /**
  *
  */
-var KSVersion = 'nawis 0.0.1 alpha';
+var NVersion = 'nawis 0.0.1 alpha';

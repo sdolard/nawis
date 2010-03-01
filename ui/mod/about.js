@@ -2,23 +2,23 @@
 * @author sebastien
 */
 
-Ext.namespace('KSMod.About.Ui');
+Ext.namespace('NMod.About.Ui');
 
 /**
 *
 */
-KSMod.About.Ui.load = function(){
+NMod.About.Ui.load = function(){
 	
-	if (KSMod.About.Ui.loaded  !== undefined){
+	if (NMod.About.Ui.loaded  !== undefined){
 		return;
 	}
-	KSMod.About.Ui.loaded = true;
+	NMod.About.Ui.loaded = true;
     
 	
     /*
     * Global var
     */
-    var aboutHtmlText = KSVersion + '<br>';
+    var aboutHtmlText = NVersion + '<br>';
     aboutHtmlText += "This software is written by Sébastien Dolard.<br>Email: sdolard@gmail.com<br><br>nawis use Silk icon set 1.3.<br>";
     aboutHtmlText += "Silk (<a href=\"http://www.famfamfam.com/lab/icons/silk/\" target=\"_blank\">http://www.famfamfam.com/lab/icons/silk/</a>)";
     aboutHtmlText += " is a smooth icon set, containing a large variety of icons in strokably-soft PNG format.<br>";
@@ -30,7 +30,7 @@ KSMod.About.Ui.load = function(){
     var aboutToolbarButton = new Ext.Button({
     		text: 'About',
     		id: 'aboutToolbarButton',
-    		icon: KSLib.Path.res('help'),
+    		icon: NLib.Path.res('help'),
     		cls: 'x-btn-text-icon'
     });
     
@@ -61,6 +61,6 @@ KSMod.About.Ui.load = function(){
     		aboutWindows.show(Ext.get('aboutToolbarButton'));
     });
     
-    KSMod.About.Ui.accessButton = aboutToolbarButton;
-    return KSMod.About.Ui;
+    NMod.About.Ui.accessButton = aboutToolbarButton;
+    return NMod.About.Ui;
 };

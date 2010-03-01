@@ -1,10 +1,10 @@
 /**
- * Log KSLib
+ * Log NLib
  * @author sebastiend
  */
 
-Ext.namespace('KSLib');
+Ext.namespace('NLib');
 
-KSLib.log = function(value) {
+NLib.log = function(value) {
 	window.console.info(value);
 }

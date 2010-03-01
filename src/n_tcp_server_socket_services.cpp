@@ -450,9 +450,10 @@ NResponse & NTcpServerSocketServices::svcGetSearch(const NClientSession & sessio
     QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for file: \"%1\"; category: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
+          tr("%1 is looking for file: \"%2\"; category: \"%3\"; start: %4; limit: %5, sort:\"%6\", dir:\"%7\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getFileListCount(searches, category);
     QScriptEngine se;
@@ -484,9 +485,10 @@ NResponse & NTcpServerSocketServices::svcGetDuplicatedFile(const NClientSession 
     QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for (duplicated) \"%1\"; category: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
+          tr("%1 is looking for (duplicated) \"%2\"; category: \"%3\"; start: %4; limit: %5, sort:\"%6\", dir:\"%7\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getDuplicatedFileListCount(searches, category);
     QScriptEngine se;
@@ -1028,9 +1030,10 @@ NResponse & NTcpServerSocketServices::svcGetUser(const NClientSession & session,
     QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for users: \"%1\"; start: %2; limit: %3, sort:\"%4\", dir:\"%5\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(sort).arg(dir));
+          tr("%1 is looking for users: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
+         arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getUserListCount(searches);
     QScriptEngine se;
@@ -1128,9 +1131,10 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
     if (!ok)
         year = -1;
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for album: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
+          tr("%1 is looking for album: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicAlbumListCount(searches, year, genre, artist);
     QScriptEngine se;
@@ -1169,9 +1173,10 @@ NResponse & NTcpServerSocketServices::svcGetMusicArtist(const NClientSession & s
         genre = NConvert_n::fromUTF8PercentEncoding(genre);
     }
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for artist: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
+          tr("%1 is looking for artist: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicArtistListCount(searches, year, genre);
     QScriptEngine se;
@@ -1200,9 +1205,10 @@ NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & se
     if (!ok)
         year = -1;
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for genre: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
+          tr("%1 is looking for genre: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicGenreListCount(searches, year);
     QScriptEngine se;
@@ -1259,9 +1265,10 @@ NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & ses
         limit = 25;
     QString dir = session.url().queryItemValue("dir");
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for year: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
+          tr("%1 is looking for year: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
+          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
 
     int totalCount = NDB.getMusicYearListCount(searches);
@@ -1324,10 +1331,11 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
     if (!ok)
         year = -1;
 
+    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
-          tr("Looking for music search:\"%1\"; album:\"%2\"; artist:\"%3\";"\
-             "genre:\"%4\"; year:\"%5\"; start:\"%6\"; "\
-             "limit:\"%7\"; sort:\"%8\"; dir:\"%9\"").arg(search).arg(album).
+          tr("%1 is looking for music search:\"%2\"; album:\"%3\"; artist:\"%4\";"\
+             "genre:\"%5\"; year:\"%6\"; start:\"%7\"; "\
+             "limit:\"%8\"; sort:\"%9\"; dir:\"%10\"").arg(authSession.login()).arg(search).arg(album).
           arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(genre).arg(year).arg(start).arg(limit).arg(sort).arg(dir));
 
 

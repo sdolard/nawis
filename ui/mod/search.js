@@ -1,16 +1,16 @@
 /**
 *
 */
-Ext.namespace('KSMod.Search.Ui');
+Ext.namespace('NMod.Search.Ui');
 
 /**
 *
 */
-KSMod.Search.Ui.load = function(){
-	if (KSMod.Search.Ui.loaded !== undefined) {
+NMod.Search.Ui.load = function(){
+	if (NMod.Search.Ui.loaded !== undefined) {
 		return;
 	}
-	KSMod.Search.Ui.loaded = true;
+	NMod.Search.Ui.loaded = true;
 	
 	function isPictureRecord(r){
 		if (r === undefined) {
@@ -88,7 +88,7 @@ KSMod.Search.Ui.load = function(){
 	*/
 	var searchStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: false,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: searchReader,
 			sortInfo: {
 				field: 'added',
@@ -101,7 +101,7 @@ KSMod.Search.Ui.load = function(){
 			}),
 			listeners: {
 				beforeload: function(store, options){
-					var searchValue = document.getElementById("KSModSearchSearchTextField").value;
+					var searchValue = document.getElementById("NModSearchSearchTextField").value;
 					if (searchValue === emptySearchText) {
 						searchValue = "";
 					}
@@ -113,8 +113,8 @@ KSMod.Search.Ui.load = function(){
 					if (categoryValue === emptyCategoryText) {
 						categoryValue = "file";
 					}
-					searchValue = KSLib.Convert.toParamValue(searchValue);
-					store.proxy.setUrl(KSLib.Path.root('api/search/' + categoryValue + "?search=" + searchValue), true);
+					searchValue = NLib.Convert.toParamValue(searchValue);
+					store.proxy.setUrl(NLib.Path.root('api/search/' + categoryValue + "?search=" + searchValue), true);
 				}
 			}
 	});
@@ -135,7 +135,7 @@ KSMod.Search.Ui.load = function(){
 	* Grid View
 	*/
 	var searchView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
 			listeners: {
 				cursormove: function(view, rowIndex, visibleRows, totalCount){
 					updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
@@ -160,7 +160,7 @@ KSMod.Search.Ui.load = function(){
 	* Result Grid renderer
 	*/
 	function rendererToHumanByte(val){
-		return KSLib.Convert.byteToHuman(parseInt(val, 10));
+		return NLib.Convert.byteToHuman(parseInt(val, 10));
 	}
 	function relativePathToTag(path){
 		return path.substr(1).split("/").join(", ");
@@ -168,14 +168,14 @@ KSMod.Search.Ui.load = function(){
 	function rendererControls(val, p, record){
 		return '<div class="controlBtn">' +
 		'<img src="' +
-		KSLib.Path.res('add') +
+		NLib.Path.res('add') +
 		'"' +
 		'ext:qtip="' +
 		"Download" +
 		'" width="16" height="16"' +
 		'class="control_edit">' +
 		'<img src="' +
-		KSLib.Path.res('drive_go') +
+		NLib.Path.res('drive_go') +
 		'" ext:qtip="' +
 		"Preview" +
 		'" width="16" height="16"' +
@@ -192,27 +192,27 @@ KSMod.Search.Ui.load = function(){
 		var link_target = '';
 		switch (record.data.category) {
 		case "archive":
-			preview += KSLib.Path.res("compress");
+			preview += NLib.Path.res("compress");
 			break;
 		case "document":
-			preview += KSLib.Path.res("page_white");
+			preview += NLib.Path.res("page_white");
 			break;
 		case "music":
 			if (record.data.hasID3Picture) {
-				preview += KSLib.Path.root('api/music/id3picture/' + record.data.hash);
+				preview += NLib.Path.root('api/music/id3picture/' + record.data.hash);
 			} else {
-				preview += KSLib.Path.res("music");
+				preview += NLib.Path.res("music");
 			}
 			break;
 		case "other":
-			preview += KSLib.Path.res("page_white_text");
+			preview += NLib.Path.res("page_white_text");
 			break;
 		case "picture":
-			preview += KSLib.Path.root('api/picture/thumb/' + record.data.hash);
+			preview += NLib.Path.root('api/picture/thumb/' + record.data.hash);
 			link_target = ' target="_blank" ';
 			break;
 		case "movie":
-			preview += KSLib.Path.res("film");
+			preview += NLib.Path.res("film");
 			break;
 		default:
 			// no preview
@@ -220,7 +220,7 @@ KSMod.Search.Ui.load = function(){
 		preview += '" height="24" alt="Thumb" title="Thumb"></div>&nbsp;';
 		var test = "";
 		var targetName = record.data.title.length === 0 ? record.data.fileName : record.data.title;
-		text = '<a href="' + KSLib.Path.root('api/download/' + record.data.hash) + '"' + link_target + '>' + targetName + '</a>';
+		text = '<a href="' + NLib.Path.root('api/download/' + record.data.hash) + '"' + link_target + '>' + targetName + '</a>';
 		/*if (record.data.album.length !== 0) {
 		text += ' - ' + record.data.album;
 		}
@@ -228,7 +228,7 @@ KSMod.Search.Ui.load = function(){
 		text += ' - ' + record.data.artist;
 		}
 		if (record.data.duration !== 0) {
-		text += ' - ' + KSLib.Convert.millisecondsToHuman(record.data.duration * 1000);
+		text += ' - ' + NLib.Convert.millisecondsToHuman(record.data.duration * 1000);
 		}
 		if (record.data.year !== 0) {
 		text += ' - ' + record.data.year;
@@ -273,9 +273,9 @@ KSMod.Search.Ui.load = function(){
 					disabledPlayerAction(true);
 					}*/
 					if (isPictureRecord(r)) {
-						KSMod.PicturePreview.Ui.overwrite({
+						NMod.PicturePreview.Ui.overwrite({
 								hash: r.data.hash,
-								sizeString: KSLib.Convert.byteToHuman(parseInt(r.data.size, 10)),
+								sizeString: NLib.Convert.byteToHuman(parseInt(r.data.size, 10)),
 								name: r.data.fileName
 						});
 					}
@@ -290,7 +290,7 @@ KSMod.Search.Ui.load = function(){
 	* Create the resultGrid
 	*/
 	var resultGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModSearchResultGrid',
+			id: 'NModSearchResultGrid',
 			border: false,
 			store: searchStore,
 			cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer({
@@ -394,7 +394,7 @@ KSMod.Search.Ui.load = function(){
 	* Search TextField
 	*/
 	var searchTextField = new Ext.form.TriggerField({
-			id: 'KSModSearchSearchTextField',
+			id: 'NModSearchSearchTextField',
 			width: 200,
 			emptyText: emptySearchText,
 			hideLabel: true,
@@ -406,7 +406,7 @@ KSMod.Search.Ui.load = function(){
 			listeners: {
 				render: function(t){
 					var searchTextFieldToolTip = new Ext.ToolTip({
-							target: 'KSModSearchSearchTextField',
+							target: 'NModSearchSearchTextField',
 							html: 'Enter here what you are looking for. You can set many words. Ex: holydays 2008'
 					});
 				},
@@ -467,7 +467,7 @@ KSMod.Search.Ui.load = function(){
 	*/
 	var searchCategoryComboBox = new Ext.form.ComboBox({
 			id: 'searchCategoryComboBox',
-			store: KSMod.Main.Ui.categoryStore,
+			store: NMod.Main.Ui.categoryStore,
 			displayField: 'name',
 			typeAhead: true,
 			mode: 'local',
@@ -515,9 +515,9 @@ KSMod.Search.Ui.load = function(){
 	/**
 	* Global Status bar
 	*/
-	KSMod.Search.Ui.toolBar = searchToolBar;
-	KSMod.Search.Ui.mainPanel = resultGrid;
+	NMod.Search.Ui.toolBar = searchToolBar;
+	NMod.Search.Ui.mainPanel = resultGrid;
 	
-	return KSMod.Search.Ui;
+	return NMod.Search.Ui;
 };
 

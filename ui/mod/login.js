@@ -3,17 +3,17 @@
 */
 Ext.BLANK_IMAGE_URL = 'lib/ext-3.1.0/resources/images/default/s.gif';
 
-Ext.namespace('KSMod.Login.Ui');
+Ext.namespace('NMod.Login.Ui');
 /**
 *
 */
-KSMod.Login.Ui.load = function(){
-    if (KSMod.Login.Ui.loaded !== undefined) {
+NMod.Login.Ui.load = function(){
+    if (NMod.Login.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.Login.Ui.loaded = true;
+    NMod.Login.Ui.loaded = true;
     
-    KSLib.Session.clear();
+    NLib.Session.clear();
     
 	function doSubmit(){
 		loginFormPanel.hide();
@@ -39,10 +39,10 @@ KSMod.Login.Ui.load = function(){
 				success: function(form, action){
 					loginFormPanel.hide();
 					var data = Ext.util.JSON.decode(action.response.responseText);
-					KSLib.Session.setLevel(data.level);
+					NLib.Session.setLevel(data.level);
 					window.open('/ui/nawis.html', "_self");
 				},
-				url: KSLib.Path.root('api/auth')
+				url: NLib.Path.root('api/auth')
 		}); 	
 	}
 	
@@ -139,5 +139,5 @@ Ext.onReady(function(){
 		Ext.form.Field.prototype.labelSeparator = '';
 		
 		// Must be called as last
-		KSMod.Login.Ui.load();
+		NMod.Login.Ui.load();
 });

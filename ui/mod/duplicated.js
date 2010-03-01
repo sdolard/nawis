@@ -1,17 +1,17 @@
 /**
 *
 */
-Ext.namespace('KSMod.Duplicated.Ui');
+Ext.namespace('NMod.Duplicated.Ui');
 
 /**
 *
 */
-KSMod.Duplicated.Ui.load = function(){
+NMod.Duplicated.Ui.load = function(){
 		
-    if (KSMod.Duplicated.Ui.loaded !== undefined) {
+    if (NMod.Duplicated.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.Duplicated.Ui.loaded = true;
+    NMod.Duplicated.Ui.loaded = true;
     
     /*
     * Global var
@@ -45,7 +45,7 @@ KSMod.Duplicated.Ui.load = function(){
     */
     duplicatedSearchStore = new Ext.ux.grid.livegrid.Store({
     				autoLoad: false,
-    				bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+    				bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
     				reader: duplicatedSearchReader,
     				sortInfo: {
     						field: 'size',
@@ -53,12 +53,12 @@ KSMod.Duplicated.Ui.load = function(){
     				},
     				remoteSort: true,
     				proxy: new Ext.data.HttpProxy({
-    								url: KSLib.Path.root('api/duplicated'),
+    								url: NLib.Path.root('api/duplicated'),
     								method: 'GET'
     				}),
     				listeners: {
     						beforeload: function(store, options){
-    								var searchValue = document.getElementById("KSModDuplicatedSearchTextField").value;
+    								var searchValue = document.getElementById("NModDuplicatedSearchTextField").value;
     								if (searchValue === emptySearchText) {
     										searchValue = "";
     								}
@@ -71,8 +71,8 @@ KSMod.Duplicated.Ui.load = function(){
     										categoryValue = "file";
     								}
     								
-    								searchValue = KSLib.Convert.toParamValue(searchValue);
-    								store.proxy.setUrl(KSLib.Path.root('api/duplicated/' + categoryValue + "?search=" + searchValue), true);
+    								searchValue = NLib.Convert.toParamValue(searchValue);
+    								store.proxy.setUrl(NLib.Path.root('api/duplicated/' + categoryValue + "?search=" + searchValue), true);
     						}
     				}
     });
@@ -81,7 +81,7 @@ KSMod.Duplicated.Ui.load = function(){
     * Grid View
     */
     var duplicatedSearchView = new Ext.ux.grid.livegrid.GridView({
-    				nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+    				nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
     				listeners: {
     						cursormove: function(view, rowIndex, visibleRows, totalCount){
     								updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
@@ -105,7 +105,7 @@ KSMod.Duplicated.Ui.load = function(){
     * Result Grid renderer
     */
     function rendererToHumanByte(val){
-        return KSLib.Convert.byteToHuman(parseInt(val, 10));
+        return NLib.Convert.byteToHuman(parseInt(val, 10));
     }
     function directoryToTag(val){
         return val.substr(1).split("/").join(", ");
@@ -113,12 +113,12 @@ KSMod.Duplicated.Ui.load = function(){
     
     function fileNameRenderer(val, p, record){
         var deleteAbsoluteFileControl = '<img src="' +
-        KSLib.Path.res('bin') +
+        NLib.Path.res('bin') +
         '"ext:qtip="Put in recycle bin" width="16" height="16"' +
         'class="control_deleteAbsoluteFilePath">';
         
         var deleteOriginalAbsoluteFileControl = '<img src="' +
-        KSLib.Path.res('bin') +
+        NLib.Path.res('bin') +
         '"ext:qtip="Put in recycle bin" width="16" height="16"' +
         'class="control_deleteOriginalAbsoluteFilePath">';
         
@@ -223,7 +223,7 @@ KSMod.Duplicated.Ui.load = function(){
     * Duplicated Search TextField
     */
     var duplicatedSearchTextField = new Ext.form.TriggerField({
-    				id: 'KSModDuplicatedSearchTextField',
+    				id: 'NModDuplicatedSearchTextField',
     				width: 200,
     				emptyText: emptySearchText,
     				hideLabel: true,
@@ -235,7 +235,7 @@ KSMod.Duplicated.Ui.load = function(){
     				listeners: {
     						render: function(t){
     								var duplicatedSearchTextFieldToolTip = new Ext.ToolTip({
-    												target: 'KSModDuplicatedSearchTextField',
+    												target: 'NModDuplicatedSearchTextField',
     												html: 'Enter here what you are looking for. You can set many words. Ex: holydays 2008'
     								});
     						},
@@ -253,7 +253,7 @@ KSMod.Duplicated.Ui.load = function(){
     */
     var duplicatedCategoryComboBox = new Ext.form.ComboBox({
     				id: 'duplicatedCategoryComboBox',
-    				store: KSMod.Main.Ui.categoryStore,
+    				store: NMod.Main.Ui.categoryStore,
     				displayField: 'name',
     				typeAhead: true,
     				mode: 'local',
@@ -283,7 +283,7 @@ KSMod.Duplicated.Ui.load = function(){
     				text: 'Search',
     				style: 'padding-left:2px',
     				scope: this,
-    				icon: KSLib.Path.res('drive_magnify'),
+    				icon: NLib.Path.res('drive_magnify'),
     				cls: 'x-btn-text-icon',
     				listeners: {
     						click: function(b, e){
@@ -308,8 +308,8 @@ KSMod.Duplicated.Ui.load = function(){
     				items: [duplicatedSearchTextField, ' ', duplicatedCategoryComboBox, ' ', duplicatedSearchButton, '->', searchDisplayedText]
     });
     
-    KSMod.Duplicated.Ui.toolBar = duplicatedSearchToolBar;
-    KSMod.Duplicated.Ui.mainPanel = duplicatedResultGrid;
-    return KSMod.Duplicated.Ui;
+    NMod.Duplicated.Ui.toolBar = duplicatedSearchToolBar;
+    NMod.Duplicated.Ui.mainPanel = duplicatedResultGrid;
+    return NMod.Duplicated.Ui;
 };
 

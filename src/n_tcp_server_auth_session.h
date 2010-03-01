@@ -41,12 +41,12 @@ public:
     void set(const QString & address, const QString & login, const QString & userAgent, int level);
 
 private:
-    QDateTime                     m_lastUsed;
-    QString                       m_address;
-    QString                       m_login;
-    QString                       m_sessionId;
-    int                           m_level;
-    QString                       m_userAgent;
+    QDateTime m_lastUsed;
+    QString   m_address;
+    QString   m_login;
+    QString   m_sessionId;
+    int       m_level;
+    QString   m_userAgent;
 
 };
 

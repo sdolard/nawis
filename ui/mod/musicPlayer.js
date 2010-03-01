@@ -4,16 +4,16 @@
 /**
 *
 */
-Ext.namespace('KSMod.MusicPlayer.Ui');
+Ext.namespace('NMod.MusicPlayer.Ui');
 
 /**
 *
 */
-KSMod.MusicPlayer.Ui.load = function(){
-    if (KSMod.MusicPlayer.Ui.loaded !== undefined) {
+NMod.MusicPlayer.Ui.load = function(){
+    if (NMod.MusicPlayer.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.MusicPlayer.Ui.loaded = true;
+    NMod.MusicPlayer.Ui.loaded = true;
     
     var currentMusic = undefined;
     var nextCallback = undefined;
@@ -37,7 +37,7 @@ KSMod.MusicPlayer.Ui.load = function(){
     			if (mySMSound !== undefined) {
     				
     				// If playing sound is same as currentMusic
-    				if (mySMSound.url === KSLib.Path.root('api/download/' + currentMusic.hash)) {
+    				if (mySMSound.url === NLib.Path.root('api/download/' + currentMusic.hash)) {
     					mySMSound.togglePause();
     					return;
     				}
@@ -53,7 +53,7 @@ KSMod.MusicPlayer.Ui.load = function(){
     			// Play
     			mySMSound = soundManager.createSound({
     					id: 'mySound',
-    					url: KSLib.Path.root('api/download/' + currentMusic.hash),
+    					url: NLib.Path.root('api/download/' + currentMusic.hash),
     					volume: DEFAULT_VOLUME_VALUE
     			});
     			mySMSound.play({
@@ -69,8 +69,8 @@ KSMod.MusicPlayer.Ui.load = function(){
     						playerTimer = now;
     						
     						playerPosSlider.setValue(this.position * SLIDER_MAX_VALUE / this.durationEstimate);
-    						playerPos = KSLib.Convert.millisecondsToHuman(this.position);
-    						playerDuration = KSLib.Convert.millisecondsToHuman(this.durationEstimate);
+    						playerPos = NLib.Convert.millisecondsToHuman(this.position);
+    						playerDuration = NLib.Convert.millisecondsToHuman(this.durationEstimate);
     						
     						if (this.loaded) {
     							playerTitle = 'Playing ' + currentMusic.title;
@@ -148,14 +148,14 @@ KSMod.MusicPlayer.Ui.load = function(){
     			});
     			
     			if (currentMusic.hasID3Picture) { 
-    				KSMod.PicturePreview.Ui.overwrite({
+    				NMod.PicturePreview.Ui.overwrite({
     						isMusic: true,
     						hash: currentMusic.hash,
     						sizeString: '',
     						name: currentMusic.album
     				});
     			} else {
-    				KSMod.PicturePreview.Ui.clear();
+    				NMod.PicturePreview.Ui.clear();
     			}
     		},
     		iconCls: 'ks-action-play-icon',
@@ -329,7 +329,7 @@ KSMod.MusicPlayer.Ui.load = function(){
     
     var musicPlayerPanel = new Ext.FormPanel({
     		frame: true,
-    		id: 'KSModMuscPlayerFormPanel',
+    		id: 'NModMuscPlayerFormPanel',
     		title: 'Player',
     		autoHeight: true,
     		items: [playerInfoLabel, playerPosSlider],
@@ -424,19 +424,19 @@ KSMod.MusicPlayer.Ui.load = function(){
     /**
     * Global Status bar
     */
-    KSMod.MusicPlayer.Ui.mainPanel = musicPlayerPanel;
-    //KSMod.MusicPlayer.Ui.playList = musicPlayListPanel; // TODO :)
-    KSMod.MusicPlayer.Ui.play = play;
-    KSMod.MusicPlayer.Ui.stop = stop;
-    KSMod.MusicPlayer.Ui.togglePause = togglePause;
-    KSMod.MusicPlayer.Ui.isPlaying = isPlaying;
-    KSMod.MusicPlayer.Ui.isPaused = isPaused;
-    KSMod.MusicPlayer.Ui.playNext = playNext;
-    KSMod.MusicPlayer.Ui.playPrevious = playPrevious;
-    KSMod.MusicPlayer.Ui.getCurrent = getCurrent;
-    KSMod.MusicPlayer.Ui.setNextCallBack = setNextCallBack;
-    KSMod.MusicPlayer.Ui.setPreviousCallBack = setPreviousCallBack;
-    KSMod.MusicPlayer.Ui.isMusicRecordValid = isMusicRecordValid;
-    return KSMod.MusicPlayer.Ui;
+    NMod.MusicPlayer.Ui.mainPanel = musicPlayerPanel;
+    //NMod.MusicPlayer.Ui.playList = musicPlayListPanel; // TODO :)
+    NMod.MusicPlayer.Ui.play = play;
+    NMod.MusicPlayer.Ui.stop = stop;
+    NMod.MusicPlayer.Ui.togglePause = togglePause;
+    NMod.MusicPlayer.Ui.isPlaying = isPlaying;
+    NMod.MusicPlayer.Ui.isPaused = isPaused;
+    NMod.MusicPlayer.Ui.playNext = playNext;
+    NMod.MusicPlayer.Ui.playPrevious = playPrevious;
+    NMod.MusicPlayer.Ui.getCurrent = getCurrent;
+    NMod.MusicPlayer.Ui.setNextCallBack = setNextCallBack;
+    NMod.MusicPlayer.Ui.setPreviousCallBack = setPreviousCallBack;
+    NMod.MusicPlayer.Ui.isMusicRecordValid = isMusicRecordValid;
+    return NMod.MusicPlayer.Ui;
 };
 

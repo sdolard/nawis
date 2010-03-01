@@ -1,35 +1,35 @@
 /**
 *
 */
-Ext.namespace('KSMod.Preferences.Ui.Log');
+Ext.namespace('NMod.Preferences.Ui.Log');
 
 /**
 *
 */
-KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT = 100;
-KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE = 300;
-KSMod.Preferences.NOP_SLEEPING_DELAY = function(){
+NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT = 100;
+NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE = 300;
+NMod.Preferences.NOP_SLEEPING_DELAY = function(){
     return 60000;
 };
 
-KSMod.Preferences.NOP_WORKING_DELAY = function(){
+NMod.Preferences.NOP_WORKING_DELAY = function(){
     return 5000;
 };
 
-KSMod.Preferences.currentNopDelay = KSMod.Preferences.NOP_SLEEPING_DELAY();
+NMod.Preferences.currentNopDelay = NMod.Preferences.NOP_SLEEPING_DELAY();
 
 
 /**
 *
 */
-KSMod.Preferences.Ui.Log.autoRefreshPeriod = 0; // value is mseconds, 0 equals to desactivated
+NMod.Preferences.Ui.Log.autoRefreshPeriod = 0; // value is mseconds, 0 equals to desactivated
 /**
 *
 */
-KSMod.Preferences.Ui.showWindow = function(){		 
+NMod.Preferences.Ui.showWindow = function(){		 
     // sharedDirProxy
     var sharedDirProxy = new Ext.data.HttpProxy({
-    		url: KSLib.Path.root('api/cfg/shareddir')
+    		url: NLib.Path.root('api/cfg/shareddir')
     });
     
     var sharedDirReader = new Ext.data.JsonReader({
@@ -73,7 +73,7 @@ KSMod.Preferences.Ui.showWindow = function(){
     	var tips = "";
     	if (!record.data.exists) {
             tips = '<img src="' +
-            KSLib.Path.res('exclamation') +
+            NLib.Path.res('exclamation') +
             '"' +
             'ext:qtip="' +
             "This directory do not exists" +
@@ -173,22 +173,22 @@ KSMod.Preferences.Ui.showWindow = function(){
     /*
     * Search mask
     */
-    var waitMask = KSLib.Ajax.newWaitMask("Please wait...", sharedDirStore);
+    var waitMask = NLib.Ajax.newWaitMask("Please wait...", sharedDirStore);
     
     /*
     * Ajax request
     */
-    var ajaxConnection = KSLib.Ajax.newAjaxConnection(waitMask);
+    var ajaxConnection = NLib.Ajax.newAjaxConnection(waitMask);
     
     // Look for modification
     var actionLookForModification = new Ext.Action({
     		text: 'Look for new files now',
     		handler: function(){
     			ajaxConnection.request({
-    					url: KSLib.Path.root('api/file/updatedb')
+    					url: NLib.Path.root('api/file/updatedb')
     			});
     			actionLookForModification.disable();
-    			KSMod.Main.Ui.setStatusAsWorking();
+    			NMod.Main.Ui.setStatusAsWorking();
     		},
     		iconCls: 'ks-action-refresh-icon'
     });
@@ -240,7 +240,7 @@ KSMod.Preferences.Ui.showWindow = function(){
     				text: 'Ok',
     				handler: function(){
     					preferenceWindows.close();
-    					KSMod.Main.Ui.setStatusAsWorking();
+    					NMod.Main.Ui.setStatusAsWorking();
     				}
     		}]
     });
@@ -251,23 +251,23 @@ KSMod.Preferences.Ui.showWindow = function(){
 /**
 *
 */
-KSMod.Preferences.Ui.load = function(){
+NMod.Preferences.Ui.load = function(){
     // Shared directories
     
-    if (KSMod.Preferences.Ui.loaded !== undefined) {
+    if (NMod.Preferences.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.Preferences.Ui.loaded = true;
+    NMod.Preferences.Ui.loaded = true;
     
     // View preference action
     var viewPreferenceAction = new Ext.Action({
     		text: 'Preferences',
     		handler: function(){
-    			KSMod.Preferences.Ui.showWindow();
+    			NMod.Preferences.Ui.showWindow();
     		},
     		iconCls: 'ks-action-view-preference-icon'
     });
     
-    KSMod.Preferences.Ui.viewPreferenceAction = viewPreferenceAction;
-    return KSMod.Preferences.Ui;
+    NMod.Preferences.Ui.viewPreferenceAction = viewPreferenceAction;
+    return NMod.Preferences.Ui;
 };

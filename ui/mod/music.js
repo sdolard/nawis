@@ -1,17 +1,17 @@
 /**
 * Music module
 */
-Ext.namespace('KSMod.Music.Ui');
+Ext.namespace('NMod.Music.Ui');
 
 
 /**
 * Load module function
 */
-KSMod.Music.Ui.load = function() {
-	if (KSMod.Music.Ui.loaded !== undefined) {
+NMod.Music.Ui.load = function() {
+	if (NMod.Music.Ui.loaded !== undefined) {
 		return;
 	}
-	KSMod.Music.Ui.loaded = true;
+	NMod.Music.Ui.loaded = true;
 	
 	/**
 	* Global var
@@ -35,7 +35,7 @@ KSMod.Music.Ui.load = function() {
 	*/
 	var yearStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: true,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: yearReader,
 			sortInfo: {
 				field: 'year',
@@ -43,7 +43,7 @@ KSMod.Music.Ui.load = function() {
 			},
 			remoteSort: true,
 			proxy: new Ext.data.HttpProxy({
-					url: KSLib.Path.root('api/music/year'),
+					url: NLib.Path.root('api/music/year'),
 					method: 'GET'
 			}),
 			listeners: {
@@ -96,14 +96,14 @@ KSMod.Music.Ui.load = function() {
 	* yearView
 	*/
 	var yearView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT
 	});
 	
 	/** 
 	* Create the resultGrid
 	*/
 	var yearGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModMusicYearGrid',
+			id: 'NModMusicYearGrid',
 			width: 100,
 			margins: '2 2 2 2',
 			store: yearStore,
@@ -148,7 +148,7 @@ KSMod.Music.Ui.load = function() {
 	*/
 	var genreStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: false,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: genreReader,
 			sortInfo: {
 				field: 'genre',
@@ -156,7 +156,7 @@ KSMod.Music.Ui.load = function() {
 			},
 			remoteSort: true,
 			proxy: new Ext.data.HttpProxy({
-					url: KSLib.Path.root('api/music/genre'),
+					url: NLib.Path.root('api/music/genre'),
 					method: 'GET'
 			}),
 			listeners: {
@@ -201,7 +201,7 @@ KSMod.Music.Ui.load = function() {
 	* genreView
 	*/
 	var genreView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
 			loadMask: {
 				msg: 'Please wait...'
 			}
@@ -211,7 +211,7 @@ KSMod.Music.Ui.load = function() {
 	* Create the resultGrid
 	*/
 	var genreGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModMusicGenreGrid',
+			id: 'NModMusicGenreGrid',
 			store: genreStore,
 			flex: 2,
 			margins: '2 2 2 0',
@@ -256,7 +256,7 @@ KSMod.Music.Ui.load = function() {
 	*/
 	var artistStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: false,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: artistReader,
 			sortInfo: {
 				field: 'artist',
@@ -264,7 +264,7 @@ KSMod.Music.Ui.load = function() {
 			},
 			remoteSort: true,
 			proxy: new Ext.data.HttpProxy({
-					url: KSLib.Path.root('api/music/artist'),
+					url: NLib.Path.root('api/music/artist'),
 					method: 'GET'
 			}),
 			listeners: {
@@ -308,7 +308,7 @@ KSMod.Music.Ui.load = function() {
 	* artistView
 	*/
 	var artistView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
 			loadMask: {
 				msg: 'Please wait...'
 			}
@@ -318,7 +318,7 @@ KSMod.Music.Ui.load = function() {
 	* Create the resultGrid
 	*/
 	var artistGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModMusicArtistGrid',
+			id: 'NModMusicArtistGrid',
 			store: artistStore,
 			flex: 2,
 			margins: '2 2 2 0',
@@ -363,7 +363,7 @@ KSMod.Music.Ui.load = function() {
 	*/
 	var albumStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: false,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: albumReader,
 			sortInfo: {
 				field: 'album',
@@ -371,7 +371,7 @@ KSMod.Music.Ui.load = function() {
 			},
 			remoteSort: true,
 			proxy: new Ext.data.HttpProxy({
-					url: KSLib.Path.root('api/music/album'),
+					url: NLib.Path.root('api/music/album'),
 					method: 'GET'
 			}),
 			listeners: {
@@ -415,7 +415,7 @@ KSMod.Music.Ui.load = function() {
 	* albumView
 	*/
 	var albumView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
 			loadMask: {
 				msg: 'Please wait...'
 			}
@@ -425,7 +425,7 @@ KSMod.Music.Ui.load = function() {
 	* Create the resultGrid
 	*/
 	var albumGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModMusicAlbumGrid',
+			id: 'NModMusicAlbumGrid',
 			store: albumStore,
 			flex: 2,
 			margins: '2 2 2 0',
@@ -501,7 +501,7 @@ KSMod.Music.Ui.load = function() {
 	*/
 	var titleStore = new Ext.ux.grid.livegrid.Store({
 			autoLoad: false,
-			bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+			bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
 			reader: titleReader,
 			sortInfo: {
 				field: 'album',
@@ -509,7 +509,7 @@ KSMod.Music.Ui.load = function() {
 			},
 			remoteSort: true,
 			proxy: new Ext.data.HttpProxy({
-					url: KSLib.Path.root('api/music/title'),
+					url: NLib.Path.root('api/music/title'),
 					method: 'GET'
 			}),
 			listeners: {
@@ -586,15 +586,15 @@ KSMod.Music.Ui.load = function() {
 	
 	// Research
 	function setSearchParam(store, url){
-		var el = document.getElementById("KSModMusicSearchTextField");
+		var el = document.getElementById("NModMusicSearchTextField");
 		if (el !== null) {
-			var searchValue = document.getElementById("KSModMusicSearchTextField").value;
+			var searchValue = document.getElementById("NModMusicSearchTextField").value;
 			if (searchValue !== emptySearchText) {
-				searchValue = KSLib.Convert.toParamValue(searchValue);
-				store.proxy.setUrl(KSLib.Path.root(url + "?search=" + searchValue), true);
+				searchValue = NLib.Convert.toParamValue(searchValue);
+				store.proxy.setUrl(NLib.Path.root(url + "?search=" + searchValue), true);
 				return;
 			}
-			store.proxy.setUrl(KSLib.Path.root(url), true);
+			store.proxy.setUrl(NLib.Path.root(url), true);
 		}
 	}
 	
@@ -614,7 +614,7 @@ KSMod.Music.Ui.load = function() {
 	* titleView
 	*/
 	var titleView = new Ext.ux.grid.livegrid.GridView({
-			nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
 			loadMask: {
 				msg: 'Please wait...'
 			},
@@ -654,7 +654,7 @@ KSMod.Music.Ui.load = function() {
 		if (record.data.duration === 0) {
 			return '';
 		}
-		return KSLib.Convert.millisecondsToHuman(record.data.duration * 1000);
+		return NLib.Convert.millisecondsToHuman(record.data.duration * 1000);
 	}
 	
 	/**
@@ -683,7 +683,7 @@ KSMod.Music.Ui.load = function() {
 	function albumRenderer(val, p, record){
 		var preview = '<img src="';
 		if (record.data.hasID3Picture) {
-			preview += KSLib.Path.root('api/music/id3picture/' + record.data.hash);
+			preview += NLib.Path.root('api/music/id3picture/' + record.data.hash);
 		} else {
 			preview += Ext.BLANK_IMAGE_URL;
 		}
@@ -702,7 +702,7 @@ KSMod.Music.Ui.load = function() {
 	* Create the resultGrid
 	*/
 	var titleGrid = new Ext.ux.grid.livegrid.GridPanel({
-			id: 'KSModMusicTitleGrid',
+			id: 'NModMusicTitleGrid',
 			store: titleStore,
 			region: 'center', // position for region
 			layout: 'fit',
@@ -760,7 +760,7 @@ KSMod.Music.Ui.load = function() {
 					var v = this.getView();
 					var rowIdx = v.findRowIndex(t);
 					var record = this.getStore().getAt(rowIdx);
-					KSMod.MusicPlayer.Ui.play(record);
+					NMod.MusicPlayer.Ui.play(record);
 				}
 			}
 	});
@@ -802,7 +802,7 @@ KSMod.Music.Ui.load = function() {
 	* Search TextField
 	*/
 	var searchTextField = new Ext.form.TriggerField({
-			id: 'KSModMusicSearchTextField',
+			id: 'NModMusicSearchTextField',
 			width: 200,
 			emptyText: emptySearchText,
 			hideLabel: true,
@@ -814,7 +814,7 @@ KSMod.Music.Ui.load = function() {
 			listeners: {
 				render: function(t){
 					var searchTextField = new Ext.ToolTip({
-							target: 'KSModMusicSearchTextField',
+							target: 'NModMusicSearchTextField',
 							html: 'Enter here what you are looking for. An artist name, album... You can set many words. Ex: 2006 ACDC'
 					});
 				},
@@ -859,36 +859,36 @@ KSMod.Music.Ui.load = function() {
 	* Search Toolbar
 	*/
 	var searchToolBar = new Ext.Toolbar({
-			id: 'KSModMusicSearchToolBar',
+			id: 'NModMusicSearchToolBar',
 			items: [searchTextField, ' ', searchAction, /*' ', searchTextItem,*/ '->', searchDisplayedText]
 	});
 	
 	function getNextMusicRecordCallback(){
 		while (this.selectNext()) {
-			if (!KSMod.MusicPlayer.Ui.isMusicRecordValid(this.getSelected())) {
+			if (!NMod.MusicPlayer.Ui.isMusicRecordValid(this.getSelected())) {
 				continue;
 			}
 			return this.getSelected();
 		}
 		return undefined;
 	}
-	KSMod.MusicPlayer.Ui.setNextCallBack(getNextMusicRecordCallback, titleGridRowSelectionModel);
+	NMod.MusicPlayer.Ui.setNextCallBack(getNextMusicRecordCallback, titleGridRowSelectionModel);
 	
 	function getPreviousMusicRecordCallback(){
 		while (this.selectPrevious()) {
-			if (!KSMod.MusicPlayer.Ui.isMusicRecordValid(this.getSelected())) {
+			if (!NMod.MusicPlayer.Ui.isMusicRecordValid(this.getSelected())) {
 				continue;
 			}
 			return this.getSelected();
 		}
 		return undefined;
 	}
-	KSMod.MusicPlayer.Ui.setPreviousCallBack(getPreviousMusicRecordCallback, titleGridRowSelectionModel);
+	NMod.MusicPlayer.Ui.setPreviousCallBack(getPreviousMusicRecordCallback, titleGridRowSelectionModel);
 	
 	
 	// Public variables
-	KSMod.Music.Ui.toolBar = searchToolBar;
-	KSMod.Music.Ui.mainPanel = mainPanel;
-	return KSMod.Music.Ui;
+	NMod.Music.Ui.toolBar = searchToolBar;
+	NMod.Music.Ui.mainPanel = mainPanel;
+	return NMod.Music.Ui;
 };
 

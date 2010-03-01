@@ -1,12 +1,12 @@
 /**
- * KSLib Misc namespace
+ * NLib Misc namespace
  */
-Ext.namespace('KSLib.Misc');
+Ext.namespace('NLib.Misc');
                                     
 /**
  * Return true if server is localhost or 127.0.0.1
  */
-KSLib.Misc.isLocalServer = function(){ 
+NLib.Misc.isLocalServer = function(){ 
 	var hostName = String(location.hostname); 
     if (location.hostname.toLowerCase() == "localhost" || hostName == "127.0.0.1") {
 		return true;

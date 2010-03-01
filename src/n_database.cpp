@@ -860,11 +860,6 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     query.bindValue(":limit", limit);
     query.bindValue(":offset", start);
 
-    /*NLOGD("NDatabase::duplicatedFileList",
-	 QString("Looking for \"%1\"; category: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-	 arg(search).arg(NFileCategory_n::fileCategoryName(fc)).arg(start).arg(limit).arg(sort).arg(dir));
-	 */
-
     if (!query.exec())
     {
         debugLastQuery("duplicatedFileList failed", query);

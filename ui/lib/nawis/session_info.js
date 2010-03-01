@@ -1,9 +1,9 @@
 /**
  * @author sebastiend
  */
-Ext.namespace('KSLib');
+Ext.namespace('NLib');
 
-KSLib.Session = function(){
+NLib.Session = function(){
 
     function getCookie(name){
         var cName = "nawis_" + name;

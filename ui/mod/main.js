@@ -4,15 +4,15 @@ Ext.BLANK_IMAGE_URL = 'lib/ext-3.1.1/resources/images/default/s.gif';
 /**
 *
 */
-Ext.namespace('KSMod.Main.Ui');
+Ext.namespace('NMod.Main.Ui');
 
 // Model dependencies
-KSMod.Main.jsLoadTags = [{
+NMod.Main.jsLoadTags = [{
 		name: "soundmanager2",
 		path: "lib/soundmanagerv2/soundmanagerv295a-20090717/script/"
 }];
 
-KSMod.Main.jsLoader = new JSLoad(KSMod.Main.jsLoadTags, "./");
+NMod.Main.jsLoader = new JSLoad(NMod.Main.jsLoadTags, "./");
 
 
 
@@ -20,7 +20,7 @@ KSMod.Main.jsLoader = new JSLoad(KSMod.Main.jsLoadTags, "./");
 /**
 *
 */
-KSMod.Main.Ui.categoryStore = new Ext.data.ArrayStore({
+NMod.Main.Ui.categoryStore = new Ext.data.ArrayStore({
 		fields: [
 			{name: 'name'}
 		]
@@ -30,11 +30,11 @@ KSMod.Main.Ui.categoryStore = new Ext.data.ArrayStore({
 /**
 *
 */
-KSMod.Main.Ui.load = function(){
-	if (KSMod.Main.Ui.loaded !== undefined) {
+NMod.Main.Ui.load = function(){
+	if (NMod.Main.Ui.loaded !== undefined) {
 		return;
 	}
-	KSMod.Main.Ui.loaded = true;
+	NMod.Main.Ui.loaded = true;
 	
 	/**
 	* Category store
@@ -48,22 +48,22 @@ KSMod.Main.Ui.load = function(){
 		["picture"],
 		["movie"]
 	];
-	KSMod.Main.Ui.categoryStore.loadData(categoryData);
+	NMod.Main.Ui.categoryStore.loadData(categoryData);
 	
 	/*
 	* Preference components
 	*/
-	KSMod.Preferences.Ui.load();
+	NMod.Preferences.Ui.load();
 	
 	/*
 	* About components
 	*/
-	KSMod.About.Ui.load();
+	NMod.About.Ui.load();
 	
 	
 	// nawis label
 	var nawisLabel = new Ext.form.Label({
-			text: KSVersion
+			text: NVersion
 	});
 	
 	// Logout action
@@ -71,10 +71,10 @@ KSMod.Main.Ui.load = function(){
 			text: 'Logout',
 			handler: function(){
 				Ext.Ajax.request({
-						url: KSLib.Path.root('api/auth'),
+						url: NLib.Path.root('api/auth'),
 						method: 'DELETE',
 						callback: function(options, success, response){
-							KSLib.Session.clear();
+							NLib.Session.clear();
 							window.open('/ui', "_self");
 						}
 				});
@@ -85,22 +85,22 @@ KSMod.Main.Ui.load = function(){
 	/*
 	* MusicPlayer Components
 	*/
-	KSMod.MusicPlayer.Ui.load();
+	NMod.MusicPlayer.Ui.load();
 	
 	/*
 	* Search Components
 	*/
-	KSMod.Search.Ui.load();
+	NMod.Search.Ui.load();
 	
 	
 	/*
 	* Music Components
 	*/
-	KSMod.Music.Ui.load();
+	NMod.Music.Ui.load();
 	
 	
-	if (!KSLib.Session.isLevelSet("admin")) {
-		KSMod.Preferences.Ui.viewPreferenceAction.setHidden(true);
+	if (!NLib.Session.isLevelSet("admin")) {
+		NMod.Preferences.Ui.viewPreferenceAction.setHidden(true);
 	}
 	
 	
@@ -118,32 +118,32 @@ KSMod.Main.Ui.load = function(){
 					layout: 'fit',
 					title: 'Music',
 					id: 'musicTab',
-					tbar: KSMod.Music.Ui.toolBar,
-					items: KSMod.Music.Ui.mainPanel
+					tbar: NMod.Music.Ui.toolBar,
+					items: NMod.Music.Ui.mainPanel
 			}, {
 				layout: 'fit',
 				title: 'Search',
 				id: 'searchTab',
-				tbar: KSMod.Search.Ui.toolBar,
-				items: KSMod.Search.Ui.mainPanel
+				tbar: NMod.Search.Ui.toolBar,
+				items: NMod.Search.Ui.mainPanel
 			}]
 	});
 	
 	/*
 	* Component only loaded for local connection on server
 	*/
-	if (KSLib.Session.isLevelSet("admin")) {
+	if (NLib.Session.isLevelSet("admin")) {
 		/*
 		* User Components are only loaded for local connection on server
 		*/
 		/* TODO: not for first version
-		KSMod.User.Ui.load();
+		NMod.User.Ui.load();
 		var userTab = new Ext.form.FormPanel({
 				layout: 'fit',
 				title: 'Users',
 				id: 'userTab',
-				items: KSMod.User.Ui.mainPanel,
-				tbar: KSMod.User.Ui.toolBar
+				items: NMod.User.Ui.mainPanel,
+				tbar: NMod.User.Ui.toolBar
 		});
 		applicationTabs.add(userTab);*/
 		
@@ -151,13 +151,13 @@ KSMod.Main.Ui.load = function(){
 		/*
 		* Duplicated tab
 		*/
-		KSMod.Duplicated.Ui.load();
+		NMod.Duplicated.Ui.load();
 		var duplicatedTab = new Ext.form.FormPanel({
 				layout: 'fit',
 				title: 'Duplicated',
 				id: 'duplicatedTab',
-				items: KSMod.Duplicated.Ui.mainPanel,
-				tbar: KSMod.Duplicated.Ui.toolBar
+				items: NMod.Duplicated.Ui.mainPanel,
+				tbar: NMod.Duplicated.Ui.toolBar
 		});
 		applicationTabs.add(duplicatedTab);
 		
@@ -165,13 +165,13 @@ KSMod.Main.Ui.load = function(){
 		/*
 		* Log Components are only loaded for local connection on server
 		*/
-		KSMod.Log.Ui.load();
+		NMod.Log.Ui.load();
 		var logTab = new Ext.form.FormPanel({
 				layout: 'fit',
 				title: 'Log',
 				id: 'logTab',
-				items: KSMod.Log.Ui.mainPanel,
-				tbar: KSMod.Log.Ui.toolBar
+				items: NMod.Log.Ui.mainPanel,
+				tbar: NMod.Log.Ui.toolBar
 		});
 		
 		applicationTabs.add(logTab);
@@ -207,7 +207,7 @@ KSMod.Main.Ui.load = function(){
 			defaults:{
 				margins:'0 0 5 0'
 			},
-			items:[KSMod.MusicPlayer.Ui.mainPanel, picturePanel]
+			items:[NMod.MusicPlayer.Ui.mainPanel, picturePanel]
 	});
 	
 	/*
@@ -218,7 +218,7 @@ KSMod.Main.Ui.load = function(){
 			items: [new Ext.Toolbar({
 						region: 'north',
 						height: 27,
-						items: [nawisLabel, '->', KSMod.About.Ui.accessButton, KSMod.Preferences.Ui.viewPreferenceAction, logoutAction]
+						items: [nawisLabel, '->', NMod.About.Ui.accessButton, NMod.Preferences.Ui.viewPreferenceAction, logoutAction]
 			}), 
 			mainRightPanel,
 			applicationTabs, statusBar]
@@ -228,8 +228,8 @@ KSMod.Main.Ui.load = function(){
 	
 	
 	// Picture preview init
-	KSMod.PicturePreview.Ui.load();
-	KSMod.PicturePreview.Ui.init('picturePanelPreview');
+	NMod.PicturePreview.Ui.load();
+	NMod.PicturePreview.Ui.init('picturePanelPreview');
 	
 	
 	setTimeout(function(){
@@ -239,18 +239,18 @@ KSMod.Main.Ui.load = function(){
 			});
 	}, 250);
 	
-	KSMod.Main.Ui.setStatusAsWorking = function(){
-		if (!KSMod.Main.Ui.loaded) {
+	NMod.Main.Ui.setStatusAsWorking = function(){
+		if (!NMod.Main.Ui.loaded) {
 			return;
 		}
-		KSMod.Preferences.currentNopDelay = KSMod.Preferences.NOP_WORKING_DELAY();
+		NMod.Preferences.currentNopDelay = NMod.Preferences.NOP_WORKING_DELAY();
 		statusBar.showBusy('nawis server is working...');
 	};
 	
 	// Nop
 	var nop = function(){
 		Ext.Ajax.request({
-				url: KSLib.Path.root('api/nop'),
+				url: NLib.Path.root('api/nop'),
 				method: 'GET',
 				callback: function(options, success, response){
 					if (!success) {
@@ -269,11 +269,11 @@ KSMod.Main.Ui.load = function(){
 									useDefaults: false
 								}
 						});
-						KSMod.Preferences.currentNopDelay = KSMod.Preferences.NOP_SLEEPING_DELAY();
+						NMod.Preferences.currentNopDelay = NMod.Preferences.NOP_SLEEPING_DELAY();
 						return;
 					}
 					
-					KSMod.Preferences.currentNopDelay = KSMod.Preferences.NOP_WORKING_DELAY();
+					NMod.Preferences.currentNopDelay = NMod.Preferences.NOP_WORKING_DELAY();
 					if (data.status === "JT_WATCH_FILES") {
 						statusBar.showBusy('nawis server is working... (looking for new files)');
 						return;
@@ -293,7 +293,7 @@ KSMod.Main.Ui.load = function(){
 					throw new Error("Unmanaged server job type state: " + data.status);
 				}
 		});
-		nop.defer(KSMod.Preferences.currentNopDelay, this);
+		nop.defer(NMod.Preferences.currentNopDelay, this);
 	};
 	nop.defer(1000, this);
 	
@@ -314,12 +314,12 @@ Ext.onReady(function(){
 		Ext.form.TextField.prototype.selectOnFocus = true;
 		
 		// Must be called as last
-		KSMod.Main.Ui.load();
+		NMod.Main.Ui.load();
 		
 		// TODO: test if flash is available, at least 8 ?
 		
 		// Must be called as last !!!
-		KSMod.Main.jsLoader.load(["soundmanager2"], function(){
+		NMod.Main.jsLoader.load(["soundmanager2"], function(){
 				soundManager.flashVersion = 9;
 				soundManager.url = 'lib/soundmanagerv2/soundmanagerv295a-20090717/swf'; // directory where SM2 .SWFs live
 				soundManager.waitForWindowLoad = true;

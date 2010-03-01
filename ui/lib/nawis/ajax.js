@@ -1,14 +1,14 @@
 /**
  * Ajax lib namespace
  */
-Ext.namespace('KSLib.Ajax');
+Ext.namespace('NLib.Ajax');
 
 /**
  *
  * @param {Object} message
  * @param {Object} store
  */
-KSLib.Ajax.newWaitMask = function(message, store){
+NLib.Ajax.newWaitMask = function(message, store){
     return new Ext.LoadMask(Ext.getBody(), {
         msg: message,
         store: store
@@ -20,7 +20,7 @@ KSLib.Ajax.newWaitMask = function(message, store){
  *
  * @param {Object} waitMask
  */
-KSLib.Ajax.newAjaxConnection = function(waitMask){
+NLib.Ajax.newAjaxConnection = function(waitMask){
     return new Ext.data.Connection({
         listeners: {
             'beforerequest': {

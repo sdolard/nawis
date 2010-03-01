@@ -1,16 +1,16 @@
 /**
 *
 */
-Ext.namespace('KSMod.Log.Ui');
+Ext.namespace('NMod.Log.Ui');
 
 /**
 *
 */
-KSMod.Log.Ui.load = function(){
-    if (KSMod.Log.Ui.loaded !== undefined) {
+NMod.Log.Ui.load = function(){
+    if (NMod.Log.Ui.loaded !== undefined) {
         return;
     }
-    KSMod.Log.Ui.loaded = true;
+    NMod.Log.Ui.loaded = true;
     
     /*
     * Global var
@@ -36,7 +36,7 @@ KSMod.Log.Ui.load = function(){
     */
     var logStore = new Ext.ux.grid.livegrid.Store({
     				autoLoad: false,
-    				bufferSize: KSMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
+    				bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
     				reader: searchReader,
     				sortInfo: {
     						field: 'date',
@@ -44,17 +44,17 @@ KSMod.Log.Ui.load = function(){
     				},
     				remoteSort: true,
     				proxy: new Ext.data.HttpProxy({
-    								url: KSLib.Path.root('api/log'),
+    								url: NLib.Path.root('api/log'),
     								method: 'GET'
     				}),
     				listeners: {
     						beforeload: function(store, options){
-    								var searchLogValue = document.getElementById("KSModLogSearchTextField").value;
+    								var searchLogValue = document.getElementById("NModLogSearchTextField").value;
     								if (searchLogValue === emptySearchText) {
     										searchLogValue = "";
     								}
-    								searchLogValue = KSLib.Convert.toParamValue(searchLogValue);
-    								store.proxy.setUrl(KSLib.Path.root('api/log' + "?search=" + searchLogValue), true);
+    								searchLogValue = NLib.Convert.toParamValue(searchLogValue);
+    								store.proxy.setUrl(NLib.Path.root('api/log' + "?search=" + searchLogValue), true);
 
     						}
     				}
@@ -64,7 +64,7 @@ KSMod.Log.Ui.load = function(){
     * Grid View
     */
     var logView = new Ext.ux.grid.livegrid.GridView({
-    				nearLimit: KSMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+    				nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
     				listeners: {
     						cursormove: function(view, rowIndex, visibleRows, totalCount){
     								updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
@@ -130,7 +130,7 @@ KSMod.Log.Ui.load = function(){
     * Search log TextField
     */
     var searchLogTextField = new Ext.form.TriggerField({
-    				id: 'KSModLogSearchTextField',
+    				id: 'NModLogSearchTextField',
     				width: 200,
     				emptyText: emptySearchText,
     				hideLabel: true,
@@ -142,7 +142,7 @@ KSMod.Log.Ui.load = function(){
     				listeners: {
     						render: function(t){
     								var searchLogTextFieldToolTip = new Ext.ToolTip({
-    												target: 'KSModLogSearchTextField',
+    												target: 'NModLogSearchTextField',
     												html: 'Enter here what you are looking for. You can set many words. Ex: holydays 2008'
     								});
     						},
@@ -162,7 +162,7 @@ KSMod.Log.Ui.load = function(){
     				text: 'Refresh',
     				style: 'padding-left:2px',
     				scope: this,
-    				icon: KSLib.Path.res('database_refresh'),
+    				icon: NLib.Path.res('database_refresh'),
     				cls: 'x-btn-text-icon',
     				listeners: {
     						click: function(b, e){
@@ -180,7 +180,7 @@ KSMod.Log.Ui.load = function(){
     				text: 'Clear logs',
     				style: 'padding-left:2px',
     				scope: this,
-    				icon: KSLib.Path.res('database_delete'),
+    				icon: NLib.Path.res('database_delete'),
     				cls: 'x-btn-text-icon',
     				listeners: {
     						click: function(b, e){
@@ -194,7 +194,7 @@ KSMod.Log.Ui.load = function(){
     */
     function clearLog(){
     		Ext.Ajax.request({
-    						url: KSLib.Path.root('api/log'),
+    						url: NLib.Path.root('api/log'),
     						method: 'DELETE',
         				callback: function(o, s, r){
         						search();
@@ -246,14 +246,14 @@ KSMod.Log.Ui.load = function(){
         run: function(){
             search();
         },
-        interval: KSMod.Preferences.Ui.Log.autoRefreshPeriod
+        interval: NMod.Preferences.Ui.Log.autoRefreshPeriod
     };
-    if (KSMod.Preferences.Ui.Log.autoRefreshPeriod > 0) {
+    if (NMod.Preferences.Ui.Log.autoRefreshPeriod > 0) {
         Ext.TaskMgr.start(task);
     }
     
-    KSMod.Log.Ui.toolBar = logToolBar;
-    KSMod.Log.Ui.mainPanel = logGrid;
-    return KSMod.Log.Ui;
+    NMod.Log.Ui.toolBar = logToolBar;
+    NMod.Log.Ui.mainPanel = logGrid;
+    return NMod.Log.Ui;
 };
 
