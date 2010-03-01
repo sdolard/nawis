@@ -211,7 +211,7 @@ KSMod.Search.Ui.load = function(){
 			preview += KSLib.Path.root('api/picture/thumb/' + record.data.hash);
 			link_target = ' target="_blank" ';
 			break;
-		case "video":
+		case "movie":
 			preview += KSLib.Path.res("film");
 			break;
 		default:
