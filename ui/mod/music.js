@@ -68,7 +68,8 @@ KSMod.Music.Ui.load = function() {
 					}
 				},
 				beforeload: function(store, options){
-					getBaseParams(options.params, false, false, false, false);
+					setBaseParams(options.params, false, false, false, false);
+					setSearchParam(store, 'api/music/year');
 				}
 			}
 	});
@@ -171,7 +172,9 @@ KSMod.Music.Ui.load = function() {
 					}
 				},
 				beforeload: function(store, options){
-					getBaseParams(options.params, true, false, false, false);
+					setBaseParams(options.params, true, false, false, false);
+					setSearchParam(store, 'api/music/genre');
+					
 				}
 			}
 	});
@@ -277,7 +280,8 @@ KSMod.Music.Ui.load = function() {
 					}
 				},
 				beforeload: function(store, options){
-					getBaseParams(options.params, true, true, false, false);
+					setBaseParams(options.params, true, true, false, false);
+					setSearchParam(store, 'api/music/artist');
 				}
 			}
 	});
@@ -383,7 +387,8 @@ KSMod.Music.Ui.load = function() {
 					}
 				},
 				beforeload: function(store, options){
-					getBaseParams(options.params, true, true, true, false);
+					setBaseParams(options.params, true, true, true, false);
+					setSearchParam(store, 'api/music/album');
 				}
 			}
 	});
@@ -509,7 +514,8 @@ KSMod.Music.Ui.load = function() {
 			}),
 			listeners: {
 				beforeload: function(store, options){
-					getBaseParams(options.params, true, true, true, true);
+					setBaseParams(options.params, true, true, true, true);
+					setSearchParam(store, 'api/music/title');
 				}
 			}
 	});
@@ -521,7 +527,7 @@ KSMod.Music.Ui.load = function() {
 	* @param {boolean} artist
 	* @param {boolean} album
 	*/
-	function getBaseParams(params, year, genre, artist, album){
+	function setBaseParams(params, year, genre, artist, album){
 		
 		// Year
 		if (year !== undefined && year) {
@@ -576,16 +582,21 @@ KSMod.Music.Ui.load = function() {
 			}
 		}
 		
-		// Research
+	}
+	
+	// Research
+	function setSearchParam(store, url){
 		var el = document.getElementById("KSModMusicSearchTextField");
 		if (el !== null) {
 			var searchValue = document.getElementById("KSModMusicSearchTextField").value;
 			if (searchValue !== emptySearchText) {
-				params.search = searchValue;
+				searchValue = KSLib.Convert.toParamValue(searchValue);
+				store.proxy.setUrl(KSLib.Path.root(url + "?search=" + searchValue), true);
+				return;
 			}
+			store.proxy.setUrl(KSLib.Path.root(url), true);
 		}
 	}
-	
 	
 	
 	/**

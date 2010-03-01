@@ -70,11 +70,9 @@ KSMod.Duplicated.Ui.load = function(){
     								if (categoryValue === emptyCategoryText) {
     										categoryValue = "file";
     								}
-    								store.proxy.setUrl(KSLib.Path.root('api/duplicated/' + categoryValue), true);
-    								store.proxy.setApi({
-    												read: KSLib.Path.root('api/duplicated/' + categoryValue)
-    								});
-    								options.params.search = searchValue;
+    								
+    								searchValue = KSLib.Convert.toParamValue(searchValue);
+    								store.proxy.setUrl(KSLib.Path.root('api/duplicated/' + categoryValue + "?search=" + searchValue), true);
     						}
     				}
     });

@@ -53,7 +53,9 @@ KSMod.Log.Ui.load = function(){
     								if (searchLogValue === emptySearchText) {
     										searchLogValue = "";
     								}
-    								options.params.search = searchLogValue;
+    								searchLogValue = KSLib.Convert.toParamValue(searchLogValue);
+    								store.proxy.setUrl(KSLib.Path.root('api/log' + "?search=" + searchLogValue), true);
+
     						}
     				}
     });

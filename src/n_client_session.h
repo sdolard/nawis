@@ -38,69 +38,69 @@
 class NClientSession
 {
 public:
-	NClientSession(const QHttpRequestHeader & request, const QByteArray & postData,
-		QAbstractSocket *socket);
-	NClientSession(const NClientSession & session);
-	
-	const QHttpRequestHeader & request() const; 
-	const QByteArray         & postData() const; 
-	const QAbstractSocket    * socket() const;
-	const QUrl               & url() const;
+    NClientSession(const QHttpRequestHeader & request, const QByteArray & postData,
+                   QAbstractSocket *socket);
+    NClientSession(const NClientSession & session);
 
-	/*
+    const QHttpRequestHeader & request() const;
+    const QByteArray         & postData() const;
+    const QAbstractSocket    * socket() const;
+    const QUrl               & url() const;
+
+    /*
 	* Return true if session is coming from localhost (ipv6 ready)
 	*/
-	bool isLocal() const;
-	
-	/*
+    bool isLocal() const;
+
+    /*
 	* Peer address
 	*/
-	const QString peerAddress() const;
-	
-	/*
+    const QString peerAddress() const;
+
+    /*
 	* Return service associated to url
 	*/
-	NService_n::NService getHTTPMethodService() const;
+    NService_n::NService getHTTPMethodService() const;
 
-	void getServices(NService_n::NService* services) const;
+    void getServices(NService_n::NService* services) const;
 
-	// Return last URL path
-	const QString resource() const;
-	
-	/*
+    // Return last URL path
+    const QString resource() const;
+
+    /*
 	* return true if we can compress (gzip or deflate)
 	*/
-	bool supportCompression(NCompress_n::CompressionType ct) const;
+    bool supportCompression(NCompress_n::CompressionType ct) const;
 
-	/*
+    /*
 	* Return post data to a NStringMap
 	*/
-	const NStringMap postDataToMap() const;
-	
-	const QString host() const;
-	int port() const;
-	
-	const QString urlPath() const;
-	
-	const QString sessionId() const;
-	
-	const QString userAgent() const;
-	
-	bool isInternetExplorer() const;
-	
-	const QString contentTypeCharset() const;
-	
+    const NStringMap postDataToMap() const;
+
+    const QString host() const;
+    int port() const;
+
+    const QString urlPath() const;
+
+    const QString sessionId() const;
+
+    const QString userAgent() const;
+
+    bool isInternetExplorer() const;
+
+    const QString contentTypeCharset() const;
+
 private:
-	QHttpRequestHeader m_request; 
-	QByteArray         m_postData; 
-	QAbstractSocket   *m_socket;
-	QUrl               m_url;
-	QString            m_sessionId;
-	QString            m_userAgent;
-	bool               m_isInternetExplorer;
-	
-	const QStringList paths() const;
-	const QString getSessionId() const;
+    QHttpRequestHeader m_request;
+    QByteArray         m_postData;
+    QAbstractSocket   *m_socket;
+    QUrl               m_url;
+    QString            m_sessionId;
+    QString            m_userAgent;
+    bool               m_isInternetExplorer;
+
+    const QStringList paths() const;
+    const QString getSessionId() const;
 };
 
 #endif //N_CLIENT_SESSION_H

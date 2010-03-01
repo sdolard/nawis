@@ -20,7 +20,7 @@ CONFIG(debug, debug|release) {
 CONFIG(release, debug|release) {
 	TARGET = nawis
 	CONFIG += warn_off
-        #DEFINES += QT_NO_DEBUG_OUTPUT #comment until http://bugreports.qt.nokia.com/browse/QTSOLBUG-72 is fixed
+        #DEFINES += QT_NO_DEBUG_OUTPUT #Comment until http://bugreports.qt.nokia.com/browse/QTSOLBUG-72 is fixed
 	message(Release build)
 }
 

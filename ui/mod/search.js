@@ -113,8 +113,8 @@ KSMod.Search.Ui.load = function(){
 					if (categoryValue === emptyCategoryText) {
 						categoryValue = "file";
 					}
-					store.proxy.setUrl(KSLib.Path.root('api/search/' + categoryValue), true);
-					options.params.search = searchValue;
+					searchValue = KSLib.Convert.toParamValue(searchValue);
+					store.proxy.setUrl(KSLib.Path.root('api/search/' + categoryValue + "?search=" + searchValue), true);
 				}
 			}
 	});

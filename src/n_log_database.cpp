@@ -153,7 +153,8 @@ bool NLogDatabase::getLogList(QScriptEngine & se, QScriptValue & dataArray,
 	QString sql = "SELECT id, date, log " \
 				  "FROM logs ";
 
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 	{
 		addAND(sql, &useAND);
@@ -208,7 +209,8 @@ int NLogDatabase::getLogListCount(const QString & search)
 	QString sql = "SELECT COUNT(*) " \
 				  "FROM logs ";
 
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 	{
 		addAND(sql, &useAND);

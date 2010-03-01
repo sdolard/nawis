@@ -22,18 +22,24 @@
 
 //Qt
 #include <QString>
+#include <QStringList>
 
 namespace NConvert_n
 {
-	// Max unit is MB  		
-	const QString byteToHuman(qint64 bytes);
+    // Max unit is MB
+    const QString byteToHuman(qint64 bytes);
 
-	// Max unit is minute 	
-	const QString durationToHuman(qint64 ms);
+    // Max unit is minute
+    const QString durationToHuman(qint64 ms);
 
-	// Return rate for 1 second
-	const QString rateForOneSecToHuman(qint64 bytes, qint64 ms);
+    // Return rate for 1 second
+    const QString rateForOneSecToHuman(qint64 bytes, qint64 ms);
 
+    // return a string from an UTF 8 percent encoding string
+    const QString fromUTF8PercentEncoding(const QString & string);
+
+    // return a string list from an UTF 8 percent encoding string list
+    const QStringList fromUTF8PercentEncoding(const QStringList & list);
 };
 
 #endif

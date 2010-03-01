@@ -592,8 +592,8 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 	if (fc != NFileCategory_n::fcAll)
 		sql += "AND files.category_id = :category_id ";
 	
-        // TODO : remove " " (space) support, it has not to be
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 		sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
 					   "OR files.fileName LIKE :fileName%1 "
@@ -606,7 +606,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 					   "OR metadata.city LIKE :city%1 "\
 					   "OR metadata.provinceState LIKE :provinceState%1 "\
 					   "OR metadata.country LIKE :country%1 "\
-					   "OR metadata.model LIKE :model%1) ").arg(i);
+                                           "OR metadata.model LIKE :model%1) ").arg(i);
 	
 	// Sort and limit
 	sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
@@ -621,7 +621,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 	
 	for (int i = 0; i < searches.count(); ++i)
 	{
-		QString s = searches.at(i);
+                QString s = searches.at(i);
 		query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
 		query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
 
@@ -754,7 +754,8 @@ int NDatabase::getFileListCount(const QString & search,
 	if (fc != NFileCategory_n::fcAll)
 		sql += "AND files.category_id = :category_id ";
 	
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 		sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
 					   "OR files.fileName LIKE :fileName%1 "
@@ -767,7 +768,7 @@ int NDatabase::getFileListCount(const QString & search,
 					   "OR metadata.city LIKE :city%1 "\
 					   "OR metadata.provinceState LIKE :provinceState%1 "\
 					   "OR metadata.country LIKE :country%1 "\
-					   "OR metadata.model LIKE :model%1) ").arg(i);
+                                           "OR metadata.model LIKE :model%1) ").arg(i);
 
 	
 	if (!query.prepare(sql))
@@ -778,7 +779,7 @@ int NDatabase::getFileListCount(const QString & search,
 	
 	for (int i = 0; i < searches.count(); ++i)
 	{
-		QString s = searches.at(i);
+                QString s = searches.at(i);
 		query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
 		query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
 		query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(s));
@@ -821,7 +822,8 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
 				  "WHERE files.hash = duplicated_files.hash "\
 				  "AND files.hash <> '' ";
 	
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 		sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
 					   "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
@@ -912,7 +914,8 @@ int NDatabase::getDuplicatedFileListCount(const QString & search, NFileCategory_
 				  "WHERE files.hash = duplicated_files.hash "\
 				  "AND files.hash <> '' ";
 	
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i)
 		sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
 					   "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
@@ -1242,7 +1245,8 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
 	QString sql = "SELECT id, lastName, firstName, email, password, passwordRequested, level, registered FROM users ";
 	
 	bool selector = false;
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		addAND(sql, &selector);
 		sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
@@ -1312,7 +1316,8 @@ int NDatabase::getUserListCount(const QString & search)
 	QString sql = "SELECT count(*) FROM users ";
 	
 	bool selector = false;
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		addAND(sql, &selector);
 		sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
@@ -1509,7 +1514,8 @@ bool NDatabase::getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 		sql += "AND metadata.genre = :genre ";
 	if (!artist.isNull())
 		sql += "AND metadata.artist = :artist ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1605,7 +1611,8 @@ int NDatabase::getMusicAlbumListCount(const QString & search, int year, const QS
 		sql += "AND metadata.genre = :genre ";
 	if (!artist.isNull())
 		sql += "AND metadata.artist = :artist ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1667,7 +1674,8 @@ bool NDatabase::getMusicArtistList(QScriptEngine & se, QScriptValue & dataArray,
 		sql += "AND metadata.year = :year ";
 	if (!genre.isNull())
 		sql += "AND metadata.genre = :genre ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1757,7 +1765,8 @@ int NDatabase::getMusicArtistListCount(const QString & search, int year, const Q
 		sql += "AND metadata.year = :year ";
 	if (!genre.isNull())
 		sql += "AND metadata.genre = :genre ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1813,7 +1822,8 @@ bool NDatabase::getMusicGenreList(QScriptEngine & se, QScriptValue & dataArray,
 	sql += "AND files.category_id = :category_id ";
 	if (year >= 0)
 		sql += "AND metadata.year = :year ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1899,7 +1909,8 @@ int NDatabase::getMusicGenreListCount(const QString & search, int year)
 	sql += "AND files.category_id = :category_id ";
 	if (year >= 0)
 		sql += "AND metadata.year = :year ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1951,7 +1962,8 @@ bool NDatabase::getMusicYearList(QScriptEngine & se, QScriptValue & dataArray, i
 				  "AND files.hash <> '' ";
 	
 	sql += "AND files.category_id = :category_id ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.year = :year%1 ").arg(i);
 		sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
@@ -2036,8 +2048,8 @@ int NDatabase::getMusicYearListCount(const QString & search)
 				  "AND files.hash <> '' ";
 	
 	sql += "AND files.category_id = :category_id ";
-	QStringList searches = search.split("+",
-										QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.year = :year%1 ").arg(i);
 		sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
@@ -2100,7 +2112,8 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 		sql += "AND metadata.artist = :artist ";
 	if (!album.isNull())
 		sql += "AND metadata.album = :album ";
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -2214,7 +2227,8 @@ int NDatabase::getMusicTitleListCount(const QString & search, const QString & al
 		sql += "AND metadata.artist = :artist ";
 	if (!album.isNull())
 		sql += "AND metadata.album = :album ";	
-	QStringList searches = search.split("+", QString::SkipEmptyParts).join(" ").split(" ", QString::SkipEmptyParts);
+        QStringList searches = search.split("+", QString::SkipEmptyParts);
+        searches = NConvert_n::fromUTF8PercentEncoding(searches);
 	for (int i = 0; i < searches.count(); ++i){
 		sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
 		sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);

@@ -450,7 +450,7 @@ NResponse & NTcpServerSocketServices::svcGetSearch(const NClientSession & sessio
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for file: \"%1\"; category: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-          arg(search).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getFileListCount(search, category);
     QScriptEngine se;
@@ -481,7 +481,7 @@ NResponse & NTcpServerSocketServices::svcGetDuplicatedFile(const NClientSession 
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for (duplicated) \"%1\"; category: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-          arg(search).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getDuplicatedFileListCount(search, category);
     QScriptEngine se;
@@ -1023,7 +1023,7 @@ NResponse & NTcpServerSocketServices::svcGetUser(const NClientSession & session,
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for users: \"%1\"; start: %2; limit: %3, sort:\"%4\", dir:\"%5\"").
-          arg(search).arg(start).arg(limit).arg(sort).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(sort).arg(dir));
 
     int totalCount = NDB.getUserListCount(search);
     QScriptEngine se;
@@ -1105,12 +1105,14 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
         artist = session.url().queryItemValue("artist");
         if (artist.isNull())
             artist = "";
+        artist = NConvert_n::fromUTF8PercentEncoding(artist);
     }
     QString genre;
     if(session.url().hasQueryItem("genre"))// Cos of NULL test
     {	genre = session.url().queryItemValue("genre");
         if (genre.isNull())
             genre = "";
+        genre = NConvert_n::fromUTF8PercentEncoding(genre);
     }
 
     int year = session.url().queryItemValue("year").toInt(&ok);
@@ -1119,7 +1121,7 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for album: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(search).arg(start).arg(limit).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicAlbumListCount(search, year, genre, artist);
     QScriptEngine se;
@@ -1153,11 +1155,12 @@ NResponse & NTcpServerSocketServices::svcGetMusicArtist(const NClientSession & s
         genre = session.url().queryItemValue("genre");
         if (genre.isNull())
             genre = "";
+        genre = NConvert_n::fromUTF8PercentEncoding(genre);
     }
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for artist: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(search).arg(start).arg(limit).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicArtistListCount(search, year, genre);
     QScriptEngine se;
@@ -1186,7 +1189,7 @@ NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & se
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for genre: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(search).arg(start).arg(limit).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
     int totalCount = NDB.getMusicGenreListCount(search, year);
     QScriptEngine se;
@@ -1243,7 +1246,7 @@ NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & ses
 
     NLOGM(session.socket()->peerAddress().toString(),
           tr("Looking for year: \"%1\"; start: %2; limit: %3, dir:\"%4\"").
-          arg(search).arg(start).arg(limit).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
 
     int totalCount = NDB.getMusicYearListCount(search);
@@ -1281,6 +1284,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
         album = session.url().queryItemValue("album");
         if (album.isNull())
             album = "";
+        album = NConvert_n::fromUTF8PercentEncoding(album);
+
     }
     QString artist;
     if(session.url().hasQueryItem("artist"))// Cos of NULL test
@@ -1288,12 +1293,14 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
         artist = session.url().queryItemValue("artist");
         if (artist.isNull())
             artist = "";
+        artist = NConvert_n::fromUTF8PercentEncoding(artist);
     }
     QString genre;
     if(session.url().hasQueryItem("genre"))// Cos of NULL test
     {	genre = session.url().queryItemValue("genre");
         if (genre.isNull())
             genre = "";
+        genre = NConvert_n::fromUTF8PercentEncoding(genre);
     }
 
     int year  = session.url().queryItemValue("year").toInt(&ok);
@@ -1304,7 +1311,7 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
           tr("Looking for music search:\"%1\"; album:\"%2\"; artist:\"%3\";"\
              "genre:\"%4\"; year:\"%5\"; start:\"%6\"; "\
              "limit:\"%7\"; sort:\"%8\"; dir:\"%9\"").arg(search).arg(album).
-          arg(artist).arg(genre).arg(year).arg(start).arg(limit).arg(sort).arg(dir));
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(genre).arg(year).arg(start).arg(limit).arg(sort).arg(dir));
 
 
     int totalCount = NDB.getMusicTitleListCount(search, album, artist, genre, year);
