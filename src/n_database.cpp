@@ -72,8 +72,7 @@ NDatabase::NDatabase()
         qDebug("NDatabase: m_db.open() failed %s", qPrintable(m_db.lastError().text()));
         Q_ASSERT(false);
     }
-    create();
-    createDefautValues();
+    createTables();
 }
 
 NDatabase::~NDatabase()
@@ -82,24 +81,47 @@ NDatabase::~NDatabase()
     m_db.close();
 }
 
-void NDatabase::create()
+void NDatabase::createCategoriesTable()
 {
     QSqlQuery query(m_db);
-    /* Database creation
-	 */
-    // category table creation
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS categories (" \
             "id INTEGER PRIMARY KEY NOT NULL," \
             "name TEXT UNIQUE NOT NULL" \
             ")"))
         debugLastQuery("categories table creation failed", query);
-    // category index creation
+
     if (!query.exec(
             "CREATE INDEX IF NOT EXISTS idx_category_name ON categories(name)"))
         debugLastQuery("idx_category_name creation failed", query);
 
-    // Metadata table
+
+    // Default values
+    if(!query.prepare("INSERT INTO categories (id, name) VALUES(:id, :name)"))
+    {
+        debugLastQuery("createDefautValues prepare failed", query);
+        return;
+    }
+
+    for(NFileCategory_n::FileCategory fc = NFileCategory_n::fcAll; fc <= NFileCategory_n::fcDocument; fc++)
+    {
+        query.bindValue(":id", NFileCategory_n::fileCategoryId(fc));
+        query.bindValue(":name", NFileCategory_n::fileCategoryName(fc));
+
+        /*#ifdef DEBUG
+                 if (!query.exec())
+                 debugLastQuery("createDefautValues failed", query);
+                 #else*/
+        query.exec();
+        //#endif //DEBUG
+    }
+}
+
+void NDatabase::createMetadataTable()
+{
+    QSqlQuery query(m_db);
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS metadata ("\
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"\
@@ -129,7 +151,19 @@ void NDatabase::create()
         debugLastQuery("metadata table creation failed", query);
 
 
-    // file table creation
+    if (!query.exec(
+            "CREATE TRIGGER IF NOT EXISTS fkd_metadata_files_id " \
+            "BEFORE DELETE ON files "\
+            "FOR EACH ROW BEGIN "\
+            "  DELETE from metadata WHERE file_id = OLD.id; "\
+            "END; "))
+        debugLastQuery("files CREATE TRIGGER fkd_metadata_files_id failed", query);
+}
+
+void NDatabase::createFilesTable()
+{
+    QSqlQuery query(m_db);
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS files (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
@@ -147,24 +181,21 @@ void NDatabase::create()
             ")"))
         debugLastQuery("files table creation failed", query);
 
-    if (!query.exec(
-            "CREATE TRIGGER IF NOT EXISTS fkd_metadata_files_id " \
-            "BEFORE DELETE ON files "\
-            "FOR EACH ROW BEGIN "\
-            "  DELETE from metadata WHERE file_id = OLD.id; "\
-            "END; "))
-        debugLastQuery("files CREATE TRIGGER fkd_metadata_files_id failed", query);
 
-    // file index creation OK
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_file_index "\
                     "ON files(absoluteFilePath, lastModified)"))
         debugLastQuery("idx_file_index creation failed", query);
-    // file index creation OK
+
+
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_file_hash "\
                     "ON files(hash)"))
         debugLastQuery("idx_file_hash creation failed", query);
+}
 
-    // duplicated file  table creation
+void NDatabase::createDuplicatedFilesTable()
+{
+    QSqlQuery query(m_db);
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS duplicated_files (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
@@ -180,48 +211,44 @@ void NDatabase::create()
             ")"))
         debugLastQuery("duplicated_files table creation failed", query);
 
-    // file index creation OK
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_duplicated_file_index "\
                     "ON duplicated_files(hash, absoluteFilePath)"))
         debugLastQuery("idx_duplicated_file_index creation failed", query);
-
-    // User table
-    if (!query.exec(
-            "CREATE TABLE IF NOT EXISTS users (" \
-            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "lastName TEXT NOT NULL," \
-            "firstName TEXT NOT NULL," \
-            "email TEXT NOT NULL UNIQUE," \
-            "password TEXT NOT NULL,"\
-            "passwordRequested BOOLEAN DEFAULT 0 NOT NULL,"\
-            "level TEXT,"
-            "registered BOOLEAN DEFAULT 0 NOT NULL"
-            ")"))
-        debugLastQuery("User table creation failed", query);
 }
 
-void NDatabase::createDefautValues()
+void NDatabase::createUsersTable()
 {
     QSqlQuery query(m_db);
-    if(!query.prepare("INSERT INTO categories (id, name) VALUES(:id, :name)"))
-    {
-        debugLastQuery("createDefautValues prepare failed", query);
-        return;
-    }
-    for(NFileCategory_n::FileCategory fc = NFileCategory_n::fcAll; fc <= NFileCategory_n::fcDocument; fc++)
-    {
-        query.bindValue(":id", NFileCategory_n::fileCategoryId(fc));
-        query.bindValue(":name", NFileCategory_n::fileCategoryName(fc));
 
-        /*#ifdef DEBUG
-		 if (!query.exec())
-		 debugLastQuery("createDefautValues failed", query);
-		 #else*/
-        query.exec();
-        //#endif //DEBUG
-    }
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS duplicated_files (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "fileName TEXT NOT NULL," \
+            "relativePath TEXT NOT NULL," \
+            "absoluteFilePath TEXT UNIQUE NOT NULL," \
+            "category_id INTEGER NOT NULL," \
+            "hash TEXT NOT NULL,"\
+            "deleted BOOLEAN DEFAULT 0 NOT NULL," \
+            "added TIMESTAMP NOT NULL,"
+            "size INTEGER NOT NULL,"
+            "lastModified TIMESTAMP NOT NULL"
+            ")"))
+        debugLastQuery("duplicated_files table creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_duplicated_file_index "\
+                    "ON duplicated_files(hash, absoluteFilePath)"))
+        debugLastQuery("idx_duplicated_file_index creation failed", query);
 }
 
+void NDatabase::createTables()
+{
+    // Order is important!
+    createCategoriesTable();
+    createFilesTable();
+    createMetadataTable();
+    createDuplicatedFilesTable();
+    createUsersTable();
+}
 
 void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)
 {

@@ -9,7 +9,7 @@ Ext.namespace('NMod.Preferences.Ui.Log');
 NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT = 100;
 NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE = 300;
 NMod.Preferences.NOP_SLEEPING_DELAY = function(){
-    return 60000;
+    return 30000;
 };
 
 NMod.Preferences.NOP_WORKING_DELAY = function(){

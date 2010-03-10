@@ -54,11 +54,11 @@ private:
     NDirWatcherThread      *m_dirWatcherJob;
     NHasherThread          *m_hasherJob;
     NMetadataUpdaterThread *m_metadataUpdaterJob;
-    QString                  m_errorMessage;
-    QTimer                   m_jobTimer;
+    QString                 m_errorMessage;
+    QTimer                  m_jobTimer;
     NDirList                m_sharedDirectories;
     NFileSuffixList         m_fileSuffixes;
-    bool                     m_configFileChanged;
+    bool                    m_configFileChanged;
 
     bool startTcpServer();
     bool restartTcpServer();

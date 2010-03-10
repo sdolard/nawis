@@ -137,8 +137,14 @@ private:
     QMutex               m_dbMutex;
     bool                 m_transactionPending;
     NDatabase();
-    void create();
-    void createDefautValues();
+
+    void createTables();
+    void createCategoriesTable();
+    void createMetadataTable();
+    void createFilesTable();
+    void createDuplicatedFilesTable();
+    void createUsersTable();
+
     void debugLastQuery(const QString & msg, const QSqlQuery & query);
     QString & addAND(QString & sql, bool *AND);
     QString stringToFileField(const QString & field);
