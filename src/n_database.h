@@ -157,7 +157,7 @@ private:
     void createMusicGenreTable();
     void createMusicCoverTable();
 
-    QString stringToFileField(const QString & field);
+    QString jsFileStringToDBFileField(const QString & jsString);
     QString stringToUserField(const QString & field);
     bool setDuplicatedFileAsNotDeleted(const QFileInfo & fi);
     bool isDuplicatedFile(const QString & hash, const QFileInfo & newFi);

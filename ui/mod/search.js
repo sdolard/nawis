@@ -218,8 +218,12 @@ NMod.Search.Ui.load = function(){
 			// no preview
 		}
 		preview += '" height="24" alt="Thumb" title="Thumb"></div>&nbsp;';
-		var test = "";
-		var targetName = record.data.title.length === 0 ? record.data.fileName : record.data.title;
+		var text = "";
+		//var targetName = record.data.title.length === 0 ? record.data.fileName : record.data.title;
+		var targetName = record.data.fileName;
+		if (record.data.title.length !== 0){ 
+			targetName += ' (' + record.data.title + ')';
+		}
 		text = '<a href="' + NLib.Path.root('api/download/' + record.data.hash) + '"' + link_target + '>' + targetName + '</a>';
 		/*if (record.data.album.length !== 0) {
 		text += ' - ' + record.data.album;
@@ -331,7 +335,28 @@ NMod.Search.Ui.load = function(){
 					sortable: true,
 					renderer: rendererToHumanByte,
 					dataIndex: 'size'
-			}]),
+				}, // DEBUG FIELD
+				/*{
+					header: "relativePath",
+					width: 140,
+					sortable: true,
+					dataIndex: 'relativePath'
+				}, {
+					header: "dateTimeOriginal",
+					width: 40,
+					sortable: true,
+					dataIndex: 'dateTimeOriginal'
+				}, {
+					header: "trackNumber",
+					width: 40,
+					sortable: true,
+					dataIndex: 'trackNumber'
+				},  {
+					header: "hasID3Picture",
+					width: 40,
+					sortable: true,
+					dataIndex: 'hasID3Picture'
+			}*/]),
 			stripeRows: true,
 			autoExpandColumn: 'filenameCol',
 			loadMask: true,

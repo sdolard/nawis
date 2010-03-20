@@ -130,17 +130,17 @@ void NDatabase::createMetadataTable()
             "album TEXT,"\
             "title TEXT,"\
             "genre TEXT,"\
-            "trackNumber INTEGER,"\
+            "track_number INTEGER,"\
             "duration INTEGER,"\
-            "hasID3Picture BOOLEAN DEFAULT 0 NOT NULL,"\
-            "dateTimeOriginal TIMESTAMP,"\
+            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL,"\
+            "date_time_original TIMESTAMP,"\
             "copyright TEXT,"\
             "width INTEGER,"\
             "height INTEGER,"\
             "make TEXT,"\
             "model TEXT,"\
             "city TEXT,"\
-            "provinceState TEXT,"\
+            "province_state TEXT,"\
             "country TEXT,"\
             "latitude TEXT,"\
             "longitude TEXT,"\
@@ -165,9 +165,9 @@ void NDatabase::createFilesTable()
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS files (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "fileName TEXT NOT NULL," \
-            "relativePath TEXT NOT NULL," \
-            "absoluteFilePath TEXT UNIQUE NOT NULL," \
+            "file_name TEXT NOT NULL," \
+            "relative_path TEXT NOT NULL," \
+            "absolute_file_path TEXT UNIQUE NOT NULL," \
             "fk_file_category_id INTEGER NOT NULL," \
             "fk_file_metadata_id INTEGER "\
             "  CONSTRAINT ct_fk_file_metadata_id REFERENCES file_metadata(id) ON DELETE CASCADE,"\
@@ -175,13 +175,13 @@ void NDatabase::createFilesTable()
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
             "size INTEGER NOT NULL,"
-            "lastModified TIMESTAMP NOT NULL"
+            "last_modified TIMESTAMP NOT NULL"
             ")"))
         debugLastQuery("files table creation failed", query);
 
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_file_index "\
-                    "ON files(absoluteFilePath, lastModified)"))
+                    "ON files(absolute_file_path, last_modified)"))
         debugLastQuery("idx_file_index creation failed", query);
 
 
@@ -197,20 +197,20 @@ void NDatabase::createDuplicatedFilesTable()
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS duplicated_files (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "fileName TEXT NOT NULL," \
-            "relativePath TEXT NOT NULL," \
-            "absoluteFilePath TEXT UNIQUE NOT NULL," \
+            "file_name TEXT NOT NULL," \
+            "relative_path TEXT NOT NULL," \
+            "absolute_file_path TEXT UNIQUE NOT NULL," \
             "fk_file_category_id INTEGER NOT NULL," \
             "hash TEXT NOT NULL,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
             "size INTEGER NOT NULL,"
-            "lastModified TIMESTAMP NOT NULL"
+            "last_modified TIMESTAMP NOT NULL"
             ")"))
         debugLastQuery("duplicated_files table creation failed", query);
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_duplicated_file_index "\
-                    "ON duplicated_files(hash, absoluteFilePath)"))
+                    "ON duplicated_files(hash, absolute_file_path)"))
         debugLastQuery("idx_duplicated_file_index creation failed", query);
 }
 
@@ -416,15 +416,15 @@ bool NDatabase::setFileAsNotDeleted(const QString & absoluteFilePath, const QDat
 {
     QSqlQuery query(m_db);
     if(!query.prepare("UPDATE files SET deleted = 0 "\
-                      "WHERE absoluteFilePath = :absoluteFilePath "\
-                      "AND lastModified = :lastModified")) // same file, no update hash needed
+                      "WHERE absolute_file_path = :absolute_file_path "\
+                      "AND last_modified = :last_modified")) // same file, no update hash needed
     {
         debugLastQuery("setFileAsNotDeleted prepare failed", query);
         return false;
     }
 
-    query.bindValue(":absoluteFilePath", absoluteFilePath);
-    query.bindValue(":lastModified", lastModified.toString(SQLITE_DATETIME));
+    query.bindValue(":absolute_file_path", absoluteFilePath);
+    query.bindValue(":last_modified", lastModified.toString(SQLITE_DATETIME));
     if (!query.exec())
     {
         debugLastQuery("setFileAsNotDeleted failed", query);
@@ -440,14 +440,14 @@ bool NDatabase::setDuplicatedFileAsNotDeleted(const QFileInfo & fi)
 
     QSqlQuery query(m_db);
     if (!query.prepare("UPDATE duplicated_files SET deleted = 0 "\
-                       "WHERE absoluteFilePath = :absoluteFilePath "\
-                       "AND lastModified = :lastModified")) // same file, no update hash needed
+                       "WHERE absolute_file_path = :absolute_file_path "\
+                       "AND last_modified = :last_modified")) // same file, no update hash needed
     {
         debugLastQuery("setDuplicatedFileAsNotDeleted prepare failed", query);
         return false;
     }
-    query.bindValue(":absoluteFilePath", fi.absoluteFilePath());
-    query.bindValue(":lastModified", fi.lastModified().toString(SQLITE_DATETIME));
+    query.bindValue(":absolute_file_path", fi.absoluteFilePath());
+    query.bindValue(":last_modified", fi.lastModified().toString(SQLITE_DATETIME));
     if (!query.exec())
     {
         debugLastQuery("setDuplicatedFileAsNotDeleted failed", query);
@@ -492,22 +492,22 @@ bool NDatabase::addFile(const QFileInfo & fi, const NFileSuffix & suffix, const 
     QDateTime lastModified = fi.lastModified();
 
     QSqlQuery query(m_db);
-    if (!query.prepare("INSERT INTO files (fileName, relativePath, "\
-                       "absoluteFilePath, fk_file_category_id, added, size, lastModified) "\
-                       "VALUES(:fileName, :relativePath, :absoluteFilePath, :fk_file_category_id, "\
-                       ":added, :size, :lastModified)"))
+    if (!query.prepare("INSERT INTO files (file_name, relative_path, "\
+                       "absolute_file_path, fk_file_category_id, added, size, last_modified) "\
+                       "VALUES(:file_name, :relative_path, :absolute_file_path, :fk_file_category_id, "\
+                       ":added, :size, :last_modified)"))
     {
         debugLastQuery("addFile prepare failed", query);
         return setFileAsNotDeleted(absoluteFilePath, lastModified);
     }
 
-    query.bindValue(":fileName", fi.fileName());
-    query.bindValue(":relativePath", fi.absolutePath().remove(rootPath));
-    query.bindValue(":absoluteFilePath", absoluteFilePath);
+    query.bindValue(":file_name", fi.fileName());
+    query.bindValue(":relative_path", fi.absolutePath().remove(rootPath));
+    query.bindValue(":absolute_file_path", absoluteFilePath);
     query.bindValue(":fk_file_category_id", suffix.category());
     query.bindValue(":added", QDateTime::currentDateTime().toString(SQLITE_DATETIME));
     query.bindValue(":size", fi.size());
-    query.bindValue(":lastModified", lastModified.toString(SQLITE_DATETIME));
+    query.bindValue(":last_modified", lastModified.toString(SQLITE_DATETIME));
 
     if (!query.exec())
     {
@@ -523,20 +523,20 @@ const QFileInfo NDatabase::fileToHash()
 {
     QSqlQuery query(m_db);
 
-    QString sql_filetoHash = "SELECT absoluteFilePath "\
+    QString sql_filetoHash = "SELECT absolute_file_path "\
                              "FROM files "\
                              "WHERE hash IS NULL "\
                              "AND deleted = 0 "\
                              "LIMIT 1 ";
 
-    QString sql_duplicated = "SELECT files.absoluteFilePath "\
+    QString sql_duplicated = "SELECT files.absolute_file_path "\
                              "FROM duplicated_files, files "\
                              "WHERE duplicated_files.hash = files.hash "\
-                             "AND duplicated_files.absoluteFilePath = :absoluteFilePath "\
+                             "AND duplicated_files.absolute_file_path = :absolute_file_path "\
                              "AND files.deleted = 0 ";
 
     QString sql_deleteFiletoHash = "DELETE FROM files "\
-                                   "WHERE absoluteFilePath = :absoluteFilePath ";
+                                   "WHERE absolute_file_path = :absolute_file_path ";
 
     while (true) {
         // we are looking for a file to hash
@@ -563,7 +563,7 @@ const QFileInfo NDatabase::fileToHash()
             debugLastQuery("fileToHash failed (2)", query);
             return QFileInfo();
         }
-        query.bindValue(":absoluteFilePath", fiToHash.absoluteFilePath());
+        query.bindValue(":absolute_file_path", fiToHash.absoluteFilePath());
         if (!query.exec())
         {
             debugLastQuery("fileToHash failed (3)", query);
@@ -583,7 +583,7 @@ const QFileInfo NDatabase::fileToHash()
         {
             debugLastQuery("fileToHash failed (4)", query);
         }
-        query.bindValue(":absoluteFilePath", fiToHash.absoluteFilePath());
+        query.bindValue(":absolute_file_path", fiToHash.absoluteFilePath());
         if (!query.exec())
         {
             debugLastQuery("fileToHash failed (5)", query);
@@ -601,7 +601,7 @@ bool NDatabase::getFileWithNoMetadata(QString & absoluteFilePath, int & fileId)
 
     QSqlQuery query(m_db);
 
-    QString sql = "SELECT id, absoluteFilePath "\
+    QString sql = "SELECT id, absolute_file_path "\
                   "FROM files "\
                   "WHERE fk_file_metadata_id IS NULL "\
                   "AND deleted = 0 "\
@@ -631,13 +631,13 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
     QSqlQuery query(m_db);
 
     if (!query.prepare("INSERT INTO file_metadata (artist, comment, year, album, "\
-                       "title, genre, trackNumber, duration,  dateTimeOriginal,"\
+                       "title, genre, track_number, duration,  date_time_original,"\
                        "copyright, width, height, make, model, latitude,"\
-                       "longitude, altitude, city, provinceState, country, hasID3Picture) " \
+                       "longitude, altitude, city, province_state, country, has_id3_picture) " \
                        "VALUES(:artist, :comment, :year, :album, "\
-                       ":title, :genre, :trackNumber, :duration,  :dateTimeOriginal,"\
+                       ":title, :genre, :track_number, :duration,  :date_time_original,"\
                        ":copyright, :width, :height, :make, :model, :latitude,"\
-                       ":longitude, :altitude, :city, :provinceState, :country, :hasID3Picture)"))
+                       ":longitude, :altitude, :city, :province_state, :country, :has_id3_picture)"))
     {
         debugLastQuery("setMetadata prepare failed", query);
         return false;
@@ -649,10 +649,10 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
     query.bindValue(":album", metadata.album());
     query.bindValue(":title", metadata.title());
     query.bindValue(":genre", metadata.genre());
-    query.bindValue(":trackNumber", metadata.trackNumber());
+    query.bindValue(":track_number", metadata.trackNumber());
     query.bindValue(":duration", metadata.duration());
-    query.bindValue(":hasID3Picture", metadata.hasID3Picture());
-    query.bindValue(":dateTimeOriginal", metadata.dateTimeOriginal().toString(SQLITE_DATETIME));
+    query.bindValue(":has_id3_picture", metadata.hasID3Picture());
+    query.bindValue(":date_time_original", metadata.dateTimeOriginal().toString(SQLITE_DATETIME));
     query.bindValue(":copyright", metadata.copyright());
     query.bindValue(":width", metadata.width());
     query.bindValue(":height", metadata.height());
@@ -662,7 +662,7 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
     query.bindValue(":longitude", metadata.longitude());
     query.bindValue(":altitude", metadata.altitude());
     query.bindValue(":city", metadata.city());
-    query.bindValue(":provinceState", metadata.provinceState());
+    query.bindValue(":province_state", metadata.provinceState());
     query.bindValue(":country", metadata.country());
     if (!query.exec())
     {
@@ -694,13 +694,13 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     // TODO: do category only search
 
     QSqlQuery query(m_db);
-    QString sql = "SELECT files.id id, files.fileName, files.relativePath, files.hash, "\
-                  "files.added, files.size, files.fk_file_category_id, files.lastModified, " \
+    QString sql = "SELECT files.id id, files.file_name, files.relative_path, files.hash, "\
+                  "files.added, files.size, files.fk_file_category_id, files.last_modified, " \
                   "file_metadata.artist, file_metadata.comment, file_metadata.year, file_metadata.album, "\
-                  "file_metadata.title, file_metadata.genre, file_metadata.trackNumber, file_metadata.duration, "\
-                  "file_metadata.dateTimeOriginal, file_metadata.copyright, file_metadata.width, file_metadata.height, "\
+                  "file_metadata.title, file_metadata.genre, file_metadata.track_number, file_metadata.duration, "\
+                  "file_metadata.date_time_original, file_metadata.copyright, file_metadata.width, file_metadata.height, "\
                   "file_metadata.make, file_metadata.model, file_metadata.latitude, file_metadata.longitude, file_metadata.altitude, "\
-                  "file_metadata.city, file_metadata.provinceState, file_metadata.country, file_metadata.hasID3Picture "\
+                  "file_metadata.city, file_metadata.province_state, file_metadata.country, file_metadata.has_id3_picture "\
                   "FROM files, file_metadata " \
                   "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
@@ -710,8 +710,8 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 
 
     for (int i = 0; i < searches.count(); ++i)
-        sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
-                       "OR files.fileName LIKE :fileName%1 "
+        sql += QString("AND (files.relative_path LIKE :relative_path%1 "\
+                       "OR files.file_name LIKE :file_name%1 "
                        "OR file_metadata.artist LIKE :artist%1 "\
                        "OR file_metadata.comment LIKE :comment%1 "\
                        "OR file_metadata.album LIKE :album%1 "\
@@ -719,13 +719,13 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
                        "OR file_metadata.genre LIKE :genre%1 "\
                        "OR file_metadata.make LIKE :make%1 "\
                        "OR file_metadata.city LIKE :city%1 "\
-                       "OR file_metadata.provinceState LIKE :provinceState%1 "\
+                       "OR file_metadata.province_state LIKE :province_state%1 "\
                        "OR file_metadata.country LIKE :country%1 "\
                        "OR file_metadata.model LIKE :model%1) ").arg(i);
 
     // Sort and limit
     sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
-           arg(stringToFileField(sort)).
+           arg(jsFileStringToDBFileField(sort)).
            arg(stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -737,8 +737,8 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":file_name%1").arg(i), QString("%%1%").arg(s));
 
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":comment%1").arg(i), QString("%%1%").arg(s));
@@ -749,7 +749,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
         query.bindValue(QString(":make%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":model%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":city%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":provinceState%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":province_state%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":country%1").arg(i), QString("%%1%").arg(s));
     }
 
@@ -771,13 +771,13 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 
     // Files fields
     int fieldId = query.record().indexOf("id");
-    int fieldFileName = query.record().indexOf("fileName");
-    int fieldRelativePath = query.record().indexOf("relativePath");
+    int fieldFileName = query.record().indexOf("file_name");
+    int fieldRelativePath = query.record().indexOf("relative_path");
     int fieldCategoryId = query.record().indexOf("fk_file_category_id");
     int fieldHash = query.record().indexOf("hash");
     int fieldAdded = query.record().indexOf("added");
     int fieldSize = query.record().indexOf("size");
-    int fieldLastModified = query.record().indexOf("lastModified");
+    int fieldLastModified = query.record().indexOf("last_modified");
 
     int fieldArtist = query.record().indexOf("artist");
     int fieldComment = query.record().indexOf("comment");
@@ -785,11 +785,11 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     int fieldAlbum = query.record().indexOf("album");
     int fieldTitle = query.record().indexOf("title");
     int fieldGenre = query.record().indexOf("genre");
-    int fieldTrackNumber = query.record().indexOf("trackNumber");
+    int fieldTrackNumber = query.record().indexOf("track_number");
     int fieldDuration = query.record().indexOf("duration");
-    int hasID3Picture = query.record().indexOf("hasID3Picture");
+    int hasID3Picture = query.record().indexOf("has_id3_picture");
 
-    int fieldDateTimeOriginal = query.record().indexOf("dateTimeOriginal");
+    int fieldDateTimeOriginal = query.record().indexOf("date_time_original");
     int fieldCopyright = query.record().indexOf("copyright");
     int fieldWidth = query.record().indexOf("width");
     int fieldHeight = query.record().indexOf("height");
@@ -800,7 +800,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     int fieldAltitude = query.record().indexOf("altitude");
 
     int fieldCity = query.record().indexOf("city");
-    int fieldProvinceState = query.record().indexOf("provinceState");
+    int fieldProvinceState = query.record().indexOf("province_state");
     int fieldCountry = query.record().indexOf("country");
 
     int i = 0;
@@ -870,8 +870,8 @@ int NDatabase::getFileListCount(const QStringList & searches,
         sql += "AND files.fk_file_category_id = :fk_file_category_id ";
 
     for (int i = 0; i < searches.count(); ++i)
-        sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
-                       "OR files.fileName LIKE :fileName%1 "
+        sql += QString("AND (files.relative_path LIKE :relative_path%1 "\
+                       "OR files.file_name LIKE :file_name%1 "
                        "OR file_metadata.artist LIKE :artist%1 "\
                        "OR file_metadata.comment LIKE :comment%1 "\
                        "OR file_metadata.album LIKE :album%1 "\
@@ -879,7 +879,7 @@ int NDatabase::getFileListCount(const QStringList & searches,
                        "OR file_metadata.genre LIKE :genre%1 "\
                        "OR file_metadata.make LIKE :make%1 "\
                        "OR file_metadata.city LIKE :city%1 "\
-                       "OR file_metadata.provinceState LIKE :provinceState%1 "\
+                       "OR file_metadata.province_state LIKE :province_state%1 "\
                        "OR file_metadata.country LIKE :country%1 "\
                        "OR file_metadata.model LIKE :model%1) ").arg(i);
 
@@ -893,8 +893,8 @@ int NDatabase::getFileListCount(const QStringList & searches,
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":file_name%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":comment%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(s));
@@ -903,7 +903,7 @@ int NDatabase::getFileListCount(const QStringList & searches,
         query.bindValue(QString(":make%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":model%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":city%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":provinceState%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":province_state%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":country%1").arg(i), QString("%%1%").arg(s));
     }
 
@@ -927,27 +927,27 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
                                       const QString & sort, const QString & dir)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT duplicated_files.id, duplicated_files.fileName, "\
-                  "duplicated_files.relativePath, duplicated_files.absoluteFilePath, "\
+    QString sql = "SELECT duplicated_files.id, duplicated_files.file_name, "\
+                  "duplicated_files.relative_path, duplicated_files.absolute_file_path, "\
                   "duplicated_files.hash, duplicated_files.added, duplicated_files.size, "\
-                  "duplicated_files.fk_file_category_id, files.absoluteFilePath original_absoluteFilePath "\
+                  "duplicated_files.fk_file_category_id, files.absolute_file_path original_absolute_file_path "\
                   "FROM files, duplicated_files "\
                   "WHERE files.hash = duplicated_files.hash "\
                   "AND files.hash <> '' ";
 
     for (int i = 0; i < searches.count(); ++i)
-        sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
-                       "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
-                       "duplicated_files.fileName LIKE :duplicated_fileName%1  OR "\
-                       "files.relativePath LIKE :relativePath%1  OR "\
-                       "files.fileName LIKE :fileName%1) ").arg(i);
+        sql += QString("AND (duplicated_files.relative_path LIKE :duplicated_relative_path%1  OR "\
+                       "duplicated_files.absolute_file_path LIKE :duplicated_absolute_file_path%1  OR "\
+                       "duplicated_files.file_name LIKE :duplicated_file_name%1  OR "\
+                       "files.relative_path LIKE :relative_path%1  OR "\
+                       "files.file_name LIKE :file_name%1) ").arg(i);
 
     if (fc != NFileCategory_n::fcAll)
         sql += "AND duplicated_files.fk_file_category_id = :fk_file_category_id ";
 
     // Sort and limit
     sql += QString("ORDER BY duplicated_files.%1 %2 LIMIT :limit OFFSET :offset").
-           arg(stringToFileField(sort)).
+           arg(jsFileStringToDBFileField(sort)).
            arg(stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -959,11 +959,11 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":duplicated_relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":duplicated_absoluteFilePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":duplicated_fileName%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_absolute_file_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_file_name%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":file_name%1").arg(i), QString("%%1%").arg(s));
     }
 
     if (fc != NFileCategory_n::fcAll)
@@ -980,14 +980,14 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     }
 
     int fieldId = query.record().indexOf("id");
-    int fieldFileName = query.record().indexOf("fileName");
-    int fieldRelativePath = query.record().indexOf("relativePath");
-    int fieldAbsoluteFilePath = query.record().indexOf("absoluteFilePath");
+    int fieldFileName = query.record().indexOf("file_name");
+    int fieldRelativePath = query.record().indexOf("relative_path");
+    int fieldAbsoluteFilePath = query.record().indexOf("absolute_file_path");
     int fieldCategoryId = query.record().indexOf("fk_file_category_id");
     int fieldHash = query.record().indexOf("hash");
     int fieldAdded = query.record().indexOf("added");
     int fieldSize = query.record().indexOf("size");
-    int fieldOriginalAbsoluteFilePath = query.record().indexOf("original_absoluteFilePath");
+    int fieldOriginalAbsoluteFilePath = query.record().indexOf("original_absolute_file_path");
 
     int i = 0;
     while (query.next()) {
@@ -1021,11 +1021,11 @@ int NDatabase::getDuplicatedFileListCount(const QStringList & searches, NFileCat
                   "AND files.hash <> '' ";
 
     for (int i = 0; i < searches.count(); ++i)
-        sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
-                       "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
-                       "duplicated_files.fileName LIKE :duplicated_fileName%1  OR "\
-                       "files.relativePath LIKE :relativePath%1  OR "\
-                       "files.fileName LIKE :fileName%1) ").arg(i);
+        sql += QString("AND (duplicated_files.relative_path LIKE :duplicated_relative_path%1  OR "\
+                       "duplicated_files.absolute_file_path LIKE :duplicated_absolute_file_path%1  OR "\
+                       "duplicated_files.file_name LIKE :duplicated_file_name%1  OR "\
+                       "files.relative_path LIKE :relative_path%1  OR "\
+                       "files.file_name LIKE :file_name%1) ").arg(i);
 
     if (fc != NFileCategory_n::fcAll)
         sql += QString("AND duplicated_files.fk_file_category_id = :fk_file_category_id ");
@@ -1039,11 +1039,11 @@ int NDatabase::getDuplicatedFileListCount(const QStringList & searches, NFileCat
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":duplicated_relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":duplicated_absoluteFilePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":duplicated_fileName%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":relativePath%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":fileName%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_absolute_file_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":duplicated_file_name%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":relative_path%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":file_name%1").arg(i), QString("%%1%").arg(s));
     }
 
     if (fc != NFileCategory_n::fcAll)
@@ -1068,7 +1068,7 @@ QFileInfo NDatabase::file(const QString & fileHash)
         return QFileInfo();
 
     QSqlQuery query(m_db);
-    if (!query.prepare("SELECT absoluteFilePath, hash, added, size, fk_file_category_id " \
+    if (!query.prepare("SELECT absolute_file_path, hash, added, size, fk_file_category_id " \
                        "FROM files "\
                        "WHERE hash =:hash"))
     {
@@ -1092,7 +1092,7 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
 {
     // called in setFileHash
     QSqlQuery query(m_db);
-    if (!query.prepare("SELECT fileName,relativePath,absoluteFilePath FROM files WHERE hash = :hash"))
+    if (!query.prepare("SELECT file_name,relative_path,absolute_file_path FROM files WHERE hash = :hash"))
     {
         debugLastQuery("isDuplicatedFileprepare failed (1)", query);
         return false;
@@ -1117,23 +1117,23 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
 
     query.clear();
     // we add it in duplicated files table
-    if(!query.prepare("INSERT INTO duplicated_files (fileName, relativePath, "\
-                      "absoluteFilePath, fk_file_category_id, added, size, lastModified, hash) "\
-                      "VALUES(:fileName, :relativePath, :absoluteFilePath, :fk_file_category_id, "\
-                      ":added, :size, :lastModified, :hash)"))
+    if(!query.prepare("INSERT INTO duplicated_files (file_name, relative_path, "\
+                      "absolute_file_path, fk_file_category_id, added, size, last_modified, hash) "\
+                      "VALUES(:file_name, :relative_path, :absolute_file_path, :fk_file_category_id, "\
+                      ":added, :size, :last_modified, :hash)"))
     {
         debugLastQuery("isDuplicatedFile prepare failed (2)", query);
         return false;
     }
 
-    query.bindValue(":fileName", newFi.fileName());
-    query.bindValue(":relativePath", newFi.absolutePath().remove(rootPath));
-    query.bindValue(":absoluteFilePath", newFi.absoluteFilePath());
+    query.bindValue(":file_name", newFi.fileName());
+    query.bindValue(":relative_path", newFi.absolutePath().remove(rootPath));
+    query.bindValue(":absolute_file_path", newFi.absoluteFilePath());
     query.bindValue(":fk_file_category_id",
                     NFileCategory_n::fileCategoryId(NCONFIG.fileSuffixes().category(newFi).category()));
     query.bindValue(":added", QDateTime::currentDateTime().toString(SQLITE_DATETIME));
     query.bindValue(":size", newFi.size());
-    query.bindValue(":lastModified", newFi.lastModified().toString(SQLITE_DATETIME));
+    query.bindValue(":last_modified", newFi.lastModified().toString(SQLITE_DATETIME));
     query.bindValue(":hash", hash);
 
     if (!query.exec())
@@ -1145,12 +1145,12 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
 
     query.clear();
 
-    if (!query.prepare("DELETE FROM files WHERE absoluteFilePath = :absoluteFilePath"))
+    if (!query.prepare("DELETE FROM files WHERE absolute_file_path = :absolute_file_path"))
     {
         debugLastQuery("isDuplicatedFile prepare failed (3)", query);
         return false;
     }
-    query.bindValue(":absoluteFilePath", newFi.absoluteFilePath());
+    query.bindValue(":absolute_file_path", newFi.absoluteFilePath());
     if (!query.exec())
     {
         debugLastQuery("isDuplicatedFile failed (3)", query);
@@ -1208,16 +1208,16 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
         }
         query.clear();
         if (!query.prepare("UPDATE files SET hash = :hash, added = :added "\
-                           "WHERE absoluteFilePath = :absoluteFilePath "\
-                           "AND lastModified = :lastModified"))
+                           "WHERE absolute_file_path = :absolute_file_path "\
+                           "AND last_modified = :last_modified"))
         {
             debugLastQuery("setFileHash prepare failed (3)", query);
             return;
         }
         query.bindValue(":hash", hash);
         query.bindValue(":added", addedDateTime);
-        query.bindValue(":lastModified", fi.lastModified().toString(SQLITE_DATETIME));
-        query.bindValue(":absoluteFilePath", fi.absoluteFilePath());
+        query.bindValue(":last_modified", fi.lastModified().toString(SQLITE_DATETIME));
+        query.bindValue(":absolute_file_path", fi.absoluteFilePath());
         if (!query.exec())
         {
             debugLastQuery("setFileHash failed (3)", query);
@@ -1228,15 +1228,15 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
 
     query.clear();
     if (!query.prepare("UPDATE files SET hash = :hash "\
-                       "WHERE absoluteFilePath = :absoluteFilePath "\
-                       "AND lastModified = :lastModified"))
+                       "WHERE absolute_file_path = :absolute_file_path "\
+                       "AND last_modified = :last_modified"))
     {
         debugLastQuery("setFileHash prepare failed (4)", query);
         return;
     }
     query.bindValue(":hash", hash);
-    query.bindValue(":lastModified", fi.lastModified().toString(SQLITE_DATETIME));
-    query.bindValue(":absoluteFilePath", fi.absoluteFilePath());
+    query.bindValue(":last_modified", fi.lastModified().toString(SQLITE_DATETIME));
+    query.bindValue(":absolute_file_path", fi.absoluteFilePath());
     if (!query.exec())
     {
         debugLastQuery("setFileHash failed (4)", query);
@@ -1296,32 +1296,56 @@ QString NDatabase::stringToSortDirection(const QString & dir)
     return dir.toUpper();
 }
 
-QString NDatabase::stringToFileField(const QString & field)
+QString NDatabase::jsFileStringToDBFileField(const QString & jsString)
 {
-    if (field.isEmpty() ||
-        (field != "id" &&
-         field != "fileName"&&
-         field != "relativePath"&&
-         field != "absoluteFilePath"&&
-         field != "fk_file_category_id"&&
-         field != "hash"&&
-         field != "deleted"&&
-         field != "added"&&
-         field != "size"&&
-         field != "lastModified"&&
-
-         field != "title"&&
-         field != "album"&&
-         field != "genre"&&
-         field != "artist"&&
-         field != "trackNumber"&&
-         field != "year"&&
-         field != "duration")
-        // TODO: ADD OTHER FIELD
-        )
+    if (jsString.isEmpty())
         return "added";
 
-    return field;
+    if (jsString == "id" ||
+        jsString == "hash"||
+        jsString == "deleted"||
+        jsString == "added"||
+        jsString == "size"||
+        jsString == "title"||
+        jsString == "album"||
+        jsString == "genre"||
+        jsString == "artist"||
+        jsString == "year"||
+        jsString == "duration")
+        return jsString;
+
+    if(jsString == "fileName")
+        return "file_name";
+
+    if(jsString == "relativePath")
+        return "relative_path";
+
+    if(jsString == "fileName")
+        return "absolute_file_path";
+
+    if(jsString == "fileCategory")
+        return "fk_file_category_id";
+
+    if(jsString == "lastModified")
+        return "last_modified";
+
+    if(jsString == "trackNumber")
+        return "track_number";
+
+    if(jsString == "dateTimeOriginal")
+        return "date_time_original";
+
+    if(jsString == "hasID3Picture")
+        return "has_id3_picture";
+
+    if(jsString == "absoluteFilePath")
+        return "absolute_file_path";
+
+    if(jsString == "originalAbsoluteFilePath")
+        return "absolute_file_path";
+
+    Q_ASSERT_X(false, "NDatabase::jsFileStringToDBFileField", qPrintable(QString("%1 is not mapped" ).arg(jsString)));
+    return "added";
 }
 
 QString NDatabase::stringToUserField(const QString & field)
@@ -2312,10 +2336,10 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
                                   const QString & dir)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT files.id id, files.fileName, files.hash, files.size, "\
+    QString sql = "SELECT files.id id, files.file_name, files.hash, files.size, "\
                   "file_metadata.artist, file_metadata.comment, file_metadata.year, file_metadata.album, "\
-                  "file_metadata.title, file_metadata.genre, file_metadata.trackNumber, file_metadata.duration, "\
-                  "file_metadata.copyright, file_metadata.hasID3Picture "\
+                  "file_metadata.title, file_metadata.genre, file_metadata.track_number, file_metadata.duration, "\
+                  "file_metadata.copyright, file_metadata.has_id3_picture "\
                   "FROM files, file_metadata " \
                   "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
@@ -2339,7 +2363,7 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 
     // Sort and limit
     sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
-           arg(stringToFileField(sort)).
+           arg(jsFileStringToDBFileField(sort)).
            arg(stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -2381,7 +2405,7 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 
     // Files fields
     int fieldId = query.record().indexOf("id");
-    int fieldFileName = query.record().indexOf("fileName");
+    int fieldFileName = query.record().indexOf("file_name");
     int fieldHash = query.record().indexOf("hash");
     int fieldSize = query.record().indexOf("size");
 
@@ -2391,10 +2415,10 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
     int fieldAlbum = query.record().indexOf("album");
     int fieldTitle = query.record().indexOf("title");
     int fieldGenre = query.record().indexOf("genre");
-    int fieldTrackNumber = query.record().indexOf("trackNumber");
+    int fieldTrackNumber = query.record().indexOf("track_number");
     int fieldDuration = query.record().indexOf("duration");
     int fieldCopyright = query.record().indexOf("copyright");
-    int hasID3Picture = query.record().indexOf("hasID3Picture");
+    int hasID3Picture = query.record().indexOf("has_id3_picture");
 
 
     int i = 0;
