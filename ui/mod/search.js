@@ -16,7 +16,7 @@ NMod.Search.Ui.load = function(){
 		if (r === undefined) {
 			return false;
 		}
-		return r.data.category === 'picture';
+		return r.data.fileCategory === 'picture';
 	}
 	
 	
@@ -41,7 +41,7 @@ NMod.Search.Ui.load = function(){
 			}, {
 				name: 'lastModified'
 			}, {
-				name: 'category' 
+				name: 'fileCategory' 
 			}, {
 				name: 'relativePath'
 			}, {
@@ -190,7 +190,7 @@ NMod.Search.Ui.load = function(){
 	function fileNameRenderer(val, p, record){
 		var preview = '<div class="search-result-preview-img"><img src="';
 		var link_target = '';
-		switch (record.data.category) {
+		switch (record.data.fileCategory) {
 		case "archive":
 			preview += NLib.Path.res("compress");
 			break;
@@ -324,7 +324,7 @@ NMod.Search.Ui.load = function(){
 					header: "Category",
 					width: 70,
 					sortable: true,
-					dataIndex: 'category'
+					dataIndex: 'fileCategory'
 				}, {
 					header: "Size",
 					width: 70,

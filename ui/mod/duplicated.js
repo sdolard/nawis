@@ -33,7 +33,7 @@ NMod.Duplicated.Ui.load = function(){
     				}, {
     						name: 'added'
     				}, {
-    						name: 'category'
+    						name: 'fileCategory'
     				}, {
     						name: 'size'
     				}]
@@ -173,7 +173,7 @@ NMod.Duplicated.Ui.load = function(){
     						header: "Category",
     						width: 70,
     						sortable: true,
-    						dataIndex: 'category'
+    						dataIndex: 'fileCategory'
     				}, {
     						header: "Size",
     						width: 70,
