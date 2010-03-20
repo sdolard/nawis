@@ -162,15 +162,17 @@ void NDatabase::createFilesTable()
 {
     QSqlQuery query(m_db);
 
+    //TODO: Create a temp table to manage file to delete ?
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS file (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "file_name TEXT NOT NULL," \
-            "relative_path TEXT NOT NULL," \
-            "absolute_file_path TEXT UNIQUE NOT NULL," \
             "fk_file_category_id INTEGER NOT NULL," \
             "fk_file_metadata_id INTEGER "\
             "  CONSTRAINT ct_fk_file_metadata_id REFERENCES file_metadata(id) ON DELETE CASCADE,"\
+            "file_name TEXT NOT NULL," \
+            "relative_path TEXT NOT NULL," \
+            "absolute_file_path TEXT UNIQUE NOT NULL," \
             "hash TEXT,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
@@ -197,10 +199,10 @@ void NDatabase::createDuplicatedFilesTable()
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS duplicated_file (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "fk_file_category_id INTEGER NOT NULL," \
             "file_name TEXT NOT NULL," \
             "relative_path TEXT NOT NULL," \
             "absolute_file_path TEXT UNIQUE NOT NULL," \
-            "fk_file_category_id INTEGER NOT NULL," \
             "hash TEXT NOT NULL,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
@@ -216,7 +218,17 @@ void NDatabase::createDuplicatedFilesTable()
 
 void NDatabase::createUsersTable()
 {
+    QSqlQuery query(m_db);
 
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS user (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "login TEXT UNIQUE NOT NULL," \
+            "pwd TEXT NOT NULL," \
+            "preference TEXT," \
+            "NAME TEXT" \
+            ")"))
+        debugLastQuery("user table creation failed", query);
 }
 
 void NDatabase::createMusicAlbumTable()
@@ -239,17 +251,18 @@ void NDatabase::createMusicAlbumTable()
         debugLastQuery("idx_music_album_index creation failed", query);
 }
 
-void NDatabase::createMusicCoverTable()
+void NDatabase::createMusicAlbumCoverTable()
 {
     QSqlQuery query(m_db);
 
     // TODO: delete entries when no more used
     // Delete when file hash reference is deleted
+
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS music_album_cover (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "music_album_id INTEGER NOT NULL," \
-            "file_hash text NOT NULL," \
+            "fk_music_album_id INTEGER NOT NULL," \
+            "fk_file_id INTEGER NOT NULL," \
             "front BOOLEAN DEFAULT 1 NOT NULL"\
             ")"))
         debugLastQuery("music_album_cover table creation failed", query);
@@ -338,7 +351,7 @@ void NDatabase::createTables()
     createMusicTitleTable();
     createMusicAuthorTable();
     createMusicGenreTable();
-    createMusicCoverTable();
+    createMusicAlbumCoverTable();
 }
 
 void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)

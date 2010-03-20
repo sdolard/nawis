@@ -150,12 +150,12 @@ private:
     void createUsersTable();
 
     // Music
-    void createMusicAlbumTable();
-    void createMusicAlbumTitleTable();
-    void createMusicTitleTable();
     void createMusicAuthorTable();
     void createMusicGenreTable();
-    void createMusicCoverTable();
+    void createMusicAlbumTitleTable();
+    void createMusicTitleTable();
+    void createMusicAlbumTable();
+    void createMusicAlbumCoverTable();
 
     QString jsFileStringToDBFileField(const QString & jsString);
     QString stringToUserField(const QString & field);
