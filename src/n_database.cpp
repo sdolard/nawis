@@ -122,7 +122,7 @@ void NDatabase::createMetadataTable()
     QSqlQuery query(m_db);
 
     if (!query.exec(
-            "CREATE TABLE IF NOT EXISTS metadata ("\
+            "CREATE TABLE IF NOT EXISTS file_metadata ("\
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"\
             "artist TEXT,"\
             "comment TEXT,"\
@@ -146,16 +146,16 @@ void NDatabase::createMetadataTable()
             "longitude TEXT,"\
             "altitude INTEGER"\
             ")"))
-        debugLastQuery("metadata table creation failed", query);
+        debugLastQuery("file_metadata table creation failed", query);
 
 
     if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_file_metadata " \
             "BEFORE DELETE ON files "\
             "FOR EACH ROW BEGIN "\
-            "  DELETE from metadata WHERE id = OLD.fk_metadata_id; "\
+            "  DELETE from file_metadata WHERE id = OLD.fk_file_metadata_id; "\
             "END; "))
-        debugLastQuery("files CREATE TRIGGER fkd_metadata_files_id failed", query);
+        debugLastQuery("files CREATE TRIGGER delete_file_metadata failed", query);
 }
 
 void NDatabase::createFilesTable()
@@ -169,8 +169,8 @@ void NDatabase::createFilesTable()
             "relativePath TEXT NOT NULL," \
             "absoluteFilePath TEXT UNIQUE NOT NULL," \
             "fk_file_category_id INTEGER NOT NULL," \
-            "fk_metadata_id INTEGER "\
-            "  CONSTRAINT ct_fk_metadata_id REFERENCES metadata(id) ON DELETE CASCADE,"\
+            "fk_file_metadata_id INTEGER "\
+            "  CONSTRAINT ct_fk_file_metadata_id REFERENCES file_metadata(id) ON DELETE CASCADE,"\
             "hash TEXT,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
@@ -603,7 +603,7 @@ bool NDatabase::getFileWithNoMetadata(QString & absoluteFilePath, int & fileId)
 
     QString sql = "SELECT id, absoluteFilePath "\
                   "FROM files "\
-                  "WHERE fk_metadata_id IS NULL "\
+                  "WHERE fk_file_metadata_id IS NULL "\
                   "AND deleted = 0 "\
                   "LIMIT 1 ";
 
@@ -630,7 +630,7 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
 
     QSqlQuery query(m_db);
 
-    if (!query.prepare("INSERT INTO metadata (artist, comment, year, album, "\
+    if (!query.prepare("INSERT INTO file_metadata (artist, comment, year, album, "\
                        "title, genre, trackNumber, duration,  dateTimeOriginal,"\
                        "copyright, width, height, make, model, latitude,"\
                        "longitude, altitude, city, provinceState, country, hasID3Picture) " \
@@ -671,12 +671,12 @@ bool NDatabase::setMetadata(int fileId, const NMetadata & metadata)
     }
     int lastInsertId = query.lastInsertId().toInt();
     query.clear();
-    if (!query.prepare("UPDATE files SET fk_metadata_id=:metadata_id WHERE id=:id"))
+    if (!query.prepare("UPDATE files SET fk_file_metadata_id=:file_metadata_id WHERE id=:id"))
     {
         debugLastQuery("setMetadata prepare failed (1)", query);
         return false;
     }
-    query.bindValue(":metadata_id", lastInsertId);
+    query.bindValue(":file_metadata_id", lastInsertId);
     query.bindValue(":id", fileId);
     if (!query.exec())
     {
@@ -696,13 +696,13 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     QSqlQuery query(m_db);
     QString sql = "SELECT files.id id, files.fileName, files.relativePath, files.hash, "\
                   "files.added, files.size, files.fk_file_category_id, files.lastModified, " \
-                  "metadata.artist, metadata.comment, metadata.year, metadata.album, "\
-                  "metadata.title, metadata.genre, metadata.trackNumber, metadata.duration, "\
-                  "metadata.dateTimeOriginal, metadata.copyright, metadata.width, metadata.height, "\
-                  "metadata.make, metadata.model, metadata.latitude, metadata.longitude, metadata.altitude, "\
-                  "metadata.city, metadata.provinceState, metadata.country, metadata.hasID3Picture "\
-                  "FROM files, metadata " \
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "file_metadata.artist, file_metadata.comment, file_metadata.year, file_metadata.album, "\
+                  "file_metadata.title, file_metadata.genre, file_metadata.trackNumber, file_metadata.duration, "\
+                  "file_metadata.dateTimeOriginal, file_metadata.copyright, file_metadata.width, file_metadata.height, "\
+                  "file_metadata.make, file_metadata.model, file_metadata.latitude, file_metadata.longitude, file_metadata.altitude, "\
+                  "file_metadata.city, file_metadata.provinceState, file_metadata.country, file_metadata.hasID3Picture "\
+                  "FROM files, file_metadata " \
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
 
     if (fc != NFileCategory_n::fcAll)
@@ -712,16 +712,16 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
                        "OR files.fileName LIKE :fileName%1 "
-                       "OR metadata.artist LIKE :artist%1 "\
-                       "OR metadata.comment LIKE :comment%1 "\
-                       "OR metadata.album LIKE :album%1 "\
-                       "OR metadata.title LIKE :title%1 "\
-                       "OR metadata.genre LIKE :genre%1 "\
-                       "OR metadata.make LIKE :make%1 "\
-                       "OR metadata.city LIKE :city%1 "\
-                       "OR metadata.provinceState LIKE :provinceState%1 "\
-                       "OR metadata.country LIKE :country%1 "\
-                       "OR metadata.model LIKE :model%1) ").arg(i);
+                       "OR file_metadata.artist LIKE :artist%1 "\
+                       "OR file_metadata.comment LIKE :comment%1 "\
+                       "OR file_metadata.album LIKE :album%1 "\
+                       "OR file_metadata.title LIKE :title%1 "\
+                       "OR file_metadata.genre LIKE :genre%1 "\
+                       "OR file_metadata.make LIKE :make%1 "\
+                       "OR file_metadata.city LIKE :city%1 "\
+                       "OR file_metadata.provinceState LIKE :provinceState%1 "\
+                       "OR file_metadata.country LIKE :country%1 "\
+                       "OR file_metadata.model LIKE :model%1) ").arg(i);
 
     // Sort and limit
     sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
@@ -862,8 +862,8 @@ int NDatabase::getFileListCount(const QStringList & searches,
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT COUNT(*) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
 
     if (fc != NFileCategory_n::fcAll)
@@ -872,16 +872,16 @@ int NDatabase::getFileListCount(const QStringList & searches,
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
                        "OR files.fileName LIKE :fileName%1 "
-                       "OR metadata.artist LIKE :artist%1 "\
-                       "OR metadata.comment LIKE :comment%1 "\
-                       "OR metadata.album LIKE :album%1 "\
-                       "OR metadata.title LIKE :title%1 "\
-                       "OR metadata.genre LIKE :genre%1 "\
-                       "OR metadata.make LIKE :make%1 "\
-                       "OR metadata.city LIKE :city%1 "\
-                       "OR metadata.provinceState LIKE :provinceState%1 "\
-                       "OR metadata.country LIKE :country%1 "\
-                       "OR metadata.model LIKE :model%1) ").arg(i);
+                       "OR file_metadata.artist LIKE :artist%1 "\
+                       "OR file_metadata.comment LIKE :comment%1 "\
+                       "OR file_metadata.album LIKE :album%1 "\
+                       "OR file_metadata.title LIKE :title%1 "\
+                       "OR file_metadata.genre LIKE :genre%1 "\
+                       "OR file_metadata.make LIKE :make%1 "\
+                       "OR file_metadata.city LIKE :city%1 "\
+                       "OR file_metadata.provinceState LIKE :provinceState%1 "\
+                       "OR file_metadata.country LIKE :country%1 "\
+                       "OR file_metadata.model LIKE :model%1) ").arg(i);
 
 
     if (!query.prepare(sql))
@@ -1626,8 +1626,8 @@ bool NDatabase::populateMusicAlbum()
     QSqlQuery query(m_db);
 
     QString sql = "SELECT DISTINCT album "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND album IS NOT NULL "\
                   "AND files.hash <> '' ";
 
@@ -1722,45 +1722,29 @@ bool NDatabase::getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 {
     QSqlQuery query(m_db);
     /*QString sql = "SELECT music_album.name "\
-                  "FROM music_album, metadata, files "\
-                  "WHERE music_album.name = metadata.album "\
+                  "FROM music_album, file_metadata, files "\
+                  "WHERE music_album.name = file_metadata.album "\
                   "AND files.";*/
 
     QString sql = "SELECT DISTINCT album "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND album IS NOT NULL "\
                   "AND files.hash <> '' ";
 
-    /*  "select metadata.album, files.relativePath "\
-        "from files,metadata "\
-        "where files.fk_metadata_id=metadata.id "\
-        "AND album IS NOT NULL "\
-        "AND files.hash <> '' "\
-        "group by metadata.album";
-    */
-
-    /*  "SELECT album.name "\
-        "FROM album, metadata "\
-        "WHERE album.name = metadata.album "\
-        "AND album IS NOT NULL "\
-        "AND files.hash <> '' ";
-    */
-
-
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
     if (!artist.isNull())
-        sql += "AND metadata.artist = :artist ";
+        sql += "AND file_metadata.artist = :artist ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     // Sort and limit
@@ -1839,24 +1823,24 @@ int NDatabase::getMusicAlbumListCount(const QStringList & searches, int year, co
     NStringMapList list;
     QSqlQuery query(m_db);
     QString sql = "SELECT count(DISTINCT album) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND album IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
     if (!artist.isNull())
-        sql += "AND metadata.artist = :artist ";
+        sql += "AND file_metadata.artist = :artist ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
@@ -1902,27 +1886,27 @@ bool NDatabase::getMusicArtistList(QScriptEngine & se, QScriptValue & dataArray,
                                    const QString & genre)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT DISTINCT metadata.artist "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
-                  "AND metadata.artist IS NOT NULL "\
+    QString sql = "SELECT DISTINCT file_metadata.artist "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
+                  "AND file_metadata.artist IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     // Sort and limit
-    sql += QString("ORDER BY metadata.artist %2 LIMIT :limit OFFSET :offset").
+    sql += QString("ORDER BY file_metadata.artist %2 LIMIT :limit OFFSET :offset").
            arg(stringToSortDirection(dir));
 
 
@@ -1992,23 +1976,23 @@ bool NDatabase::getMusicArtistList(QScriptEngine & se, QScriptValue & dataArray,
 int NDatabase::getMusicArtistListCount(const QStringList & searches, int year, const QString & genre)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT count(DISTINCT  metadata.artist) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
-                  "AND metadata.artist IS NOT NULL "\
+    QString sql = "SELECT count(DISTINCT  file_metadata.artist) "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
+                  "AND file_metadata.artist IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
@@ -2051,20 +2035,20 @@ bool NDatabase::getMusicGenreList(QScriptEngine & se, QScriptValue & dataArray,
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT DISTINCT genre "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND genre IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     // Sort and limit
@@ -2137,20 +2121,20 @@ int NDatabase::getMusicGenreListCount(const QStringList & searches, int year)
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT count(DISTINCT genre) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND genre IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
@@ -2191,19 +2175,19 @@ bool NDatabase::getMusicYearList(QScriptEngine & se, QScriptValue & dataArray, i
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT DISTINCT year "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND year IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.year = :year%1 ").arg(i);
-        sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.year = :year%1 ").arg(i);
+        sql += QString("OR file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     // Sort and limit
@@ -2276,19 +2260,19 @@ int NDatabase::getMusicYearListCount(const QStringList & searches)
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT count(DISTINCT year) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND year IS NOT NULL "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.year = :year%1 ").arg(i);
-        sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.year = :year%1 ").arg(i);
+        sql += QString("OR file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
@@ -2329,28 +2313,28 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT files.id id, files.fileName, files.hash, files.size, "\
-                  "metadata.artist, metadata.comment, metadata.year, metadata.album, "\
-                  "metadata.title, metadata.genre, metadata.trackNumber, metadata.duration, "\
-                  "metadata.copyright, metadata.hasID3Picture "\
-                  "FROM files, metadata " \
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "file_metadata.artist, file_metadata.comment, file_metadata.year, file_metadata.album, "\
+                  "file_metadata.title, file_metadata.genre, file_metadata.trackNumber, file_metadata.duration, "\
+                  "file_metadata.copyright, file_metadata.hasID3Picture "\
+                  "FROM files, file_metadata " \
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
     if (!artist.isNull())
-        sql += "AND metadata.artist = :artist ";
+        sql += "AND file_metadata.artist = :artist ";
     if (!album.isNull())
-        sql += "AND metadata.album = :album ";
+        sql += "AND file_metadata.album = :album ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     // Sort and limit
@@ -2446,25 +2430,25 @@ int NDatabase::getMusicTitleListCount(const QStringList & searches, const QStrin
 {
     QSqlQuery query(m_db);
     QString sql = "SELECT COUNT(*) "\
-                  "FROM files, metadata "\
-                  "WHERE files.fk_metadata_id = metadata.id "\
+                  "FROM files, file_metadata "\
+                  "WHERE files.fk_file_metadata_id = file_metadata.id "\
                   "AND files.hash <> '' ";
 
     sql += "AND files.fk_file_category_id = :fk_file_category_id ";
     if (year >= 0)
-        sql += "AND metadata.year = :year ";
+        sql += "AND file_metadata.year = :year ";
     if (!genre.isNull())
-        sql += "AND metadata.genre = :genre ";
+        sql += "AND file_metadata.genre = :genre ";
     if (!artist.isNull())
-        sql += "AND metadata.artist = :artist ";
+        sql += "AND file_metadata.artist = :artist ";
     if (!album.isNull())
-        sql += "AND metadata.album = :album ";
+        sql += "AND file_metadata.album = :album ";
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
-        sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
-        sql += QString("OR metadata.album LIKE :album%1 ").arg(i);
-        sql += QString("OR metadata.title LIKE :title%1) ").arg(i);
+        sql += QString("AND (file_metadata.genre LIKE :genre%1 ").arg(i);
+        sql += QString("OR file_metadata.artist LIKE :artist%1 ").arg(i);
+        sql += QString("OR file_metadata.album LIKE :album%1 ").arg(i);
+        sql += QString("OR file_metadata.title LIKE :title%1) ").arg(i);
     }
 
     if (!query.prepare(sql))

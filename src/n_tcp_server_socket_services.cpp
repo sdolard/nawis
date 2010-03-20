@@ -1335,8 +1335,17 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
     NLOGM(session.socket()->peerAddress().toString(),
           tr("%1 is looking for music search:\"%2\"; album:\"%3\"; artist:\"%4\";"\
              "genre:\"%5\"; year:\"%6\"; start:\"%7\"; "\
-             "limit:\"%8\"; sort:\"%9\"; dir:\"%10\"").arg(authSession.login()).arg(search).arg(album).
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(genre).arg(year).arg(start).arg(limit).arg(sort).arg(dir));
+             "limit:\"%8\"; sort:\"%9\"; dir:\"%10\"").
+          arg(authSession.login()). // 1
+          arg(NConvert_n::fromUTF8PercentEncoding(search)).// 2
+          arg(album).// 3
+          arg(artist).// 4
+          arg(genre).// 5
+          arg(year).// 6
+          arg(start).// 7
+          arg(limit).// 8
+          arg(sort).// 9
+          arg(dir));// 10
 
 
     int totalCount = NDB.getMusicTitleListCount(searches, album, artist, genre, year);
