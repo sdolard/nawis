@@ -93,8 +93,6 @@ public:
     bool deleteUser(const QString & id);
     bool requestUserPassord(const QString & email);
 
-    static QString stringToSortDirection(const QString & dir);
-
     // Music album
     bool getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
                            const QStringList & searches, int start, int limit,
@@ -131,6 +129,12 @@ public:
                                const QString & artist, const QString & genre,
                                int year);
 
+    bool updateMusicAlbumTable();
+
+    static void debugLastQuery(const QString & msg, const QSqlQuery & query);
+    static QString & addAND(QString & sql, bool *AND);
+    static QString stringToSortDirection(const QString & dir);
+
 private:
     static NDatabase   *m_instance;
     QSqlDatabase         m_db;
@@ -145,13 +149,24 @@ private:
     void createDuplicatedFilesTable();
     void createUsersTable();
 
-    void debugLastQuery(const QString & msg, const QSqlQuery & query);
-    QString & addAND(QString & sql, bool *AND);
+    // Music
+    void createMusicAlbumTable();
+    void createMusicAlbumTitleTable();
+    void createMusicTitleTable();
+    void createMusicAuthorTable();
+    void createMusicGenreTable();
+    void createMusicCoverTable();
+
     QString stringToFileField(const QString & field);
     QString stringToUserField(const QString & field);
     bool setDuplicatedFileAsNotDeleted(const QFileInfo & fi);
     bool isDuplicatedFile(const QString & hash, const QFileInfo & newFi);
     bool setFileAsNotDeleted(const QString & absoluteFilePath, const QDateTime & lastModified);
+
+    bool setMusicAlbumDeleted(const QString albumName = "", bool deleted = true);
+    bool populateMusicAlbum();
+    bool insertMusicAlbum(const QString & albumName);
+    bool removeDeletedMusicAlbum();
 };
 
 #endif //N_DATABASE_H

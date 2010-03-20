@@ -1,5 +1,8 @@
+#ifndef N_ALBUM_COVER_UPDATER_THREAD_H
+#define N_ALBUM_COVER_UPDATER_THREAD_H
+
 /*
- * n_metadata_thread_updater.h
+ * n_album_cover_updater_thread.h
  * nawis
  *
  * Created by Sébastien Dolard on 04/09/09.
@@ -21,33 +24,23 @@
  *
  */
 
-#ifndef N_METADATA_UPDATER_THREAD_H
-#define N_METADATA_UPDATER_THREAD_H
-
 //Qt
 #include <QString>
 
 // App
 #include "n_thread.h"
-#include "n_metadata.h"
 
-class NMetadataUpdaterThread: public NThread {
+class NAlbumCoverUpdaterThread: public NThread {
     Q_OBJECT
 public:
-    NMetadataUpdaterThread(QObject * parent = 0 );
-    ~NMetadataUpdaterThread();
-
-signals: // TODO: delete this signal, it's no more used
-    void metadataUpdateDone();
+    NAlbumCoverUpdaterThread(QObject * parent = 0 );
+    ~NAlbumCoverUpdaterThread();
 
 protected:
     void run();
-
-private:
-    NMetadata m_metadata;
-
-    bool getFile();
 };
 
-#endif // N_METADATA_UPDATER_THREAD_H
 
+
+
+#endif // N_ALBUM_COVER_UPDATER_THREAD_H

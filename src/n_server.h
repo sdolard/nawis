@@ -11,6 +11,7 @@
 #include "n_db_updater.h"
 #include "n_hasher_thread.h"
 #include "n_metadata_updater_thread.h"
+#include "n_album_cover_updater_thread.h"
 
 #define NSERVER (NServer::instance())
 
@@ -20,7 +21,8 @@
 #define JT_DB_UPDATE       0x02
 #define JT_HASH            0x03
 #define JT_GET_METADATA    0x04
-#define JT_LAST            JT_GET_METADATA
+#define JT_GET_ALBUM_COVER 0x05
+#define JT_LAST            JT_GET_ALBUM_COVER
 
 class NServer: public QObject
 {
@@ -46,19 +48,20 @@ public slots:
 private:
     NServer(QObject *parent);
 
-    static NServer         *m_instance;
-    int                     m_currentJob;
-    NTcpServer             *m_server;
-    NDirWatcherThreadItems  m_dirs;
-    NDbUpdaterThread       *m_dbUpdaterJob;
-    NDirWatcherThread      *m_dirWatcherJob;
-    NHasherThread          *m_hasherJob;
-    NMetadataUpdaterThread *m_metadataUpdaterJob;
-    QString                 m_errorMessage;
-    QTimer                  m_jobTimer;
-    NDirList                m_sharedDirectories;
-    NFileSuffixList         m_fileSuffixes;
-    bool                    m_configFileChanged;
+    static NServer           *m_instance;
+    int                       m_currentJob;
+    NTcpServer               *m_server;
+    NDirWatcherThreadItems    m_dirs;
+    NDbUpdaterThread         *m_dbUpdaterJob;
+    NDirWatcherThread        *m_dirWatcherJob;
+    NHasherThread            *m_hasherJob;
+    NMetadataUpdaterThread   *m_metadataUpdaterJob;
+    NAlbumCoverUpdaterThread *m_albumCoverUpdaterJob;
+    QString                   m_errorMessage;
+    QTimer                    m_jobTimer;
+    NDirList                  m_sharedDirectories;
+    NFileSuffixList           m_fileSuffixes;
+    bool                      m_configFileChanged;
 
     bool startTcpServer();
     bool restartTcpServer();

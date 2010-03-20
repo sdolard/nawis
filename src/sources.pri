@@ -1,4 +1,5 @@
-HEADERS += src/n_client_session.h \
+HEADERS += src/n_album_cover_updater_thread.h \
+    src/n_client_session.h \
     src/n_compat.h \
     src/n_compress.h \
     src/n_config.h \
@@ -28,7 +29,6 @@ HEADERS += src/n_client_session.h \
     src/n_settings.h \
     src/n_server.h \
     src/n_services.h \
-    #src/n_single_app.h \
     src/n_string.h \
     src/n_stream_writer.h \
     src/n_tcp_server.h \
@@ -40,6 +40,7 @@ HEADERS += src/n_client_session.h \
     src/n_version.h
 
 SOURCES += src/main.cpp \
+    src/n_album_cover_updater_thread.cpp \
     src/n_client_session.cpp \
     src/n_compress.cpp \
     src/n_config.cpp \
@@ -69,7 +70,6 @@ SOURCES += src/main.cpp \
     src/n_settings.cpp \
     src/n_server.cpp \
     src/n_services.cpp \
-    #src/n_single_app.cpp \
     src/n_string.cpp \
     src/n_stream_writer.cpp \
     src/n_tcp_server.cpp \

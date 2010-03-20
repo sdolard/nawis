@@ -37,15 +37,16 @@ void NServer::deleteInstance()
 NServer::NServer(QObject *parent)
     :QObject(parent)
 {
-    m_configFileChanged = false;
-    m_currentJob = JT_NONE;
-    m_server = NULL;
-    m_dbUpdaterJob = NULL;
-    m_dirWatcherJob = NULL;
-    m_hasherJob = NULL;
-    m_metadataUpdaterJob = NULL;
-    m_sharedDirectories = NCONFIG.sharedDirectories();
-    m_fileSuffixes = NCONFIG.fileSuffixes();
+    m_configFileChanged    = false;
+    m_currentJob           = JT_NONE;
+    m_server               = NULL;
+    m_dbUpdaterJob         = NULL;
+    m_dirWatcherJob        = NULL;
+    m_hasherJob            = NULL;
+    m_metadataUpdaterJob   = NULL;
+    m_albumCoverUpdaterJob = NULL;
+    m_sharedDirectories    = NCONFIG.sharedDirectories();
+    m_fileSuffixes         = NCONFIG.fileSuffixes();
 
     NConfig::instance();
 
@@ -249,6 +250,7 @@ void NServer::startJob(int job)
     stopJob(job);
     m_currentJob = job;
     NThread **pJob = NULL;
+
     switch (job) {
     case JT_NONE:
         return;
@@ -275,6 +277,11 @@ void NServer::startJob(int job)
         pJob = (NThread**)&m_metadataUpdaterJob;
         break;
 
+    case JT_GET_ALBUM_COVER:
+        m_albumCoverUpdaterJob = new NAlbumCoverUpdaterThread();
+        pJob = (NThread**)&m_albumCoverUpdaterJob;
+        break;
+
     default:
         Q_ASSERT_X(false, "NServer::stopJob", "job not managed");
         break;
@@ -296,6 +303,7 @@ void NServer::stopJobs()
 void NServer::stopJob(int job)
 {
     NThread **pJob = NULL;
+
     switch (job) {
     case JT_NONE:
         return;
@@ -314,6 +322,10 @@ void NServer::stopJob(int job)
 
     case JT_GET_METADATA:
         pJob = (NThread**)&m_metadataUpdaterJob;
+        break;
+
+    case JT_GET_ALBUM_COVER:
+        pJob = (NThread**)&m_albumCoverUpdaterJob;
         break;
 
     default:
@@ -399,24 +411,14 @@ int NServer::jobStatus() const
 const QString NServer::jobToString(int job)
 {
     switch (job) {
-    case JT_NONE:
-        return "JT_NONE";
-        break;
-    case JT_WATCH_FILES:
-        return "JT_WATCH_FILES";
-        break;
-    case JT_DB_UPDATE:
-        return "JT_DB_UPDATE";
-        break;
-    case JT_HASH:
-        return "JT_HASH";
-        break;
-    case JT_GET_METADATA:
-        return "JT_GET_METADATA";
-        break;
+    case JT_NONE: return "JT_NONE";
+    case JT_WATCH_FILES: return "JT_WATCH_FILES";
+    case JT_DB_UPDATE: return "JT_DB_UPDATE";
+    case JT_HASH: return "JT_HASH";
+    case JT_GET_METADATA: return "JT_GET_METADATA";
+    case JT_GET_ALBUM_COVER: return "JT_GET_ALBUM_COVER";
     default:
         Q_ASSERT_X(false, "NServer::jobToString", "Conversion missing.");
         return "";
-        break;
     }
 }

@@ -28,7 +28,6 @@
 #include <QDateTime>
 #include <QSqlRecord>
 #include <QSqlDriver>
-//#include <QTextDocument>
 
 // App
 #include "n_path.h"
@@ -172,7 +171,7 @@ void NDatabase::createFilesTable()
             "absoluteFilePath TEXT UNIQUE NOT NULL," \
             "category_id INTEGER NOT NULL," \
             "metadata_id INTEGER "\
-            "            CONSTRAINT fk_metadata_id REFERENCES metadata(id) ON DELETE CASCADE,"\
+            "  CONSTRAINT fk_metadata_id REFERENCES metadata(id) ON DELETE CASCADE,"\
             "hash TEXT,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "added TIMESTAMP NOT NULL,"
@@ -218,7 +217,7 @@ void NDatabase::createDuplicatedFilesTable()
 
 void NDatabase::createUsersTable()
 {
-    QSqlQuery query(m_db);
+    /*QSqlQuery query(m_db);
 
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS duplicated_files (" \
@@ -237,8 +236,112 @@ void NDatabase::createUsersTable()
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_duplicated_file_index "\
                     "ON duplicated_files(hash, absoluteFilePath)"))
-        debugLastQuery("idx_duplicated_file_index creation failed", query);
+        debugLastQuery("idx_duplicated_file_index creation failed", query);*/
 }
+
+void NDatabase::createMusicAlbumTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    // Delete after update
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_album (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "name TEXT," \
+            "music_album_cover_id INTEGER,"\
+            "deleted BOOLEAN DEFAULT 0 NOT NULL" \
+            ")"))
+        debugLastQuery("music_album table creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_album_index "\
+                    "ON music_album(name)"))
+        debugLastQuery("idx_music_album_index creation failed", query);
+}
+
+void NDatabase::createMusicCoverTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    // Delete when file hash reference is deleted
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_album_cover (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "music_album_id INTEGER NOT NULL," \
+            "file_hash text NOT NULL," \
+            "front BOOLEAN DEFAULT 1 NOT NULL"\
+            ")"))
+        debugLastQuery("music_album_cover table creation failed", query);
+}
+
+void NDatabase::createMusicAlbumTitleTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_album_title (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "music_album_id INTEGER NOT NULL," \
+            "file_hash text NOT NULL"\
+            ")"))
+        debugLastQuery("music_album_title table creation failed", query);
+}
+
+void NDatabase::createMusicTitleTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_title (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "file_hash TEXT NOT NULL,"\
+            "music_author_id INTEGER NOT NULL," \
+            "music_genre_id INTEGER NOT NULL" \
+            ")"))
+        debugLastQuery("music_title table creation failed", query);
+}
+
+void NDatabase::createMusicAuthorTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    // Delete on update
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_author (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "name TEXT UNIQUE,"\
+            "deleted BOOLEAN DEFAULT 0 NOT NULL" \
+            ")"))
+        debugLastQuery("music_author table creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_author_index "\
+                    "ON music_author(name)"))
+        debugLastQuery("idx_music_author_index creation failed", query);
+}
+
+void NDatabase::createMusicGenreTable()
+{
+    QSqlQuery query(m_db);
+
+    // TODO: delete entries when no more used
+    // Delete on update
+    if (!query.exec(
+            "CREATE TABLE IF NOT EXISTS music_genre (" \
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "name TEXT,"\
+            "deleted BOOLEAN DEFAULT 0 NOT NULL" \
+            ")"))
+        debugLastQuery("music_genre table creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_genre_index "\
+                    "ON music_genre(name)"))
+        debugLastQuery("idx_music_genre_index creation failed", query);
+}
+
 
 void NDatabase::createTables()
 {
@@ -248,6 +351,14 @@ void NDatabase::createTables()
     createMetadataTable();
     createDuplicatedFilesTable();
     createUsersTable();
+
+    // Music
+    createMusicAlbumTable();
+    createMusicAlbumTitleTable();
+    createMusicTitleTable();
+    createMusicAuthorTable();
+    createMusicGenreTable();
+    createMusicCoverTable();
 }
 
 void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)
@@ -387,7 +498,6 @@ bool NDatabase::removeDeletedDuplicatedFiles()
     }
     return true;
 }
-
 
 bool NDatabase::addFile(const QFileInfo & fi, const NFileSuffix & suffix, const QString & rootPath)
 {
@@ -619,8 +729,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     if (fc != NFileCategory_n::fcAll)
         sql += "AND files.category_id = :category_id ";
 
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-        searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (files.relativePath LIKE :relativePath%1 "\
                        "OR files.fileName LIKE :fileName%1 "
@@ -847,8 +956,6 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
                   "WHERE files.hash = duplicated_files.hash "\
                   "AND files.hash <> '' ";
 
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
                        "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
@@ -934,8 +1041,6 @@ int NDatabase::getDuplicatedFileListCount(const QStringList & searches, NFileCat
                   "WHERE files.hash = duplicated_files.hash "\
                   "AND files.hash <> '' ";
 
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (duplicated_files.relativePath LIKE :duplicated_relativePath%1  OR "\
                        "duplicated_files.absoluteFilePath LIKE :duplicated_absoluteFilePath%1  OR "\
@@ -1265,8 +1370,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
     QString sql = "SELECT id, lastName, firstName, email, password, passwordRequested, level, registered FROM users ";
 
     bool selector = false;
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
         sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
@@ -1336,8 +1440,6 @@ int NDatabase::getUserListCount(const QStringList & searches)
     QString sql = "SELECT count(*) FROM users ";
 
     bool selector = false;
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
         sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
@@ -1515,17 +1617,157 @@ bool NDatabase::requestUserPassord(const QString & email)
     return true;
 }
 
+bool NDatabase::updateMusicAlbumTable()
+{
+    beginTransaction();
+    if (!setMusicAlbumDeleted())
+    {
+        abortTransaction();
+        return false;
+    }
+
+    if (!populateMusicAlbum())
+    {
+        abortTransaction();
+        return false;
+    }
+
+    if (!removeDeletedMusicAlbum())
+    {
+        abortTransaction();
+        return false;
+    }
+
+    commitTransaction();
+    return true;
+}
+
+bool NDatabase::populateMusicAlbum()
+{
+    QSqlQuery query(m_db);
+
+    QString sql = "SELECT DISTINCT album "\
+                  "FROM files, metadata "\
+                  "WHERE files.metadata_id = metadata.id "\
+                  "AND album IS NOT NULL "\
+                  "AND files.hash <> '' ";
+
+    if (!query.prepare(sql))
+    {
+        debugLastQuery("populateMusicAlbum prepare failed", query);
+        return false;
+    }
+
+    if (!query.exec())
+    {
+        debugLastQuery("populateMusicAlbum failed", query);
+        return false;
+    }
+
+    int fieldAlbum = query.record().indexOf("album");
+
+    while (query.next()) {
+
+        if (!insertMusicAlbum(query.value(fieldAlbum).toString()))
+            return false;
+    }
+
+    return true;
+}
+
+bool NDatabase::insertMusicAlbum(const QString & albumName)
+{
+    QSqlQuery query(m_db);
+    if (!query.prepare("INSERT INTO music_album (name) "\
+                       "VALUES(:name)"))
+    {
+        debugLastQuery("insertMusicAlbum prepare failed", query);
+        return false;
+    }
+
+    query.bindValue(":name", albumName);
+
+    if (!query.exec())
+    {
+        // uncomment for DEBUG if needed
+        //debugLastQuery("insertMusicAlbum failed", query);
+        return setMusicAlbumDeleted(albumName, false);
+    }
+
+    return true;
+}
+
+bool NDatabase::setMusicAlbumDeleted(const QString albumName, bool deleted)
+{
+    QSqlQuery query(m_db);
+
+    QString sql = "UPDATE music_album "\
+                  "SET deleted=:deleted";
+
+    if (!albumName.isEmpty())
+        sql += " WHERE name=:name";
+
+    if (!query.prepare(sql))
+    {
+        debugLastQuery("setMusicAlbumDeleted prepare failed", query);
+        return false;
+    }
+
+    query.bindValue(":deleted", deleted ? 1 : 0);
+    if (!albumName.isEmpty())
+        query.bindValue(":name", albumName);
+
+    if (!query.exec())
+    {
+        debugLastQuery("setMusicAlbumDeleted failed", query);
+        return false;
+    }
+    return true;
+}
+
+bool NDatabase::removeDeletedMusicAlbum()
+{
+    QSqlQuery query(m_db);
+    if (!query.exec("DELETE FROM music_album WHERE deleted=1"))
+    {
+        debugLastQuery("removeDeletedMusicAlbum failed", query);
+        return false;
+    }
+    return true;
+}
+
 bool NDatabase::getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
                                   const QStringList & searches, int start, int limit,
                                   const QString & dir, int year, const QString & genre,
                                   const QString & artist)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT DISTINCT album "\
+    QString sql = "SELECT music_album.name "\
+                  "FROM music_album, metadata, files "\
+                  "WHERE music_album.name = metadata.album "\
+                  "AND files.";
+
+    /*QString sql = "SELECT DISTINCT album "\
                   "FROM files, metadata "\
                   "WHERE files.metadata_id = metadata.id "\
                   "AND album IS NOT NULL "\
-                  "AND files.hash <> '' ";
+                  "AND files.hash <> '' ";*/
+
+    /*  "select metadata.album, files.relativePath "\
+        "from files,metadata "\
+        "where files.metadata_id=metadata.id "\
+        "AND album IS NOT NULL "\
+        "AND files.hash <> '' "\
+        "group by metadata.album";
+    */
+
+    /*  "SELECT album.name "\
+        "FROM album, metadata "\
+        "WHERE album.name = metadata.album "\
+        "AND album IS NOT NULL "\
+        "AND files.hash <> '' ";
+    */
+
 
     sql += "AND files.category_id = :category_id ";
     if (year >= 0)
@@ -1535,8 +1777,6 @@ bool NDatabase::getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     if (!artist.isNull())
         sql += "AND metadata.artist = :artist ";
 
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1632,8 +1872,7 @@ int NDatabase::getMusicAlbumListCount(const QStringList & searches, int year, co
         sql += "AND metadata.genre = :genre ";
     if (!artist.isNull())
         sql += "AND metadata.artist = :artist ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1695,8 +1934,7 @@ bool NDatabase::getMusicArtistList(QScriptEngine & se, QScriptValue & dataArray,
         sql += "AND metadata.year = :year ";
     if (!genre.isNull())
         sql += "AND metadata.genre = :genre ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1786,8 +2024,7 @@ int NDatabase::getMusicArtistListCount(const QStringList & searches, int year, c
         sql += "AND metadata.year = :year ";
     if (!genre.isNull())
         sql += "AND metadata.genre = :genre ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1843,8 +2080,7 @@ bool NDatabase::getMusicGenreList(QScriptEngine & se, QScriptValue & dataArray,
     sql += "AND files.category_id = :category_id ";
     if (year >= 0)
         sql += "AND metadata.year = :year ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1930,8 +2166,7 @@ int NDatabase::getMusicGenreListCount(const QStringList & searches, int year)
     sql += "AND files.category_id = :category_id ";
     if (year >= 0)
         sql += "AND metadata.year = :year ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -1983,8 +2218,7 @@ bool NDatabase::getMusicYearList(QScriptEngine & se, QScriptValue & dataArray, i
                   "AND files.hash <> '' ";
 
     sql += "AND files.category_id = :category_id ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.year = :year%1 ").arg(i);
         sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
@@ -2069,8 +2303,7 @@ int NDatabase::getMusicYearListCount(const QStringList & searches)
                   "AND files.hash <> '' ";
 
     sql += "AND files.category_id = :category_id ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.year = :year%1 ").arg(i);
         sql += QString("OR metadata.genre LIKE :genre%1 ").arg(i);
@@ -2133,8 +2366,7 @@ bool NDatabase::getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
         sql += "AND metadata.artist = :artist ";
     if (!album.isNull())
         sql += "AND metadata.album = :album ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
@@ -2248,8 +2480,7 @@ int NDatabase::getMusicTitleListCount(const QStringList & searches, const QStrin
         sql += "AND metadata.artist = :artist ";
     if (!album.isNull())
         sql += "AND metadata.album = :album ";
-    /*QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);*/
+
     for (int i = 0; i < searches.count(); ++i){
         sql += QString("AND (metadata.genre LIKE :genre%1 ").arg(i);
         sql += QString("OR metadata.artist LIKE :artist%1 ").arg(i);
