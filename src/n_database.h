@@ -143,7 +143,7 @@ private:
     NDatabase();
 
     void createTables();
-    void createCategoriesTable();
+    void createCategoryTable();
     void createMetadataTable();
     void createFilesTable();
     void createDuplicatedFilesTable();
