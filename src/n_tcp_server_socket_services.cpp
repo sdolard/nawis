@@ -33,6 +33,7 @@
 #include "n_version.h"
 #include "n_log.h"
 #include "n_database.h"
+#include "n_music_database.h"
 #include "n_log_database.h"
 #include "n_config.h"
 #include "n_date.h"
@@ -1136,12 +1137,12 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
           tr("%1 is looking for album: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
-    int totalCount = NDB.getMusicAlbumListCount(searches, year, genre, artist);
+    int totalCount = NMDB.getAlbumListCount(searches, year, genre, artist);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NDB.getMusicAlbumList(se, svData, totalCount, searches, start,
+    bool succeed = NMDB.getAlbumList(se, svData, totalCount, searches, start,
                                          limit, dir, year, genre, artist);
     setJsonRootReponse(svRoot, totalCount, succeed);
     response.setData(NJson::serializeToQByteArray(svRoot));
@@ -1178,12 +1179,12 @@ NResponse & NTcpServerSocketServices::svcGetMusicArtist(const NClientSession & s
           tr("%1 is looking for artist: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
-    int totalCount = NDB.getMusicArtistListCount(searches, year, genre);
+    int totalCount = NMDB.getArtistListCount(searches, year, genre);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NDB.getMusicArtistList(se, svData, totalCount, searches, start, limit, dir, year, genre);
+    bool succeed = NMDB.getArtistList(se, svData, totalCount, searches, start, limit, dir, year, genre);
     setJsonRootReponse(svRoot, totalCount, succeed);
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
@@ -1210,12 +1211,12 @@ NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & se
           tr("%1 is looking for genre: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
-    int totalCount = NDB.getMusicGenreListCount(searches, year);
+    int totalCount = NMDB.getGenreListCount(searches, year);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NDB.getMusicGenreList(se, svData, totalCount, searches, start, limit, dir, year);
+    bool succeed = NMDB.getGenreList(se, svData, totalCount, searches, start, limit, dir, year);
     setJsonRootReponse(svRoot, totalCount, succeed);
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
@@ -1271,13 +1272,13 @@ NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & ses
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
 
-    int totalCount = NDB.getMusicYearListCount(searches);
+    int totalCount = NMDB.getYearListCount(searches);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
 
-    bool succeed = NDB.getMusicYearList(se, svData, totalCount, searches, start,
+    bool succeed = NMDB.getYearList(se, svData, totalCount, searches, start,
                                         limit, dir);
     setJsonRootReponse(svRoot, totalCount, succeed);
 
@@ -1348,13 +1349,13 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
           arg(dir));// 10
 
 
-    int totalCount = NDB.getMusicTitleListCount(searches, album, artist, genre, year);
+    int totalCount = NMDB.getTitleListCount(searches, album, artist, genre, year);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
 
-    bool succeed = NDB.getMusicTitleList(se, svData, searches, album, artist, genre, year,
+    bool succeed = NMDB.getTitleList(se, svData, searches, album, artist, genre, year,
                                          start, limit, sort, dir);
 
     setJsonRootReponse(svRoot, totalCount, succeed);

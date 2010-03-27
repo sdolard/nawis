@@ -42,9 +42,14 @@
 class NDatabase: public QObject {
     Q_OBJECT
 public:
+    ~NDatabase();
+
     static NDatabase & instance();
     static void deleteInstance();
-    ~NDatabase();
+    static void debugLastQuery(const QString & msg, const QSqlQuery & query);
+    static QString & addAND(QString & sql, bool *AND);
+    static QString stringToSortDirection(const QString & dir);
+    static QString jsFileStringToDBFileField(const QString & jsString);
 
     // transaction
     bool beginTransaction();
@@ -93,50 +98,8 @@ public:
     bool deleteUser(const QString & id);
     bool requestUserPassord(const QString & email);
 
-    // Music album
-    bool getMusicAlbumList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
-                           const QStringList & searches, int start, int limit,
-                           const QString & dir, int year, const QString & genre,
-                           const QString & artist);
-    int getMusicAlbumListCount(const QStringList & searches, int year, const QString & genre,
-                               const QString & artist);
-
-    // Music artist
-    bool getMusicArtistList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
-                            const QStringList & searches, int start, int limit,
-                            const QString & dir, int year, const QString & genre);
-    int getMusicArtistListCount(const QStringList & searches, int year, const QString & genre);
-
-    // Music genre
-    bool getMusicGenreList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
-                           const QStringList & searches, int start, int limit,
-                           const QString & dir, int year);
-    int getMusicGenreListCount(const QStringList & searches, int year);
-
-    // Music year
-    bool getMusicYearList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
-                          const QStringList & searches, int start, int limit,
-                          const QString & dir);
-    int getMusicYearListCount(const QStringList & searches);
-
-    // Music title
-    bool getMusicTitleList(QScriptEngine & se, QScriptValue & dataArray,
-                           const QStringList & searches, const QString & album,
-                           const QString & artist, const QString & genre, int year,
-                           int start = 0, int limit = 25, const QString & sort = "",
-                           const QString & dir = "");
-    int getMusicTitleListCount(const QStringList & searches, const QString & album,
-                               const QString & artist, const QString & genre,
-                               int year);
-
-    bool updateMusicAlbumTable();
-
-    static void debugLastQuery(const QString & msg, const QSqlQuery & query);
-    static QString & addAND(QString & sql, bool *AND);
-    static QString stringToSortDirection(const QString & dir);
-
 private:
-    static NDatabase   *m_instance;
+    static NDatabase    *m_instance;
     QSqlDatabase         m_db;
     QMutex               m_dbMutex;
     bool                 m_transactionPending;
@@ -144,29 +107,15 @@ private:
 
     void createTables();
     void createCategoryTable();
-    void createMetadataTable();
-    void createFilesTable();
-    void createDuplicatedFilesTable();
-    void createUsersTable();
+    void createFileMetadataTable();
+    void createFileTable();
+    void createDuplicatedFileTable();
+    void createUserTable();
 
-    // Music
-    void createMusicAuthorTable();
-    void createMusicGenreTable();
-    void createMusicAlbumTitleTable();
-    void createMusicTitleTable();
-    void createMusicAlbumTable();
-    void createMusicAlbumCoverTable();
-
-    QString jsFileStringToDBFileField(const QString & jsString);
     QString stringToUserField(const QString & field);
     bool setDuplicatedFileAsNotDeleted(const QFileInfo & fi);
     bool isDuplicatedFile(const QString & hash, const QFileInfo & newFi);
     bool setFileAsNotDeleted(const QString & absoluteFilePath, const QDateTime & lastModified);
-
-    bool setMusicAlbumDeleted(const QString albumName = "", bool deleted = true);
-    bool populateMusicAlbum();
-    bool insertMusicAlbum(const QString & albumName);
-    bool removeDeletedMusicAlbum();
 };
 
 #endif //N_DATABASE_H

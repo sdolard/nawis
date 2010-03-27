@@ -137,9 +137,10 @@ const QString NTcpServerSocket::peerString()
 void NTcpServerSocket::addLine(const QString & line)
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssReadingLine);
-
-    /*NLOGD("NTcpServerSocket", QString("(%1) addLine: %2").arg(m_sslSocket.socketDescriptor()).
-		   arg(QUrl::fromPercentEncoding(line.toAscii())));*/
+    /*
+    NLOGD("NTcpServerSocket", QString("(%1) addLine: %2").arg(m_sslSocket.socketDescriptor()).
+                   arg(QUrl::fromPercentEncoding(line.toAscii())));
+                   */
 
     m_response.data().append(line);
     if (line == "\r\n")
@@ -216,8 +217,6 @@ void NTcpServerSocket::sendResponse()
             error = m_response.updateFileBuffer() == -1; // Buffer update
 
         if(!error)
-            /*written = m_sslSocket.write(m_response.data().constData(),
-										m_response.data().size() < MAX_SOCKET_WRITE_SIZE ? m_response.data().size() : MAX_SOCKET_WRITE_SIZE);*/
             written = m_sslSocket.write(m_response.data().constData(), m_response.data().size());
     }
 

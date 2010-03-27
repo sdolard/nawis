@@ -22,6 +22,7 @@ HEADERS += src/n_album_cover_updater_thread.h \
     src/n_metadata.h \
     src/n_metadata_updater_thread.h \
     src/n_mime_type.h \
+    src/n_music_database.h \
     src/n_nawis_daemon.h \
     src/n_node.h \
     src/n_path.h \
@@ -63,6 +64,7 @@ SOURCES += src/main.cpp \
     src/n_metadata.cpp \
     src/n_metadata_updater_thread.cpp \
     src/n_mime_type.cpp \
+    src/n_music_database.cpp \
     src/n_nawis_daemon.cpp \
     src/n_node.cpp \
     src/n_path.cpp \
