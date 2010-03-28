@@ -92,24 +92,33 @@ const QString NJson::serializeNumber(const QScriptValue & sv)
 
 const QString NJson::serializeString(const QScriptValue & sv)
 {
+    // THIS FUNCTION IS NOT FAMOUS... Review it.
     /*
 	char
 	any-Unicode-character-
 		except-"-or-\-or-
 		control-character
-	\"
-	\\
-	\/
-	\b
-	\f
-	\n
-	\r
-	\t
-	\u four-hex-digits
+        \ \  reverse
+        \ "  quotation
+        \ /  solidus
+        \ b  backspace
+        \ f  formfeed
+        \ n  newline
+        \ r  carriage return
+        \ t  horizontal tab
+        \ u  four-hex-digits
 	*/
     Q_ASSERT(sv.isString());
-    QString value = sv.toString().replace(QString("\""), QString("\\\""));
-    value = value.replace(QString("\r\n"), QString("<br>"));
+    QString value = sv.toString();
+    value = value.replace(QString("\\"), QString("\\\\"));
+    value = value.replace(QString("\""), QString("\\\""));
+    value = value.replace(QString("//"), QString("\\//"));
+    value = value.replace(QString("\b"), QString("\\b"));
+    value = value.replace(QString("\f"), QString("\\f"));
+    value = value.replace(QString("\n"), QString("\\n"));
+    value = value.replace(QString("\r"), QString("\\r"));
+    value = value.replace(QString("\t"), QString("\\t"));
+    //value = value.replace(QString("\u"), QString("\\u"));
     return QString("\"%1\"").arg(value);
 }
 
