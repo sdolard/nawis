@@ -680,7 +680,7 @@ void NMusicDatabase::createAlbumTitleTable()
         NDatabase::debugLastQuery("music_album_title table creation failed", query);
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_album_title_index "\
-                    "ON music_album_title(fk_music_title_id, fk_music_album_id)"))
+                    "ON music_album_title(fk_music_album_id, fk_music_title_id)"))
         NDatabase::debugLastQuery("idx_music_album_title_index creation failed", query);
 
     if (!query.exec(
