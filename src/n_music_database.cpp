@@ -538,6 +538,10 @@ void NMusicDatabase::createTitleTable()
             ")"))
         NDatabase::debugLastQuery("music_title table creation failed", query);
 
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_title_index "\
+                    "ON music_title(fk_music_artist_id, fk_music_genre_id, fk_file_id)"))
+        NDatabase::debugLastQuery("idx_music_title_index creation failed", query);
+
     if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_music_title " \
             "BEFORE DELETE ON file "\
@@ -674,6 +678,10 @@ void NMusicDatabase::createAlbumTitleTable()
             "fk_music_album_id INTEGER NOT NULL" \
             ")"))
         NDatabase::debugLastQuery("music_album_title table creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_album_title_index "\
+                    "ON music_album_title(fk_music_title_id, fk_music_album_id)"))
+        NDatabase::debugLastQuery("idx_music_album_title_index creation failed", query);
 
     if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_music_album_title " \
@@ -1557,7 +1565,6 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
                                       int year)
 {
     QSqlQuery query(*m_db);
-   // QString sql = "SELECT count(DISTINCT music_title.id) "
      QString sql = "SELECT count(music_title.id) "\
                   "FROM music_title, music_genre, music_artist, music_album, music_album_title, file "\
                   "WHERE music_genre.id = music_title.fk_music_genre_id "\
