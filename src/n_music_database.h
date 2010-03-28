@@ -89,6 +89,8 @@ private:
     QSqlDatabase             *m_db;
     NMusicDatabase(QSqlDatabase  *db);
 
+    QString jsFileStringToDBFileField(const QString & jsString);
+
     void createTables();
 
     // Music

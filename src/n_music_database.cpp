@@ -528,19 +528,23 @@ void NMusicDatabase::createTitleTable()
             "fk_file_id INTEGER UNIQUE NOT NULL,"\
             "fk_music_artist_id INTEGER NOT NULL," \
             "fk_music_genre_id INTEGER NOT NULL," \
-             "title TEXT," \
-             "duration INTEGER," \
-             "track_number INTEGER," \
-             "year INTEGER," \
-             "comment TEXT," \
-             "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL,"\
-             "copyright TEXT" \
+            "title TEXT," \
+            "duration INTEGER," \
+            "track_number INTEGER," \
+            "year INTEGER," \
+            "comment TEXT," \
+            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL,"\
+            "copyright TEXT" \
             ")"))
         NDatabase::debugLastQuery("music_title table creation failed", query);
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_title_index "\
                     "ON music_title(fk_music_artist_id, fk_music_genre_id, fk_file_id)"))
         NDatabase::debugLastQuery("idx_music_title_index creation failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_title_index_2 "\
+                    "ON music_title(fk_music_genre_id, fk_music_artist_id)"))
+        NDatabase::debugLastQuery("idx_music_title_index_2 creation failed", query);
 
     if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_music_title " \
@@ -867,7 +871,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }
 
     // Sort and limit
-    sql += QString("GROUP BY album ORDER BY album %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_album.name ORDER BY music_album.name %2 LIMIT :limit OFFSET :offset").
            arg(NDatabase::stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -1187,7 +1191,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_genre.name ORDER BY genre %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %2 LIMIT :limit OFFSET :offset").
            arg(NDatabase::stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -1327,7 +1331,7 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
     }
 
     // Sort and limit
-    sql += QString("GROUP BY year ORDER BY year %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_title.year ORDER BY music_title.year %2 LIMIT :limit OFFSET :offset").
            arg(NDatabase::stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -1476,7 +1480,7 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
 
     // Sort and limit
     sql += QString(" GROUP BY music_title.id ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
-           arg(NDatabase::jsFileStringToDBFileField(sort)).
+           arg(jsFileStringToDBFileField(sort)).
            arg(NDatabase::stringToSortDirection(dir));
 
     if (!query.prepare(sql))
@@ -1565,7 +1569,7 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
                                       int year)
 {
     QSqlQuery query(*m_db);
-     QString sql = "SELECT count(music_title.id) "\
+    QString sql = "SELECT count(music_title.id) "\
                   "FROM music_title, music_genre, music_artist, music_album, music_album_title, file "\
                   "WHERE music_genre.id = music_title.fk_music_genre_id "\
                   "AND music_title.fk_music_artist_id = music_artist.id "\
@@ -1623,4 +1627,63 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
     if (!query.first())
         return 0;
     return query.value(0).toInt();
+}
+
+QString NMusicDatabase::jsFileStringToDBFileField(const QString & jsString)
+{                      
+    if (jsString.isEmpty())
+        return "";                  
+
+    if (jsString == "size")
+        return "music_title.size";
+
+    if (jsString == "title")
+        return "music_title.title";
+
+    if (jsString == "comment")
+        return "music_title.comment";
+
+    if (jsString == "hasId3Picture")
+        return "music_title.has_id3_picture";
+
+    if (jsString == "year")
+        return "music_title.year";
+
+    if(jsString == "trackNumber")
+        return "music_title.track_number";
+
+    if(jsString == "hasID3Picture")
+        return "music_title.has_id3_picture";
+
+    if (jsString == "duration")
+        return "music_title.duration";
+
+    if (jsString == "copyright")
+        return "music_title.copyright";
+
+    // Album
+    if (jsString == "album")
+        return "music_album.name";
+
+    // Genre
+    if (jsString == "genre")
+        return "music_genre.name";
+
+    // Artist
+    if (jsString == "artist")
+        return "music_artist.name";
+
+    // File
+    if(jsString == "fileName")
+        return "file.file_name";
+
+    if (jsString == "hash")
+        return "file.hash";
+
+    if (jsString == "size")
+        return "file.size";
+
+
+    Q_ASSERT_X(false, "NMusicDatabase::jsFileStringToDBFileField", qPrintable(QString("%1 is not mapped" ).arg(jsString)));
+    return "added";
 }

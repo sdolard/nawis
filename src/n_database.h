@@ -49,7 +49,7 @@ public:
     static void debugLastQuery(const QString & msg, const QSqlQuery & query);
     static QString & addAND(QString & sql, bool *AND);
     static QString stringToSortDirection(const QString & dir);
-    static QString jsFileStringToDBFileField(const QString & jsString);
+
 
     // transaction
     bool beginTransaction();
@@ -111,6 +111,8 @@ private:
     void createFileTable();
     void createDuplicatedFileTable();
     void createUserTable();
+
+    QString jsFileStringToDBFileField(const QString & jsString);
 
     QString stringToUserField(const QString & field);
     bool setDuplicatedFileAsNotDeleted(const QFileInfo & fi);
