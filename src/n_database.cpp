@@ -597,6 +597,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
 {
     // TODO: do category only search
 
+    // TODO: LEFT OUTER JOIN file_metadata > if file metadata is empty, a record is not necessary(db will be more light)
     QSqlQuery query(m_db);
     QString sql = "SELECT file.id id, file.file_name, file.relative_path, file.hash, "\
                   "file.added, file.size, file.fk_file_category_id, file.last_modified, " \
@@ -720,7 +721,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
         svfile.setProperty("fileCategory", NFileCategory_n::fileCategoryName(category));
         svfile.setProperty("hash", query.value(fieldHash).toString());
         svfile.setProperty("added", query.value(fieldAdded).toString());
-        svfile.setProperty("size", query.value(fieldSize).toInt());
+        svfile.setProperty("size", query.value(fieldSize).toString());//TODO: Should be toULongLong
         svfile.setProperty("lastModified", query.value(fieldLastModified).toString());
 
 
@@ -742,6 +743,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
         {
             // Metadata
             svfile.setProperty("dateTimeOriginal", query.value(fieldDateTimeOriginal).toString());
+            // TODO: copyright only on picture ?
             svfile.setProperty("copyright", query.value(fieldCopyright).toString());
             svfile.setProperty("width", query.value(fieldWidth).toInt());
             svfile.setProperty("height", query.value(fieldHeight).toInt());
@@ -907,7 +909,7 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
         svfile.setProperty("fileCategory", NFileCategory_n::fileCategoryName(fc));
         svfile.setProperty("hash", query.value(fieldHash).toString());
         svfile.setProperty("added", query.value(fieldAdded).toString());
-        svfile.setProperty("size", query.value(fieldSize).toInt());
+        svfile.setProperty("size", query.value(fieldSize).toString());//TODO: Should be toULongLong
         svfile.setProperty("originalAbsoluteFilePath", query.value(fieldOriginalAbsoluteFilePath).toString());
 
         i++;

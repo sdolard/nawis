@@ -130,8 +130,7 @@ private:
     bool populateTitle();
     bool insertTitle(int fileId, const QString & genre, const QString & artist,
                      const QString & title, int duration, int trackNumber,
-                     int year, const QString & comment, bool hasId3Picture,
-                     const QString & copyright);
+                     int year, const QString & comment, bool hasId3Picture);
 
     // album title
     bool populateAlbumTitle();

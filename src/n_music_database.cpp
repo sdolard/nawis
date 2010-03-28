@@ -533,8 +533,7 @@ void NMusicDatabase::createTitleTable()
             "track_number INTEGER," \
             "year INTEGER," \
             "comment TEXT," \
-            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL,"\
-            "copyright TEXT" \
+            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL"
             ")"))
         NDatabase::debugLastQuery("music_title table creation failed", query);
 
@@ -576,8 +575,7 @@ bool NMusicDatabase::populateTitle()
 
     QString sql = "SELECT file.id id, file_metadata.genre, file_metadata.artist, "\
                   "       file_metadata.title, file_metadata.duration, file_metadata.track_number, "\
-                  "       file_metadata.year, file_metadata.comment, file_metadata.has_id3_picture, "\
-                  "       file_metadata.copyright "\
+                  "       file_metadata.year, file_metadata.comment, file_metadata.has_id3_picture "\
                   "FROM file, file_metadata " \
                   "WHERE file.fk_file_metadata_id = file_metadata.id "\
                   "AND file.fk_file_category_id=:fk_file_category_id "\
@@ -607,7 +605,6 @@ bool NMusicDatabase::populateTitle()
     int fieldYear = query.record().indexOf("year");
     int fieldComment = query.record().indexOf("comment");
     int fieldHasId3Picture = query.record().indexOf("has_id3_picture");
-    int fieldCopyright = query.record().indexOf("copyright");
 
     while (query.next()) {
         if (!insertTitle(query.value(fieldId).toInt(),
@@ -618,8 +615,7 @@ bool NMusicDatabase::populateTitle()
                          query.value(fieldTrackNumber).toInt(),
                          query.value(fieldYear).toInt(),
                          query.value(fieldComment).toString(),
-                         query.value(fieldHasId3Picture).toBool(),
-                         query.value(fieldCopyright).toString()))
+                         query.value(fieldHasId3Picture).toBool()))
             return false;
     }
 
@@ -629,20 +625,18 @@ bool NMusicDatabase::populateTitle()
 bool NMusicDatabase::insertTitle(int fileId, const QString & genre,
                                  const QString & artist, const QString & title,
                                  int duration, int trackNumber, int year,
-                                 const QString & comment, bool hasId3Picture,
-                                 const QString & copyright)
+                                 const QString & comment, bool hasId3Picture)
 {
     QSqlQuery query(*m_db);
     if (!query.prepare("INSERT INTO music_title(fk_file_id, fk_music_genre_id, "\
                        "                        fk_music_artist_id, title, duration, "\
-                       "                        track_number, year, comment, has_id3_picture,"\
-                       "                        copyright) "\
+                       "                        track_number, year, comment, has_id3_picture) "\
                        "VALUES("\
                        "  :fileId, "\
                        "  (SELECT id FROM music_genre where name=:genre),"\
                        "  (SELECT id FROM music_artist where name=:artist),"\
                        "  :title, :duration, :track_number, :year, :comment,"\
-                       "  :has_id3_picture, :copyright"
+                       "  :has_id3_picture"
                        ")"))
     {
         NDatabase::debugLastQuery("insertTitle prepare failed", query);
@@ -659,7 +653,6 @@ bool NMusicDatabase::insertTitle(int fileId, const QString & genre,
     query.bindValue(":year", year);
     query.bindValue(":comment", comment);
     query.bindValue(":has_id3_picture", hasId3Picture);
-    query.bindValue(":copyright", copyright);
     if (!query.exec())
     {
         // uncomment for DEBUG if needed
@@ -1454,13 +1447,13 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     QString sql = "SELECT music_title.id id, file.file_name, file.hash, file.size, "\
                   "       music_artist.name artist, music_title.comment, music_title.year, music_album.name album, "\
                   "       music_title.title, music_genre.name genre, music_title.track_number, music_title.duration, "\
-                  "       music_title.copyright, music_title.has_id3_picture "\
+                  "       music_title.has_id3_picture "\
                   "FROM music_title, music_genre, music_artist, music_album, music_album_title, file "\
-                  "WHERE music_genre.id = music_title.fk_music_genre_id "\
+                  "WHERE music_title.fk_music_genre_id = music_genre.id "\
                   "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
+                  "AND music_title.fk_file_id = file.id "\
                   "AND music_album_title.fk_music_title_id = music_title.id "\
-                  "AND file.id = music_title.fk_file_id ";
+                  "AND music_album.id = music_album_title.fk_music_album_id ";
 
     if (year >= 0)
         sql += "AND music_title.year = :year ";
@@ -1533,7 +1526,6 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     int fieldGenre = query.record().indexOf("genre");
     int fieldTrackNumber = query.record().indexOf("track_number");
     int fieldDuration = query.record().indexOf("duration");
-    int fieldCopyright = query.record().indexOf("copyright");
     int hasID3Picture = query.record().indexOf("has_id3_picture");
 
 
@@ -1546,7 +1538,7 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         svTitle.setProperty("id", query.value(fieldId).toInt());
         svTitle.setProperty("fileName", query.value(fieldFileName).toString());
         svTitle.setProperty("hash", query.value(fieldHash).toString());
-        svTitle.setProperty("size", query.value(fieldSize).toInt());
+        svTitle.setProperty("size", query.value(fieldSize).toString()); //TODO: Should be toULongLong
 
         // Metadata field
         svTitle.setProperty("artist", query.value(fieldArtist).toString());
@@ -1557,7 +1549,6 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         svTitle.setProperty("genre", query.value(fieldGenre).toString());
         svTitle.setProperty("trackNumber", query.value(fieldTrackNumber).toInt());
         svTitle.setProperty("duration", query.value(fieldDuration).toInt());
-        svTitle.setProperty("copyright", query.value(fieldCopyright).toString());
         svTitle.setProperty("hasID3Picture", query.value(hasID3Picture).toString());
     }
 
@@ -1570,12 +1561,11 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
 {
     QSqlQuery query(*m_db);
     QString sql = "SELECT count(music_title.id) "\
-                  "FROM music_title, music_genre, music_artist, music_album, music_album_title, file "\
-                  "WHERE music_genre.id = music_title.fk_music_genre_id "\
+                  "FROM music_title, music_genre, music_artist, music_album, music_album_title "\
+                  "WHERE music_title.fk_music_genre_id = music_genre.id "\
                   "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
                   "AND music_album_title.fk_music_title_id = music_title.id "\
-                  "AND file.id = music_title.fk_file_id ";
+                  "AND music_album.id = music_album_title.fk_music_album_id ";
 
     if (year >= 0)
         sql += "AND music_title.year = :year ";
@@ -1657,9 +1647,6 @@ QString NMusicDatabase::jsFileStringToDBFileField(const QString & jsString)
 
     if (jsString == "duration")
         return "music_title.duration";
-
-    if (jsString == "copyright")
-        return "music_title.copyright";
 
     // Album
     if (jsString == "album")

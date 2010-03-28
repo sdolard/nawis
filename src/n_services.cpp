@@ -679,7 +679,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;music filename&gt;\", // string<br>"\
         "    \"hash\":\"&lt;music file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"artist\":\"&lt;artist name&gt;\", // string<br>"\
         "    \"comment\":\"&lt;music comment&gt;\", // string<br>"\
         "    \"year\":&lt;music year&gt;, // number<br>"\
@@ -688,7 +688,6 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "    \"genre\":\"&lt;music genre&gt;\", // string<br>"\
         "    \"trackNumber\":&lt;trac number&gt;, // number<br>"\
         "    \"duration\":&lt;duration in second&gt;, // number<br>"\
-        "    \"copyright\":\"&lt;music copyright&gt;\", // string<br>"\
         "    \"hasID3Picture\":true&#124;false // boolean<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -797,7 +796,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -832,7 +831,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -867,7 +866,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -923,7 +922,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -958,7 +957,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -1002,7 +1001,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -1037,7 +1036,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "    \"id\":&lt;item id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"hash\":\"&lt;file md5 hash&gt;\", // string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number<br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number<br>"\
         "    \"relativePath\":\"&lt;file relative path&gt;\", // string<br>"\
         "    \"fileCategory\":\"&lt;other&#124;movie&#124;music&#124;picture&#124;archive&#124;document&gt;\", // string, file category type<br>"\
         "    \"added\":\"&lt;Date time added in server database&gt;\", // string<br>"\
@@ -1097,7 +1096,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1132,7 +1131,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1168,7 +1167,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1204,7 +1203,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1240,7 +1239,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1276,7 +1275,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -1312,7 +1311,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "    \"fileCategory\":\"&lt;file category&gt;\", // string, TODO: explain<br>"\
         "    \"hash\":\"&lt;md5 file hash&gt;\",<br>"\
         "    \"added\":\"&lt;added in db date time&gt\", //format: \"yyyy-MM-dd hh:mm:ss.zzz\", string<br>"\
-        "    \"size\":&lt;file size in octet&gt;, // number <br>"\
+        "    \"size\":&lt;file size in octet&gt;, // string, should be a number <br>"\
         "    \"originalAbsoluteFilePath\":\"&lt;absolute file path of original file&gt;\", // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
