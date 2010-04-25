@@ -74,7 +74,6 @@ void NMusicDatabase::createTables()
     createGenreTable();
     createTitleTable();
     createAlbumTitleTable();
-    //createAlbumCoverTable();
 }
 
 NMusicDatabase::~NMusicDatabase()
@@ -840,26 +839,47 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     QSqlQuery query(*m_db);
 
     QString sql = "SELECT music_album.name album, music_album.front_cover_picture_file_hash fcpfh, "\
-                  "music_album.back_cover_picture_file_hash bcpfh, "\
-                  "music_album.front_cover_id3picture_file_hash fcipfh, "\
-                  "music_album.back_cover_id3picture_file_hash bcipfh "\
-                  "FROM music_album, music_album_title, music_title, music_genre, music_artist "\
-                  "WHERE music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id "\
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_title.fk_music_genre_id = music_genre.id ";
+                  "       music_album.back_cover_picture_file_hash bcpfh, "\
+                  "       music_album.front_cover_id3picture_file_hash fcipfh, "\
+                  "       music_album.back_cover_id3picture_file_hash bcipfh "\
+                  "FROM music_album ";
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
+    if (year >= 0 || !genre.isNull() || !artist.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_album_title "\
+               "    ON music_album.id = music_album_title.fk_music_album_id "\
+               "  INNER JOIN music_title "\
+               "    ON music_title.id = music_album_title.fk_music_title_id ";
+    }
 
-    if (!genre.isNull())
-        sql += "AND music_genre.name = :genre ";
+    if (!genre.isNull() || searches.count()){
+        sql += "  INNER JOIN music_genre "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
 
-    if (!artist.isNull())
-        sql += "AND music_artist.name = :artist ";
+    if (!artist.isNull() || searches.count()){
+        sql += "  INNER JOIN music_artist "\
+               "    ON music_title.fk_music_artist_id = music_artist.id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
+
+    if (!genre.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_genre.name = :genre ";
+    }
+    if (!artist.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_artist.name = :artist ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -897,6 +917,8 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     {
         NDatabase::debugLastQuery("getAlbumList failed", query);
         return false;
+    } else {
+        NLOGD("NMusicDatabase", query.lastQuery());
     }
 
     int fieldAlbum = query.record().indexOf("album");
@@ -957,21 +979,44 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
     QSqlQuery query(*m_db);
 
     QString sql = "SELECT count(DISTINCT music_album.name) "\
-                  "FROM music_album, music_album_title, music_title, music_genre, music_artist "\
-                  "WHERE music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id "\
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_title.fk_music_genre_id = music_genre.id ";
+                  "FROM music_album ";
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
-    if (!genre.isNull())
-        sql += "AND music_genre.name = :genre ";
-    if (!artist.isNull())
-        sql += "AND music_artist.name = :artist ";
+    if (year >= 0 || !genre.isNull() || !artist.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_album_title "\
+               "    ON music_album.id = music_album_title.fk_music_album_id "\
+               "  INNER JOIN music_title "\
+               "    ON music_title.id = music_album_title.fk_music_title_id ";
+    }
+
+    if (!genre.isNull() || searches.count()){
+        sql += "  INNER JOIN music_genre "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
+
+    if (!artist.isNull() || searches.count()){
+        sql += "  INNER JOIN music_artist "\
+               "    ON music_title.fk_music_artist_id = music_artist.id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
+
+    if (!genre.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_genre.name = :genre ";
+    }
+    if (!artist.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_artist.name = :artist ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1001,6 +1046,8 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
     {
         NDatabase::debugLastQuery("getAlbumListCount failed", query);
         return 0;
+    } else {
+        NLOGD("NMusicDatabase", query.lastQuery());
     }
 
     if (!query.first())
@@ -1020,20 +1067,40 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
     QSqlQuery query(*m_db);
 
     QString sql = "SELECT music_artist.name artist "\
-                  "FROM music_artist, music_album, music_album_title, music_title, music_genre "\
-                  "WHERE music_artist.id = music_title.fk_music_artist_id "\
-                  "AND music_title.fk_music_genre_id = music_genre.id "
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_artist ";
 
+    if (year >= 0 || !genre.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_title "\
+               "    ON music_title.fk_music_artist_id = music_artist.id ";
+    }
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
-    if (!genre.isNull())
-        sql += "AND music_genre.name = :genre ";
+    if (!genre.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_genre "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
+
+    if (searches.count()) {
+        sql += "  INNER JOIN music_album_title "\
+               "    ON music_album_title.fk_music_title_id = music_title.id "\
+               "  INNER JOIN music_album "\
+               "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
+
+    if (!genre.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_genre.name = :genre ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1111,19 +1178,40 @@ int NMusicDatabase::getArtistListCount(const QStringList & searches, int year, c
     QSqlQuery query(*m_db);
 
     QString sql = "SELECT count(DISTINCT music_artist.name) "\
-                  "FROM music_artist, music_album, music_album_title, music_title, music_genre "\
-                  "WHERE music_artist.id = music_title.fk_music_artist_id "\
-                  "AND music_title.fk_music_genre_id = music_genre.id "
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_artist ";
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
-    if (!genre.isNull())
-        sql += "AND music_genre.name = :genre ";
+    if (year >= 0 || !genre.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_title "\
+               "    ON music_title.fk_music_artist_id = music_artist.id ";
+    }
+
+    if (!genre.isNull() || searches.count()) {
+        sql += "  INNER JOIN music_genre "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
+
+    if (searches.count()) {
+        sql += "  INNER JOIN music_album_title "\
+               "    ON music_album_title.fk_music_title_id = music_title.id "\
+               "  INNER JOIN music_album "\
+               "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
+
+    if (!genre.isNull()){
+        NDatabase::addAND(sql, &AND);
+        sql += "music_genre.name = :genre ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1167,19 +1255,33 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
                                   int limit, const QString & dir, int year)
 {
     QSqlQuery query(*m_db);
-
     QString sql = "SELECT music_genre.name genre "\
-                  "FROM music_genre, music_artist, music_album, music_album_title, music_title "\
-                  "WHERE music_genre.id = music_title.fk_music_genre_id "
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_genre ";
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
+    if (year >= 0 || searches.count()) {
+        sql += "  INNER JOIN music_title "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
+
+    if (searches.count()) {
+        sql += "  INNER JOIN music_artist "\
+               "    ON music_title.fk_music_artist_id = music_artist.id "\
+               "  INNER JOIN music_album_title "\
+               "    ON music_album_title.fk_music_title_id = music_title.id "\
+               "  INNER JOIN music_album "\
+               "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1253,20 +1355,33 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
 int NMusicDatabase::getGenreListCount(const QStringList & searches, int year)
 {
     QSqlQuery query(*m_db);
-
-
     QString sql = "SELECT count(DISTINCT music_genre.name) "\
-                  "FROM music_genre, music_artist, music_album, music_album_title, music_title "\
-                  "WHERE music_genre.id = music_title.fk_music_genre_id "
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_genre ";
 
-    if (year >= 0)
-        sql += "AND music_title.year = :year ";
+    if (year >= 0 || searches.count()) {
+        sql += "  INNER JOIN music_title "\
+               "    ON music_title.fk_music_genre_id = music_genre.id ";
+    }
+
+    if (searches.count()) {
+        sql += "  INNER JOIN music_artist "\
+               "    ON music_title.fk_music_artist_id = music_artist.id "\
+               "  INNER JOIN music_album_title "\
+               "    ON music_album_title.fk_music_title_id = music_title.id "\
+               "  INNER JOIN music_album "\
+               "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
+
+    if (year >= 0) {
+        NDatabase::addAND(sql, &AND);
+        sql += "music_title.year = :year ";
+    }
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_genre.name LIKE :genre%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1309,16 +1424,24 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
 {
     QSqlQuery query(*m_db);
     QString sql = "SELECT music_title.year "\
-                  "FROM music_title, music_genre, music_artist, music_album, music_album_title "\
-                  "WHERE year IS NOT NULL "
-                  "AND music_genre.id = music_title.fk_music_genre_id "
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_title ";
 
+    if (searches.count()) {
+        sql +=  "  INNER JOIN music_genre "\
+                "    ON music_title.fk_music_genre_id = music_genre.id "\
+                "  INNER JOIN music_artist "\
+                "    ON music_title.fk_music_artist_id = music_artist.id "\
+                "  INNER JOIN music_album_title "\
+                "    ON music_album_title.fk_music_title_id = music_title.id "\
+                "  INNER JOIN music_album "\
+                "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_title.year = :year%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_title.year = :year%1 ").arg(i);
         sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
@@ -1334,7 +1457,6 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
         NDatabase::debugLastQuery("getYearList prepare failed", query);
         return false;
     }
-
 
     for (int i = 0; i < searches.count(); ++i){
         query.bindValue(QString(":year%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1394,16 +1516,24 @@ int NMusicDatabase::getYearListCount(const QStringList & searches)
 {
     QSqlQuery query(*m_db);    
     QString sql = "SELECT count(DISTINCT music_title.year) "\
-                  "FROM music_title, music_genre, music_artist, music_album, music_album_title "\
-                  "WHERE year IS NOT NULL "
-                  "AND music_genre.id = music_title.fk_music_genre_id "
-                  "AND music_title.fk_music_artist_id = music_artist.id "\
-                  "AND music_album.id = music_album_title.fk_music_album_id "\
-                  "AND music_album_title.fk_music_title_id = music_title.id ";
+                  "FROM music_title ";
 
+    if (searches.count()) {
+        sql +=  "  INNER JOIN music_genre "\
+                "    ON music_title.fk_music_genre_id = music_genre.id "\
+                "  INNER JOIN music_artist "\
+                "    ON music_title.fk_music_artist_id = music_artist.id "\
+                "  INNER JOIN music_album_title "\
+                "    ON music_album_title.fk_music_title_id = music_title.id "\
+                "  INNER JOIN music_album "\
+                "    ON music_album.id = music_album_title.fk_music_album_id ";
+    }
+
+    bool AND = false;
 
     for (int i = 0; i < searches.count(); ++i){
-        sql += QString("AND (music_title.year = :year%1 ").arg(i);
+        NDatabase::addAND(sql, &AND);
+        sql += QString("(music_title.year = :year%1 ").arg(i);
         sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
@@ -1452,14 +1582,15 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
                   "       music_artist.name artist, music_genre.name genre, "\
                   "       file.file_name, file.hash, file.size, "\
                   "       music_album.name album "\
-                  "FROM (((music_title INNER JOIN music_genre "\
+                  "FROM music_title "\
+                  "  INNER JOIN music_genre "\
                   "    ON music_title.fk_music_genre_id = music_genre.id "\
                   "  INNER JOIN music_artist "\
-                  "    ON music_title.fk_music_artist_id = music_artist.id) "\
+                  "    ON music_title.fk_music_artist_id = music_artist.id "\
                   "  INNER JOIN file "\
-                  "    ON music_title.fk_file_id = file.id) "\
+                  "    ON music_title.fk_file_id = file.id "\
                   "  INNER JOIN music_album_title "\
-                  "    ON music_album_title.fk_music_title_id = music_title.id) "\
+                  "    ON music_album_title.fk_music_title_id = music_title.id "\
                   "  INNER JOIN music_album "\
                   "    ON music_album.id = music_album_title.fk_music_album_id ";
     bool AND = false;
@@ -1527,7 +1658,7 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         NDatabase::debugLastQuery("getTitleList failed", query);
         return false;
     } else {
-        NLOGD("NMusicDatabase", query.lastQuery());
+        //NLOGD("NMusicDatabase", query.lastQuery());
     }
 
     // Files fields
@@ -1578,14 +1709,15 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
 {
     QSqlQuery query(*m_db);
     QString sql = "SELECT count(*) "\
-                  "FROM (((music_title INNER JOIN music_genre "\
+                  "FROM music_title "\
+                  "  INNER JOIN music_genre "\
                   "    ON music_title.fk_music_genre_id = music_genre.id "\
                   "  INNER JOIN music_artist "\
-                  "    ON music_title.fk_music_artist_id = music_artist.id) "\
+                  "    ON music_title.fk_music_artist_id = music_artist.id "\
                   "  INNER JOIN file "\
-                  "    ON music_title.fk_file_id = file.id) "\
+                  "    ON music_title.fk_file_id = file.id "\
                   "  INNER JOIN music_album_title "\
-                  "    ON music_album_title.fk_music_title_id = music_title.id) "\
+                  "    ON music_album_title.fk_music_title_id = music_title.id "\
                   "  INNER JOIN music_album "\
                   "    ON music_album.id = music_album_title.fk_music_album_id ";
     bool AND = false;
@@ -1643,7 +1775,7 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
         NDatabase::debugLastQuery("getTitleListCount failed", query);
         return 0;
     }else {
-        NLOGD("NMusicDatabase", query.lastQuery());
+        //NLOGD("NMusicDatabase", query.lastQuery());
     }
 
     if (!query.first())
