@@ -1,5 +1,4 @@
-HEADERS += src/n_album_cover_updater_thread.h \
-    src/n_client_session.h \
+HEADERS += src/n_client_session.h \
     src/n_compat.h \
     src/n_compress.h \
     src/n_config.h \
@@ -23,6 +22,7 @@ HEADERS += src/n_album_cover_updater_thread.h \
     src/n_metadata_updater_thread.h \
     src/n_mime_type.h \
     src/n_music_database.h \
+    src/n_music_db_updater_thread.h \
     src/n_nawis_daemon.h \
     src/n_node.h \
     src/n_path.h \
@@ -41,7 +41,6 @@ HEADERS += src/n_album_cover_updater_thread.h \
     src/n_version.h
 
 SOURCES += src/main.cpp \
-    src/n_album_cover_updater_thread.cpp \
     src/n_client_session.cpp \
     src/n_compress.cpp \
     src/n_config.cpp \
@@ -65,6 +64,7 @@ SOURCES += src/main.cpp \
     src/n_metadata_updater_thread.cpp \
     src/n_mime_type.cpp \
     src/n_music_database.cpp \
+    src/n_music_db_updater_thread.cpp \
     src/n_nawis_daemon.cpp \
     src/n_node.cpp \
     src/n_path.cpp \

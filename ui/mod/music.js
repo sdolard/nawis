@@ -355,6 +355,10 @@ NMod.Music.Ui.load = function() {
 			root: 'data'
 	}, [{
 			name: 'album'
+	},{
+		name: 'frontCoverID3PictureFileHash'
+	},{
+		name: 'frontCoverPictureFileHash'
 	}]);
 	
 	
@@ -424,6 +428,31 @@ NMod.Music.Ui.load = function() {
 	/** 
 	* Create the resultGrid
 	*/
+	function albumSelectRenderer(val, p, record){
+		// Preview
+		var preview = '<img src="{0}" height="16" alt="Thumb" title="Thumb">';
+		var previewP = Ext.BLANK_IMAGE_URL;
+		if (record.data.frontCoverID3PictureFileHash.length) {
+			previewP = NLib.Path.root('api/music/id3picture/' + record.data.frontCoverID3PictureFileHash);
+		} else if (record.data.frontCoverPictureFileHash.length) {
+			previewP = NLib.Path.root('api/picture/thumb/' + record.data.frontCoverPictureFileHash);
+		}
+		preview = String.format(preview, previewP);
+		
+		// table
+		var table = '<table><tr><td>{0}</td><td>{1}</td></tr></table>';
+		if (Ext.isIE) {
+            table = '<table><tr><td width="32">{0}</td><td width="100%">{1}</td></tr></table>';
+        }
+        var album =  record.data.album;
+		if (record.data.album === "album-all") {
+			album = String.format('All ({0})', albumStore.getTotalCount() - 1);
+		} else if (record.data.album === "") {
+			album = 'Unknown';
+		}
+		return String.format(table, preview, album);
+	}
+	
 	var albumGrid = new Ext.ux.grid.livegrid.GridPanel({
 			id: 'NModMusicAlbumGrid',
 			store: albumStore,
@@ -435,15 +464,7 @@ NMod.Music.Ui.load = function() {
 						width: 20,
 						sortable: true,
 						dataIndex: 'album',
-						renderer: function(val, p, record){
-							if (record.data.album === "album-all") {
-								return String.format('All ({0})', albumStore.getTotalCount() - 1);
-							}
-							if (record.data.album === "") {
-								return 'Unknown';
-							}
-							return record.data.album;
-						}
+						renderer: albumSelectRenderer
 			}]),
 			stripeRows: true,
 			autoExpandColumn: 'albumCol',

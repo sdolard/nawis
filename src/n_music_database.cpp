@@ -28,6 +28,8 @@
 #include <QDateTime>
 #include <QSqlRecord>
 #include <QSqlDriver>
+#include <QFileInfo>
+#include <QDir>
 
 // App
 #include "n_path.h"
@@ -82,13 +84,15 @@ NMusicDatabase::~NMusicDatabase()
 
 void NMusicDatabase::updateDb(){
     // TODO: manage transaction here.
+    updateAlbumTable();
+    updateArtistTable();
+    updateGenreTable();
+    updateTitleTable();
+    updateAlbumTitleTable();
 
-    NMDB.updateAlbumTable();
-    NMDB.updateArtistTable();
-    NMDB.updateGenreTable();
-    NMDB.updateTitleTable();
-    NMDB.updateAlbumTitleTable();
-    NMDB.updateAlbumCover();
+    NDB.beginTransaction();
+    updateAlbumCover();
+    NDB.commitTransaction();
 }
 
 void NMusicDatabase::createAlbumTable()
@@ -96,6 +100,7 @@ void NMusicDatabase::createAlbumTable()
     QSqlQuery query(*m_db);
 
     // TODO: delete entries when no more used
+    // TODO: clear file_hash when file hash are deleted
     // Delete after update
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS music_album (" \
@@ -193,7 +198,6 @@ bool NMusicDatabase::populateAlbum()
     int field = query.record().indexOf("album");
 
     while (query.next()) {
-
         if (!insertAlbum(query.value(field).toString()))
             return false;
     }
@@ -762,74 +766,121 @@ bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
 
 bool NMusicDatabase::updateAlbumCover()
 {
-    NDB.beginTransaction();
-
-    // for each album
-    // for each album title
-    // looking title with id3_picture
-    // looking for picture in title directory
-    /*if (!populateAlbumCover())
-    {
-        NDB.abortTransaction();
-        return false;
-    }*/
-
-    NDB.commitTransaction();
-    return true;
-}
-
-/*bool NMusicDatabase::populateAlbumCover()
-{
+    // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
-
-    QString sql = "SELECT music_album.id "\
-                  "FROM music_album ";
+    QString sql;
+    sql = "SELECT music_album.id, music_album.name, file.hash, file.absolute_file_path, "\
+          "       file_metadata.has_id3_picture, "\
+          "       music_album.front_cover_picture_file_hash, music_album.back_cover_picture_file_hash, "\
+          "       music_album.front_cover_id3picture_file_hash, music_album.back_cover_id3picture_file_hash "\
+          "FROM music_album, music_album_title, music_title, file, file_metadata "\
+          "WHERE music_album.name <> \"\" "
+          "AND music_album.id = music_album_title.fk_music_album_id "\
+          "AND music_album_title.fk_music_title_id = music_title.id "\
+          "AND music_title.fk_file_id = file.id "\
+          "AND file.fk_file_metadata_id = file_metadata.id "\
+          "AND( front_cover_picture_file_hash is NULL "\
+          "OR back_cover_picture_file_hash is NULL "\
+          "OR front_cover_id3picture_file_hash is NULL "\
+          "OR back_cover_id3picture_file_hash is NULL)";
 
     if (!query.prepare(sql))
     {
-        NDatabase::debugLastQuery("populateAlbumCover prepare failed", query);
+        NDatabase::debugLastQuery("updateAlbumCover prepare failed", query);
         return false;
     }
 
-    if (!query.exec())
-    {
-        NDatabase::debugLastQuery("populateAlbumCover failed", query);
-        return false;
-    }
-
-    int fieldId = query.record().indexOf("id");
-
-
-    while (query.next()) {
-        if (!insertAlbumCover(query.value(fieldId).toInt()))
-            return false;
-    }
-
-    return true;
-}
-
-bool NMusicDatabase::insertAlbumCover(int albumId)
-{
-    QSqlQuery query(*m_db);
-    if (!query.prepare("INSERT INTO music_album_cover(fk_music_album_id) "\
-                       "VALUES(:albumId"\
-                       ")"))
-    {
-        NDatabase::debugLastQuery("insertAlbumCover prepare failed", query);
-        return false;
-    }
-
-    query.bindValue(":albumId", albumId);
     if (!query.exec())
     {
         // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertAlbumCover failed", query);
+        NDatabase::debugLastQuery("updateAlbumCover failed", query);
         return true;
     }
 
+    QHash<int/*album id*/, QString/*hash*/> fcifhHash;
+    QHash<int/*album id*/, QString/*hash*/> fcpfhHash;
+
+
+    int albumIdFieldIdx = query.record().indexOf("id");
+    //int albumNameFieldIdx = query.record().indexOf("name");
+    int absoluteFilePathFieldIdx = query.record().indexOf("absolute_file_path");
+    int hasId3PictureFieldIdx = query.record().indexOf("has_id3_picture");
+    int hashFieldIdx = query.record().indexOf("hash");
+
+    while (query.next()) {
+        int albumId = query.value(albumIdFieldIdx).toInt();
+        //QString albumName = query.value(albumNameFieldIdx).toString();
+        QString absoluteFilePath = query.value(absoluteFilePathFieldIdx).toString();
+        bool hasId3Picture = query.value(hasId3PictureFieldIdx).toBool();
+        QString fileHash = query.value(hashFieldIdx).toString();
+
+        // Front cover picture file hash
+        if (!fcpfhHash.contains(albumId))
+        {
+            QFileInfo fi( absoluteFilePath);
+            QDir dir = fi.absoluteDir();
+            QSqlQuery q(*m_db);
+            QString sql2;
+            sql2 = "SELECT hash, absolute_file_path "\
+                   "FROM file "\
+                   "WHERE fk_file_category_id=:fk_file_category_id "\
+                   "AND absolute_file_path LIKE :absoluteFilePath";
+
+            if (!q.prepare(sql2))
+            {
+                NDatabase::debugLastQuery("updateAlbumCover (2) prepare failed", q);
+                return false;
+            }
+
+            q.bindValue(":fk_file_category_id", NFileCategory_n::fileCategoryId(NFileCategory_n::fcPicture));
+            q.bindValue(":absoluteFilePath", QString("%1%").arg(dir.absolutePath()));
+            //NLOGD("dir.absolutePath()", dir.absolutePath());
+
+            if (!q.exec())
+            {
+                // uncomment for DEBUG if needed
+                NDatabase::debugLastQuery("updateAlbumCover (2) failed", q);
+                return true;
+            }
+            int hashIdx = q.record().indexOf("hash");
+            int absoluteFilePathIdx = q.record().indexOf("absolute_file_path");
+            while (q.next()) {
+                QString picHash = q.value(hashIdx).toString();
+                QString picAbsoluteFilePath = q.value(absoluteFilePathIdx).toString();
+                QFileInfo fiAbsoluteFilePath(picAbsoluteFilePath);
+                if (dir == fiAbsoluteFilePath.dir()){
+                    // TODO: use a regex
+                    // TODO: do a real selection between pics in dir
+                    // TODO: back cover, cd cover...
+                    QString baseName = fiAbsoluteFilePath.baseName();
+                    if ((baseName.contains("cover", Qt::CaseInsensitive) && baseName.contains("front", Qt::CaseInsensitive)) ||
+                        (baseName.contains("large", Qt::CaseInsensitive) && baseName.contains("AlbumArt", Qt::CaseInsensitive)) ||
+                        baseName.contains("cover", Qt::CaseInsensitive) ||
+                        baseName.contains("front", Qt::CaseInsensitive))
+                    {
+                        /*NLOGD(QString("pic for %1 (%2)").arg(albumName).arg(dir.absolutePath()),
+                              QString("%1, %2").arg(picHash).arg(picAbsoluteFilePath));*/
+                        fcpfhHash[albumId] = picHash;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        // front cover id3picture file hash
+        if (hasId3Picture){
+            if (!fcifhHash.contains(albumId))
+                fcifhHash[albumId] = fileHash;
+        }
+    }
+
+    insertAlbumFrontCoverPictureFileHash(fcpfhHash);
+    insertAlbumFrontCoverId3Picture(fcifhHash);
+
     return true;
 }
-*/
+
 
 bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, int totalCount,
                                   const QStringList & searches, int start, int limit,
@@ -1657,9 +1708,9 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     {
         NDatabase::debugLastQuery("getTitleList failed", query);
         return false;
-    } else {
+    }/* else {
         //NLOGD("NMusicDatabase", query.lastQuery());
-    }
+    }*/
 
     // Files fields
     int fieldId = query.record().indexOf("id");
@@ -1774,9 +1825,9 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
     {
         NDatabase::debugLastQuery("getTitleListCount failed", query);
         return 0;
-    }else {
+    }/*else {
         //NLOGD("NMusicDatabase", query.lastQuery());
-    }
+    }*/
 
     if (!query.first())
         return 0;
@@ -1815,16 +1866,13 @@ QString NMusicDatabase::jsFileStringToDBFileField(const QString & jsString)
     // Album
     if (jsString == "album")
         return "music_album.name";
-    //return "album";
 
     // Genre
     if (jsString == "genre")
         return "music_genre.name";
-    //return "genre";
 
     // Artist
     if (jsString == "artist")
-        //return "artist";
         return "music_artist.name";
 
     // File
@@ -1840,4 +1888,58 @@ QString NMusicDatabase::jsFileStringToDBFileField(const QString & jsString)
 
     Q_ASSERT_X(false, "NMusicDatabase::jsFileStringToDBFileField", qPrintable(QString("%1 is not mapped" ).arg(jsString)));
     return "added";
+}
+
+bool NMusicDatabase::insertAlbumFrontCoverPictureFileHash(const QHash<int/*album id*/, QString/*hash*/> & hash)
+{
+    QSqlQuery query(*m_db);
+    if (!query.prepare("UPDATE music_album "\
+                       "set front_cover_picture_file_hash=:fcpfh "\
+                       "WHERE id=:id"))
+    {
+        NDatabase::debugLastQuery("insertAlbumFrontCoverPictureFileHash prepare failed", query);
+        return false;
+    }
+
+    bool success = true;
+    QHashIterator<int, QString> i(hash);
+    while (i.hasNext()) {
+        i.next();
+        query.bindValue(":id", i.key());
+        query.bindValue(":fcpfh", i.value());
+        if (!query.exec())
+        {
+            success = false;
+            // uncomment for DEBUG if needed
+            NDatabase::debugLastQuery("insertAlbumFrontCoverPictureFileHash failed", query);
+        }
+    }
+    return success;
+}
+
+bool NMusicDatabase::insertAlbumFrontCoverId3Picture(const QHash<int/*album id*/, QString/*hash*/> & hash)
+{
+    QSqlQuery query(*m_db);
+    if (!query.prepare("UPDATE music_album "\
+                       "set front_cover_id3picture_file_hash=:fcifh "\
+                       "WHERE id=:id"))
+    {
+        NDatabase::debugLastQuery("insertAlbumFrontCoverId3Picture prepare failed", query);
+        return false;
+    }
+
+    bool success = true;
+    QHashIterator<int, QString> i(hash);
+    while (i.hasNext()) {
+        i.next();
+        query.bindValue(":id", i.key());
+        query.bindValue(":fcifh", i.value());
+        if (!query.exec())
+        {
+            success = false;
+            // uncomment for DEBUG if needed
+            NDatabase::debugLastQuery("insertAlbumFrontCoverId3Picture failed", query);
+        }
+    }
+    return success;
 }

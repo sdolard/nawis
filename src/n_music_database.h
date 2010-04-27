@@ -138,8 +138,8 @@ private:
 
 
     // album cover
-    /*bool populateAlbumCover();
-    bool insertAlbumCover(int albumId);*/
+    bool insertAlbumFrontCoverPictureFileHash(const QHash<int/*album id*/, QString/*hash*/> & hash);
+    bool insertAlbumFrontCoverId3Picture(const QHash<int/*album id*/, QString/*hash*/> & hash);
 };
 
 #endif //N_MUSIC_DATABASE_H

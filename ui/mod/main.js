@@ -290,6 +290,10 @@ NMod.Main.Ui.load = function(){
 						statusBar.showBusy('nawis server is working... (getting file metadata)');
 						return;
 					}
+					if (data.status === "JT_BUILD_MUSIC_DB") {
+						statusBar.showBusy('nawis server is working... (building music db)');
+						return;
+					}
 					throw new Error("Unmanaged server job type state: " + data.status);
 				}
 		});

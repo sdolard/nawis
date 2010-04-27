@@ -1,8 +1,8 @@
-#ifndef N_ALBUM_COVER_UPDATER_THREAD_H
-#define N_ALBUM_COVER_UPDATER_THREAD_H
+#ifndef N_MUSIC_DB_UPDATER_THREAD_H
+#define N_MUSIC_DB_UPDATER_THREAD_H
 
 /*
- * n_album_cover_updater_thread.h
+ * n_music_db_updater_thread.h
  * nawis
  *
  * Created by Sébastien Dolard on 04/09/09.
@@ -30,17 +30,14 @@
 // App
 #include "n_thread.h"
 
-class NAlbumCoverUpdaterThread: public NThread {
+class NMusicDbUpdaterThread: public NThread {
     Q_OBJECT
 public:
-    NAlbumCoverUpdaterThread(QObject * parent = 0 );
-    ~NAlbumCoverUpdaterThread();
+    NMusicDbUpdaterThread(QObject * parent = 0 );
+    ~NMusicDbUpdaterThread();
 
 protected:
     void run();
 };
 
-
-
-
-#endif // N_ALBUM_COVER_UPDATER_THREAD_H
+#endif // N_MUSIC_DB_UPDATER_THREAD_H

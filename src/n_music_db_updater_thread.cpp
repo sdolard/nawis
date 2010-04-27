@@ -3,18 +3,18 @@
 #include "n_log.h"
 #include "n_music_database.h"
 
-#include "n_album_cover_updater_thread.h"
+#include "n_music_db_updater_thread.h"
 
-NAlbumCoverUpdaterThread::NAlbumCoverUpdaterThread(QObject * parent)
+NMusicDbUpdaterThread::NMusicDbUpdaterThread(QObject * parent)
     :NThread(parent)
 {
 }
 
-NAlbumCoverUpdaterThread::~NAlbumCoverUpdaterThread()
+NMusicDbUpdaterThread::~NMusicDbUpdaterThread()
 {
 }
 
-void NAlbumCoverUpdaterThread::run()
+void NMusicDbUpdaterThread::run()
 {
     NMDB.updateDb();
 }

@@ -44,7 +44,7 @@ NServer::NServer(QObject *parent)
     m_dirWatcherJob        = NULL;
     m_hasherJob            = NULL;
     m_metadataUpdaterJob   = NULL;
-    m_albumCoverUpdaterJob = NULL;
+    m_musicDbUpdaterJob    = NULL;
     m_sharedDirectories    = NCONFIG.sharedDirectories();
     m_fileSuffixes         = NCONFIG.fileSuffixes();
 
@@ -277,9 +277,9 @@ void NServer::startJob(int job)
         pJob = (NThread**)&m_metadataUpdaterJob;
         break;
 
-    case JT_GET_ALBUM_COVER:
-        m_albumCoverUpdaterJob = new NAlbumCoverUpdaterThread();
-        pJob = (NThread**)&m_albumCoverUpdaterJob;
+    case JT_BUILD_MUSIC_DB:
+        m_musicDbUpdaterJob = new NMusicDbUpdaterThread();
+        pJob = (NThread**)&m_musicDbUpdaterJob;
         break;
 
     default:
@@ -324,8 +324,8 @@ void NServer::stopJob(int job)
         pJob = (NThread**)&m_metadataUpdaterJob;
         break;
 
-    case JT_GET_ALBUM_COVER:
-        pJob = (NThread**)&m_albumCoverUpdaterJob;
+    case JT_BUILD_MUSIC_DB:
+        pJob = (NThread**)&m_musicDbUpdaterJob;
         break;
 
     default:
@@ -416,7 +416,7 @@ const QString NServer::jobToString(int job)
     case JT_DB_UPDATE: return "JT_DB_UPDATE";
     case JT_HASH: return "JT_HASH";
     case JT_GET_METADATA: return "JT_GET_METADATA";
-    case JT_GET_ALBUM_COVER: return "JT_GET_ALBUM_COVER";
+    case JT_BUILD_MUSIC_DB: return "JT_BUILD_MUSIC_DB";
     default:
         Q_ASSERT_X(false, "NServer::jobToString", "Conversion missing.");
         return "";

@@ -11,7 +11,7 @@
 #include "n_db_updater.h"
 #include "n_hasher_thread.h"
 #include "n_metadata_updater_thread.h"
-#include "n_album_cover_updater_thread.h"
+#include "n_music_db_updater_thread.h"
 
 #define NSERVER (NServer::instance())
 
@@ -21,8 +21,8 @@
 #define JT_DB_UPDATE       0x02
 #define JT_HASH            0x03
 #define JT_GET_METADATA    0x04
-#define JT_GET_ALBUM_COVER 0x05
-#define JT_LAST            JT_GET_ALBUM_COVER
+#define JT_BUILD_MUSIC_DB  0x05
+#define JT_LAST            JT_BUILD_MUSIC_DB
 
 class NServer: public QObject
 {
@@ -56,7 +56,7 @@ private:
     NDirWatcherThread        *m_dirWatcherJob;
     NHasherThread            *m_hasherJob;
     NMetadataUpdaterThread   *m_metadataUpdaterJob;
-    NAlbumCoverUpdaterThread *m_albumCoverUpdaterJob;
+    NMusicDbUpdaterThread    *m_musicDbUpdaterJob;
     QString                   m_errorMessage;
     QTimer                    m_jobTimer;
     NDirList                  m_sharedDirectories;
