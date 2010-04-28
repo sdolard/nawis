@@ -595,6 +595,8 @@ NResponse & NTcpServerSocketServices::svcGetPictureThumb(const NClientSession & 
     response.httpHeader().setContentType(image.mimeType());
     response.removeDefaultCharset();
     response.add10yExpiresHttpHeader();
+    QString lastModified = NDate_n::toHTMLDateTime(fileInfo.lastModified());
+    response.httpHeader().setValue("Last-Modified", lastModified);
     return response;
 }
 
