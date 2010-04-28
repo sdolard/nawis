@@ -781,7 +781,7 @@ bool NMusicDatabase::updateAlbumCover()
     QSqlQuery query(*m_db);
     QString sql;
     sql = "SELECT music_album.id, music_album.name, file.hash, file.absolute_file_path, "\
-          "       file_metadata.has_id3_picture, "\
+          "       file_metadata.has_id3_picture, file.relative_path, "\
           "       music_album.front_cover_picture_file_hash, music_album.back_cover_picture_file_hash, "\
           "       music_album.front_cover_id3picture_file_hash, music_album.back_cover_id3picture_file_hash "\
           "FROM music_album, music_album_title, music_title, file, file_metadata "\
@@ -793,7 +793,8 @@ bool NMusicDatabase::updateAlbumCover()
           "AND( front_cover_picture_file_hash is NULL "\
           "OR back_cover_picture_file_hash is NULL "\
           "OR front_cover_id3picture_file_hash is NULL "\
-          "OR back_cover_id3picture_file_hash is NULL)";
+          "OR back_cover_id3picture_file_hash is NULL)"\
+          "GROUP BY file.relative_path";
 
     if (!query.prepare(sql))
     {
