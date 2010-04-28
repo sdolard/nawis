@@ -122,6 +122,7 @@ void NMusicDatabase::createAlbumTable()
 
 bool NMusicDatabase::updateAlbumTable()
 {
+    NLOGM("NMusicDatabase", "updateAlbumTable start");
     NDB.beginTransaction();
     if (!setAlbumDeleted())
     {
@@ -142,6 +143,7 @@ bool NMusicDatabase::updateAlbumTable()
     }
 
     NDB.commitTransaction();
+    NLOGM("NMusicDatabase", "updateAlbumTable ends");
     return true;
 }
 
@@ -261,6 +263,7 @@ void NMusicDatabase::createArtistTable()
 
 bool NMusicDatabase::updateArtistTable()
 {
+    NLOGM("NMusicDatabase", "updateArtistTable start");
     NDB.beginTransaction();
     if (!setArtistDeleted())
     {
@@ -281,6 +284,7 @@ bool NMusicDatabase::updateArtistTable()
     }
 
     NDB.commitTransaction();
+    NLOGM("NMusicDatabase", "updateArtistTable ends");
     return true;
 }
 
@@ -402,6 +406,7 @@ void NMusicDatabase::createGenreTable()
 
 bool NMusicDatabase::updateGenreTable()
 {
+    NLOGM("NMusicDatabase", "updateGenreTable start");
     NDB.beginTransaction();
     if (!setGenreDeleted())
     {
@@ -422,6 +427,7 @@ bool NMusicDatabase::updateGenreTable()
     }
 
     NDB.commitTransaction();
+    NLOGM("NMusicDatabase", "updateGenreTable ends");
     return true;
 }
 
@@ -560,6 +566,7 @@ void NMusicDatabase::createTitleTable()
 
 bool NMusicDatabase::updateTitleTable()
 {
+    NLOGM("NMusicDatabase", "updateTitleTable start");
     NDB.beginTransaction();
 
     if (!populateTitle())
@@ -569,6 +576,7 @@ bool NMusicDatabase::updateTitleTable()
     }
 
     NDB.commitTransaction();
+    NLOGM("NMusicDatabase", "updateTitleTable ends");
     return true;
 }
 
@@ -694,6 +702,7 @@ void NMusicDatabase::createAlbumTitleTable()
 
 bool NMusicDatabase::updateAlbumTitleTable()
 {
+    NLOGM("NMusicDatabase", "updateAlbumTitleTable start");
     NDB.beginTransaction();
 
     if (!populateAlbumTitle())
@@ -703,6 +712,7 @@ bool NMusicDatabase::updateAlbumTitleTable()
     }
 
     NDB.commitTransaction();
+    NLOGM("NMusicDatabase", "updateAlbumTitleTable ends");
     return true;
 }
 
@@ -766,6 +776,7 @@ bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
 
 bool NMusicDatabase::updateAlbumCover()
 {
+    NLOGM("NMusicDatabase", "updateAlbumCover start");
     // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
     QString sql;
@@ -878,6 +889,7 @@ bool NMusicDatabase::updateAlbumCover()
     insertAlbumFrontCoverPictureFileHash(fcpfhHash);
     insertAlbumFrontCoverId3Picture(fcifhHash);
 
+    NLOGM("NMusicDatabase", "updateAlbumCover ends");
     return true;
 }
 
