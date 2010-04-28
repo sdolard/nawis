@@ -818,6 +818,19 @@ bool NMusicDatabase::updateAlbumCover()
     int hasId3PictureFieldIdx = query.record().indexOf("has_id3_picture");
     int hashFieldIdx = query.record().indexOf("hash");
 
+    QSqlQuery q(*m_db);
+    QString sql2;
+    sql2 = "SELECT hash, absolute_file_path "\
+           "FROM file "\
+           "WHERE fk_file_category_id=:fk_file_category_id "\
+           "AND absolute_file_path LIKE :absoluteFilePath";
+
+    if (!q.prepare(sql2))
+    {
+        NDatabase::debugLastQuery("updateAlbumCover (2) prepare failed", q);
+        return false;
+    }
+
     while (query.next()) {
         int albumId = query.value(albumIdFieldIdx).toInt();
         //QString albumName = query.value(albumNameFieldIdx).toString();
@@ -830,18 +843,6 @@ bool NMusicDatabase::updateAlbumCover()
         {
             QFileInfo fi( absoluteFilePath);
             QDir dir = fi.absoluteDir();
-            QSqlQuery q(*m_db);
-            QString sql2;
-            sql2 = "SELECT hash, absolute_file_path "\
-                   "FROM file "\
-                   "WHERE fk_file_category_id=:fk_file_category_id "\
-                   "AND absolute_file_path LIKE :absoluteFilePath";
-
-            if (!q.prepare(sql2))
-            {
-                NDatabase::debugLastQuery("updateAlbumCover (2) prepare failed", q);
-                return false;
-            }
 
             q.bindValue(":fk_file_category_id", NFileCategory_n::fileCategoryId(NFileCategory_n::fcPicture));
             q.bindValue(":absoluteFilePath", QString("%1%").arg(dir.absolutePath()));
