@@ -594,7 +594,7 @@ NResponse & NTcpServerSocketServices::svcGetPictureThumb(const NClientSession & 
     response.setData(image.getThumb());
     response.httpHeader().setContentType(image.mimeType());
     response.removeDefaultCharset();
-
+    response.add10yExpiresHttpHeader();
     return response;
 }
 
