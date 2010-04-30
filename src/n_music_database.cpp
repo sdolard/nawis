@@ -824,7 +824,12 @@ bool NMusicDatabase::updateAlbumCover()
     sql2 = "SELECT hash, absolute_file_path "\
            "FROM file "\
            "WHERE fk_file_category_id=:fk_file_category_id "\
-           "AND absolute_file_path LIKE :absoluteFilePath";
+           "AND absolute_file_path LIKE :absoluteFilePath "\
+           "AND (file_name LIKE \"%front%\" "\
+           "OR file_name LIKE \"%cover%\" "\
+           "OR file_name LIKE \"%albumart%\" "\
+           "OR file_name LIKE \"%large%\") "\
+           "ORDER BY size";
 
     if (!q.prepare(sql2))
     {
@@ -834,7 +839,6 @@ bool NMusicDatabase::updateAlbumCover()
 
     while (query.next()) {
         int albumId = query.value(albumIdFieldIdx).toInt();
-        //QString albumName = query.value(albumNameFieldIdx).toString();
         QString absoluteFilePath = query.value(absoluteFilePathFieldIdx).toString();
         bool hasId3Picture = query.value(hasId3PictureFieldIdx).toBool();
         QString fileHash = query.value(hashFieldIdx).toString();
@@ -858,24 +862,26 @@ bool NMusicDatabase::updateAlbumCover()
             int hashIdx = q.record().indexOf("hash");
             int absoluteFilePathIdx = q.record().indexOf("absolute_file_path");
             while (q.next()) {
-                QString picHash = q.value(hashIdx).toString();
                 QString picAbsoluteFilePath = q.value(absoluteFilePathIdx).toString();
                 QFileInfo fiAbsoluteFilePath(picAbsoluteFilePath);
                 if (dir == fiAbsoluteFilePath.dir()){
+                    QString picHash = q.value(hashIdx).toString();
                     // TODO: use a regex
                     // TODO: do a real selection between pics in dir
                     // TODO: back cover, cd cover...
-                    QString baseName = fiAbsoluteFilePath.baseName();
+                    fcpfhHash[albumId] = picHash;
+                    break;
+                    /*QString baseName = fiAbsoluteFilePath.baseName();
                     if ((baseName.contains("cover", Qt::CaseInsensitive) && baseName.contains("front", Qt::CaseInsensitive)) ||
                         (baseName.contains("large", Qt::CaseInsensitive) && baseName.contains("AlbumArt", Qt::CaseInsensitive)) ||
                         baseName.contains("cover", Qt::CaseInsensitive) ||
                         baseName.contains("front", Qt::CaseInsensitive))
                     {
-                        /*NLOGD(QString("pic for %1 (%2)").arg(albumName).arg(dir.absolutePath()),
-                              QString("%1, %2").arg(picHash).arg(picAbsoluteFilePath));*/
+                        //NLOGD(QString("pic for %1 (%2)").arg(albumName).arg(dir.absolutePath()),
+                        //      QString("%1, %2").arg(picHash).arg(picAbsoluteFilePath));
                         fcpfhHash[albumId] = picHash;
                         break;
-                    }
+                    }*/
                 }
             }
         }

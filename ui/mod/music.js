@@ -430,7 +430,7 @@ NMod.Music.Ui.load = function() {
 	*/
 	function albumSelectRenderer(val, p, record){
 		// Preview
-		var preview = '<img src="{0}" height="16" alt="Thumb" title="Thumb">';
+		var preview = '<img src="{0}" height="16" alt="" title="">';
 		var previewP = Ext.BLANK_IMAGE_URL;
 		if (record.data.frontCoverID3PictureFileHash.length) {
 			previewP = NLib.Path.root('api/music/id3picture/' + record.data.frontCoverID3PictureFileHash);
