@@ -9,7 +9,7 @@ Ext.namespace('NMod.Main.Ui');
 // Model dependencies
 NMod.Main.jsLoadTags = [{
 		name: "soundmanager2",
-		path: "lib/soundmanagerv2/soundmanagerv295a-20090717/script/"
+		path: "lib/soundmanagerv2/soundmanagerv295b-20100323/script/"
 }];
 
 NMod.Main.jsLoader = new JSLoad(NMod.Main.jsLoadTags, "./");
@@ -325,7 +325,7 @@ Ext.onReady(function(){
 		// Must be called as last !!!
 		NMod.Main.jsLoader.load(["soundmanager2"], function(){
 				soundManager.flashVersion = 9;
-				soundManager.url = 'lib/soundmanagerv2/soundmanagerv295a-20090717/swf'; // directory where SM2 .SWFs live
+				soundManager.url = 'lib/soundmanagerv2/soundmanagerv295b-20100323/swf'; // directory where SM2 .SWFs live
 				soundManager.waitForWindowLoad = true;
 				// Note that SounndManager will determine and append the appropriate .SWF file to the URL.
 				// disable debug mode after development/testing..
