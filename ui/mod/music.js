@@ -470,7 +470,15 @@ NMod.Music.Ui.load = function() {
 			autoExpandColumn: 'albumCol',
 			selModel: albumGridRowSelectionModel,
 			view: albumView,
-			loadMask: true
+			loadMask: true/*,
+			listeners: {
+				click: function(e){
+					var t = e.getTarget();
+					var v = this.getView();
+					var rowIdx = v.findRowIndex(t);
+					var record = this.getStore().getAt(rowIdx);
+				}
+			}*/
 	});
 	
 	
