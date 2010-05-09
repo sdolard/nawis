@@ -838,17 +838,16 @@ NMod.Music.Ui.load = function() {
 						border: false
 					},
 					items:[{
-							xtype: 'panel',
 							flex: 1,
-							cls: 'hbox-tabpanel-coverflow',
-							ctCls: 'hbox-tabpanel-coverflow'
+							bodyCssClass: 'hbox-tabpanel-coverflow'
 					},
 					{
 						id: 'tabpanel-coverflow',
-						width: 700,
+						width: 800,bodyCssClass: 'hbox-tabpanel-coverflow',
 						html: '<div id="musicCoverFlowContainer" ><div id="musicCoverFlow" class="imageflow"></div></div>'
 					},{
-						flex: 1
+						flex: 1,
+						bodyCssClass: 'hbox-tabpanel-coverflow'
 					}]
 				}
 				
@@ -891,23 +890,17 @@ NMod.Music.Ui.load = function() {
     						circular: true,
     						glideToStartID: false,
     						imageCursor: 'pointer',
-    						// TEST 1
+    						preloadImages: false,
     						reflectionP: 0.0,
-    						
-    						// TEST 2
-    						/*aspectRatio: 2.333, 
-    						imagesHeight: 0.5,
-    						*/
-    						
-    						// TEST 3
-    						/*aspectRatio: 3.0, 
+    						aspectRatio: 3.0, 
     						imagesM: 0.8, 
     						xStep: 70, 
     						percentLandscape: 66, 
     						percentOther: 50, 
-    						imageFocusMax: 3, */
+    						imageFocusMax: 4,
+    						imageFocusM: 1.3,
     						onClick: function(a){
-    							a.target.url;
+    							//a.target.url;
     						}
     				});
     			}

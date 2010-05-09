@@ -213,16 +213,16 @@ a:hover {
 .
 
 #hbox1-tabpanel-coverflow #hbox2-tabpanel-coverflow { 
-	background-color: black;
+	background-color: black !important;
 }
 .hbox-tabpanel-coverflow { 
-	background-color: black;
+	background-color: black !important;
 }
 
 #musicCoverFlowContainer {
 	position:relative;
-	margin-top:-50px; 
-	margin-bottom: -50px;
+	/*margin-top:-50px; 
+	margin-bottom: -50px;*/
 	background-color: black;
 }
 
