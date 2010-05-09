@@ -629,9 +629,17 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
                        "OR file_metadata.model LIKE :model%1) ").arg(i);
 
     // Sort and limit
-    sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
+    sql += QString("ORDER BY %1 %2 ").
            arg(jsFileStringToDBFileField(sort)).
            arg(stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -661,9 +669,13 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     if (fc != NFileCategory_n::fcAll)
         query.bindValue(":fk_file_category_id", (NFileCategory_n::fileCategoryId(fc)));
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     //TMP  if (!query.exec())
     if (!query.exec())
@@ -852,9 +864,17 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
         sql += "AND duplicated_file.fk_file_category_id = :fk_file_category_id ";
 
     // Sort and limit
-    sql += QString("ORDER BY duplicated_file.%1 %2 LIMIT :limit OFFSET :offset").
+    sql += QString("ORDER BY duplicated_file.%1 %2 ").
            arg(jsFileStringToDBFileField(sort)).
            arg(stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -875,9 +895,13 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     if (fc != NFileCategory_n::fcAll)
         query.bindValue(":fk_file_category_id", (NFileCategory_n::fileCategoryId(fc)));
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {
@@ -1286,10 +1310,17 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
+    sql += QString("ORDER BY %1 %2 ").
            arg(stringToUserField(sort)).
            arg(stringToSortDirection(dir));
 
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -1305,9 +1336,13 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
         query.bindValue(QString(":email%1").arg(i), QString("%%1%").arg(s));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {

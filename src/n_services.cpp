@@ -231,7 +231,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "sort: &lt;sorted field&gt; // optionnal, default \"date\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON"\
         "<pre>{<br>"\
@@ -557,7 +557,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "search: &lt;text to search&gt; // optionnal<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal<br>"\
         "genre: &lt;music genre&gt; // optionnal<br>"\
         "artist: &lt;music artist&gt; // optionnal", // params
@@ -591,7 +591,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "search: &lt;text to search&gt; // optionnal<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal<br>"\
         "genre: &lt;music genre&gt; // optionnal", // params
         "", // postData
@@ -620,7 +620,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "search: &lt;text to search&gt; // optionnal<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal", // params
         "", // postData
         "JSON<pre>{<br>"\
@@ -663,7 +663,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"album\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"<br>"\
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal<br>"\
         "genre: &lt;music genre&gt; // optionnal<br>"\
         "artist: &lt;music artist&gt; // optionnal<br>"\
@@ -706,7 +706,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "search: &lt;text to search&gt; // optionnal<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"",  // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit",  // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -784,7 +784,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -819,7 +819,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -854,7 +854,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -910,7 +910,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -945,7 +945,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -989,7 +989,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1024,7 +1024,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "sort: &lt;any data field&gt; // Field to sort, optionnal, default \"added\"<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1080,7 +1080,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1116,7 +1116,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1151,7 +1151,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1187,7 +1187,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1223,7 +1223,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1259,7 +1259,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -1295,7 +1295,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
-        "limit: &lt;result limit&gt; // optionnal, default \"25\"", // params
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
         "", // postData
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\

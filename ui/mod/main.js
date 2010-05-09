@@ -50,21 +50,22 @@ NMod.Main.Ui.load = function(){
 	];
 	NMod.Main.Ui.categoryStore.loadData(categoryData);
 	
-	/*
+	/**
 	* Preference components
 	*/
 	NMod.Preferences.Ui.load();
 	
-	/*
+	/**
 	* About components
 	*/
 	NMod.About.Ui.load();
 	
 	
 	// nawis label
-	var nawisLabel = new Ext.form.Label({
-			text: NVersion
-	});
+	var nawisLabel = { 
+		xtype: 'label',
+		text: NVersion
+	};
 	
 	// Logout action
 	var logoutAction = new Ext.Action({
@@ -82,18 +83,18 @@ NMod.Main.Ui.load = function(){
 			iconCls: 'ks-action-logout-icon'
 	});
 	
-	/*
+	/**
 	* MusicPlayer Components
 	*/
 	NMod.MusicPlayer.Ui.load();
 	
-	/*
+	/**
 	* Search Components
 	*/
 	NMod.Search.Ui.load();
 	
 	
-	/*
+	/**
 	* Music Components
 	*/
 	NMod.Music.Ui.load();
@@ -105,7 +106,7 @@ NMod.Main.Ui.load = function(){
 	
 	
 	
-	/*
+	/**
 	* Application Tabs
 	*/
 	var applicationTabs = new Ext.TabPanel({
@@ -214,6 +215,7 @@ NMod.Main.Ui.load = function(){
 	* Application ViewPort
 	*/
 	var applicationViewPort = new Ext.Viewport({
+			id: 'application-view-port',
 			layout: 'border',
 			items: [new Ext.Toolbar({
 						region: 'north',

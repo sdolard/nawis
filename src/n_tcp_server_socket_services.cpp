@@ -1144,6 +1144,7 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
+    // TODO: manage limit = -1 to get all album
     bool succeed = NMDB.getAlbumList(se, svData, totalCount, searches, start,
                                          limit, dir, year, genre, artist);
     setJsonRootReponse(svRoot, totalCount, succeed);

@@ -780,21 +780,20 @@ bool NMusicDatabase::updateAlbumCover()
     // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
     QString sql;
-    sql = "SELECT music_album.id, music_album.name, file.hash, file.absolute_file_path, "\
+    /*sql = "SELECT music_album.id, music_album.name, file.hash, file.absolute_file_path, "\
           "       file_metadata.has_id3_picture, file.relative_path, "\
           "       music_album.front_cover_picture_file_hash, music_album.back_cover_picture_file_hash, "\
-          "       music_album.front_cover_id3picture_file_hash, music_album.back_cover_id3picture_file_hash "\
+          "       music_album.front_cover_id3picture_file_hash, music_album.back_cover_id3picture_file_hash "*/
+
+
+    sql = "SELECT music_album.id, file.hash, file.absolute_file_path, file_metadata.has_id3_picture "\
           "FROM music_album, music_album_title, music_title, file, file_metadata "\
           "WHERE music_album.name <> \"\" "
           "AND music_album.id = music_album_title.fk_music_album_id "\
           "AND music_album_title.fk_music_title_id = music_title.id "\
           "AND music_title.fk_file_id = file.id "\
           "AND file.fk_file_metadata_id = file_metadata.id "\
-          "AND( front_cover_picture_file_hash is NULL "\
-          "OR back_cover_picture_file_hash is NULL "\
-          "OR front_cover_id3picture_file_hash is NULL "\
-          "OR back_cover_id3picture_file_hash is NULL)"\
-          "GROUP BY file.relative_path";
+          "GROUP BY music_album.name, file.relative_path";
 
     if (!query.prepare(sql))
     {
@@ -809,18 +808,14 @@ bool NMusicDatabase::updateAlbumCover()
         return true;
     }
 
-    QHash<int/*album id*/, QString/*hash*/> fcifhHash;
-    QHash<int/*album id*/, QString/*hash*/> fcpfhHash;
-
-
     int albumIdFieldIdx = query.record().indexOf("id");
-    //int albumNameFieldIdx = query.record().indexOf("name");
     int absoluteFilePathFieldIdx = query.record().indexOf("absolute_file_path");
     int hasId3PictureFieldIdx = query.record().indexOf("has_id3_picture");
     int hashFieldIdx = query.record().indexOf("hash");
 
     QSqlQuery q(*m_db);
     QString sql2;
+    // TODO: check picture proportions ?
     sql2 = "SELECT hash, absolute_file_path "\
            "FROM file "\
            "WHERE fk_file_category_id=:fk_file_category_id "\
@@ -829,7 +824,7 @@ bool NMusicDatabase::updateAlbumCover()
            "OR file_name LIKE \"%cover%\" "\
            "OR file_name LIKE \"%albumart%\" "\
            "OR file_name LIKE \"%large%\") "\
-           "ORDER BY size";
+           "ORDER BY size DESC";
 
     if (!q.prepare(sql2))
     {
@@ -837,16 +832,26 @@ bool NMusicDatabase::updateAlbumCover()
         return false;
     }
 
+    // Files to add
+    QHash<int/*album id*/, QString/*hash*/> fcifhHash; // File cover id3 file hash
+    QHash<int/*album id*/, QString/*hash*/> fcpfhHash; // File cover picture file hash
+
     while (query.next()) {
         int albumId = query.value(albumIdFieldIdx).toInt();
-        QString absoluteFilePath = query.value(absoluteFilePathFieldIdx).toString();
-        bool hasId3Picture = query.value(hasId3PictureFieldIdx).toBool();
-        QString fileHash = query.value(hashFieldIdx).toString();
+
+        // front cover id3picture file hash
+        if (!fcifhHash.contains(albumId)){
+            bool hasId3Picture = query.value(hasId3PictureFieldIdx).toBool();
+            if (hasId3Picture)
+                fcifhHash[albumId] = query.value(hashFieldIdx).toString();
+        }
+
 
         // Front cover picture file hash
         if (!fcpfhHash.contains(albumId))
         {
-            QFileInfo fi( absoluteFilePath);
+            QString absoluteFilePath = query.value(absoluteFilePathFieldIdx).toString();
+            QFileInfo fi(absoluteFilePath);
             QDir dir = fi.absoluteDir();
 
             q.bindValue(":fk_file_category_id", NFileCategory_n::fileCategoryId(NFileCategory_n::fcPicture));
@@ -855,7 +860,6 @@ bool NMusicDatabase::updateAlbumCover()
 
             if (!q.exec())
             {
-                // uncomment for DEBUG if needed
                 NDatabase::debugLastQuery("updateAlbumCover (2) failed", q);
                 return true;
             }
@@ -871,26 +875,8 @@ bool NMusicDatabase::updateAlbumCover()
                     // TODO: back cover, cd cover...
                     fcpfhHash[albumId] = picHash;
                     break;
-                    /*QString baseName = fiAbsoluteFilePath.baseName();
-                    if ((baseName.contains("cover", Qt::CaseInsensitive) && baseName.contains("front", Qt::CaseInsensitive)) ||
-                        (baseName.contains("large", Qt::CaseInsensitive) && baseName.contains("AlbumArt", Qt::CaseInsensitive)) ||
-                        baseName.contains("cover", Qt::CaseInsensitive) ||
-                        baseName.contains("front", Qt::CaseInsensitive))
-                    {
-                        //NLOGD(QString("pic for %1 (%2)").arg(albumName).arg(dir.absolutePath()),
-                        //      QString("%1, %2").arg(picHash).arg(picAbsoluteFilePath));
-                        fcpfhHash[albumId] = picHash;
-                        break;
-                    }*/
                 }
             }
-        }
-
-
-        // front cover id3picture file hash
-        if (hasId3Picture){
-            if (!fcifhHash.contains(albumId))
-                fcifhHash[albumId] = fileHash;
         }
     }
 
@@ -956,9 +942,17 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
     }
 
-    // Sort and limit
-    sql += QString("GROUP BY music_album.name ORDER BY music_album.name %2 LIMIT :limit OFFSET :offset").
+    // Sort
+    sql += QString("GROUP BY music_album.name ORDER BY music_album.name ").
            arg(NDatabase::stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -980,9 +974,13 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         query.bindValue(QString(":title%1").arg(i), QString("%%1%").arg(searches.at(i)));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {
@@ -1178,9 +1176,16 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_artist.name ORDER BY music_artist.name %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_artist.name ORDER BY music_artist.name %2 ").
            arg(NDatabase::stringToSortDirection(dir));
 
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -1200,9 +1205,13 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
         query.bindValue(QString(":title%1").arg(i), QString("%%1%").arg(searches.at(i)));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {
@@ -1359,8 +1368,17 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %2 ").
            arg(NDatabase::stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
+
 
     if (!query.prepare(sql))
     {
@@ -1378,9 +1396,13 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
         query.bindValue(QString(":title%1").arg(i), QString("%%1%").arg(searches.at(i)));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {
@@ -1520,8 +1542,16 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_title.year ORDER BY music_title.year %2 LIMIT :limit OFFSET :offset").
+    sql += QString("GROUP BY music_title.year ORDER BY music_title.year %2 ").
            arg(NDatabase::stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -1537,9 +1567,13 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
         query.bindValue(QString(":title%1").arg(i), QString("%%1%").arg(searches.at(i)));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     if (!query.exec())
     {
@@ -1692,9 +1726,17 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString(" ORDER BY %1 %2 LIMIT :limit OFFSET :offset").
+    sql += QString(" ORDER BY %1 %2 ").
            arg(jsFileStringToDBFileField(sort)).
            arg(NDatabase::stringToSortDirection(dir));
+
+    // limit
+    if (limit != -1)
+        sql += "LIMIT :limit ";
+
+    // offset
+    if (start != 0)
+        sql += "OFFSET :offset ";
 
     if (!query.prepare(sql))
     {
@@ -1719,9 +1761,13 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         query.bindValue(QString(":title%1").arg(i), QString("%%1%").arg(searches.at(i)));
     }
 
-    // Limit, start
-    query.bindValue(":limit", limit);
-    query.bindValue(":offset", start);
+    // Limit
+    if (limit != -1)
+        query.bindValue(":limit", limit);
+
+    // start
+    if (start != 0)
+        query.bindValue(":offset", start);
 
     //TMP  if (!query.exec())
     if (!query.exec())

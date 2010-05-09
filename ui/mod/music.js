@@ -8,6 +8,8 @@ Ext.namespace('NMod.Music.Ui');
 * Load module function
 */
 NMod.Music.Ui.load = function() {
+	var imageFlowInstance;
+	
 	if (NMod.Music.Ui.loaded !== undefined) {
 		return;
 	}
@@ -470,15 +472,7 @@ NMod.Music.Ui.load = function() {
 			autoExpandColumn: 'albumCol',
 			selModel: albumGridRowSelectionModel,
 			view: albumView,
-			loadMask: true/*,
-			listeners: {
-				click: function(e){
-					var t = e.getTarget();
-					var v = this.getView();
-					var rowIdx = v.findRowIndex(t);
-					var record = this.getStore().getAt(rowIdx);
-				}
-			}*/
+			loadMask: true
 	});
 	
 	
@@ -615,9 +609,9 @@ NMod.Music.Ui.load = function() {
 	
 	// Research
 	function setSearchParam(store, url){
-		var el = document.getElementById("NModMusicSearchTextField");
+		var el = document.getElementById("nmod-music-search-text-field");
 		if (el !== null) {
-			var searchValue = document.getElementById("NModMusicSearchTextField").value;
+			var searchValue = document.getElementById("nmod-music-search-text-field").value;
 			if (searchValue !== emptySearchText) {
 				searchValue = NLib.Convert.toParamValue(searchValue);
 				store.proxy.setUrl(NLib.Path.root(url + "?search=" + searchValue), true);
@@ -710,19 +704,21 @@ NMod.Music.Ui.load = function() {
 	* Album Renderer
 	*/
 	function albumRenderer(val, p, record){
-		var preview = '<img src="';
+		// Preview
+		var preview = '<img src="{0}" height="16" alt="" title="">';
+		var previewP = Ext.BLANK_IMAGE_URL;
 		if (record.data.hasID3Picture) {
-			preview += NLib.Path.root('api/music/id3picture/' + record.data.hash);
-		} else {
-			preview += Ext.BLANK_IMAGE_URL;
+			previewP = NLib.Path.root('api/music/id3picture/' + record.data.hash);
 		}
-		preview += '" height="16" alt="Thumb" title="Thumb">';
+		preview = String.format(preview, previewP);
+		
+		// table
+		var table = '<table><tr><td>{0}</td><td>{1}</td></tr></table>';
 		if (Ext.isIE) {
-            return '<table><tr><td width="32">' + preview + '</td><td width="100%">' + record.data.album + '</td></tr></table>';
+            table = '<table><tr><td width="32">{0}</td><td width="100%">{1}</td></tr></table>';
         }
-        else {
-            return '<table><tr><td>' + preview + '</td><td>' + record.data.album + '</td></tr></table>';
-        }
+        
+		return String.format(table, preview, record.data.album);
 	}
 	
 	
@@ -802,36 +798,141 @@ NMod.Music.Ui.load = function() {
 		searchStore.load();
 	}
 	
+	
 	/**
 	*
 	*/
-	var mainPanel = new Ext.Panel({
-			width: 700,
-			height: 500,
-			layout: 'border',
+	var musicCard = {
+			layout: 'card',
+			id: 'music-card',
+			height: 250,
+			region: 'north',
+			activeItem: 0,
+			deferredRender: true,
 			border: false,
-			items: [{
+			split: true, // enable resizing
+			minSize: 75, // defaults to 50
+			maxSize: 250, // defaults to 50
+			border: false,
+			items: [
+				{
 					xtype: 'panel',
+					id: 'music-card-search-item',
 					layout: 'hbox',
-					region: 'north',
 					border: false,
-					height: 150,
-					split: true, // enable resizing
-					minSize: 75, // defaults to 50
-					maxSize: 400,
 					layoutConfig: {
 						align: 'stretch',
 						pack: 'start'
 					},
 					items: [yearGrid, genreGrid, artistGrid, albumGrid]
-			}, titleGrid]
+				},
+				{
+					layout: 'hbox',
+					id: 'music-card-coverflow-item',
+					border: false,
+					layoutConfig: {
+						align: 'stretch',
+						pack: 'start'
+					},
+					defaults: {
+						border: false
+					},
+					items:[{
+							xtype: 'panel',
+							flex: 1,
+							cls: 'hbox-tabpanel-coverflow',
+							ctCls: 'hbox-tabpanel-coverflow'
+					},
+					{
+						id: 'tabpanel-coverflow',
+						width: 700,
+						html: '<div id="musicCoverFlowContainer" ><div id="musicCoverFlow" class="imageflow"></div></div>'
+					},{
+						flex: 1
+					}]
+				}
+				
+			]
+    };
+    
+    
+    function applyAlbumCover(){
+    	if (imageFlowInstance) {
+    		return;
+    	}
+    	var dh = Ext.DomHelper; 
+    	var html = '<img src="{0}" longdesc="{1}" width="200" height="200" alt="{2}"/>';
+    	var tpl = new Ext.DomHelper.createTemplate(html);
+    	var params = {};
+    	setBaseParams(params, true, true, true, false);
+    	
+    	//for
+    	
+    	Ext.Ajax.request({
+    			url: NLib.Path.root('api/music/album?limit=-1'),
+    			method: 'GET',
+    			success: function (response){
+    				var data = Ext.util.JSON.decode(response.responseText);
+    				Ext.each(data.data, function(album){
+    						var cover = NLib.Path.root('ui/res/nocover.jpg');
+    						if (album.frontCoverPictureFileHash){
+    							cover = NLib.Path.root(String.format('api/picture/resize/{0}?width=200&height=200', album.frontCoverPictureFileHash));
+    						} else if (album.frontCoverID3PictureFileHash) {
+    							cover = NLib.Path.root('api/music/id3picture/' + album.frontCoverID3PictureFileHash);
+    						}
+    						tpl.append('musicCoverFlow', [cover, album.album, album.album]);
+    				});
+    				
+    				imageFlowInstance = new ImageFlow();
+    				imageFlowInstance.init({
+    						ImageFlowID: 'musicCoverFlow' , 
+    						reflections: false, 
+    						buttons: true,
+    						circular: true,
+    						glideToStartID: false,
+    						imageCursor: 'pointer',
+    						// TEST 1
+    						reflectionP: 0.0,
+    						
+    						// TEST 2
+    						/*aspectRatio: 2.333, 
+    						imagesHeight: 0.5,
+    						*/
+    						
+    						// TEST 3
+    						/*aspectRatio: 3.0, 
+    						imagesM: 0.8, 
+    						xStep: 70, 
+    						percentLandscape: 66, 
+    						percentOther: 50, 
+    						imageFocusMax: 3, */
+    						onClick: function(a){
+    							a.target.url;
+    						}
+    				});
+    			}
+    	});
+    }
+    
+	
+	/**
+	*
+	*/
+	var mainPanel = new Ext.Panel({
+			id: 'music-main-panel',
+			width: 700,
+			height: 500,
+			layout: 'border',
+			border: false,
+			items: [musicCard, titleGrid]
 	});
+	
 	
 	/** 
 	* Search TextField
 	*/
 	var searchTextField = new Ext.form.TriggerField({
-			id: 'NModMusicSearchTextField',
+			id: 'nmod-music-search-text-field',
 			width: 200,
 			emptyText: emptySearchText,
 			hideLabel: true,
@@ -843,7 +944,7 @@ NMod.Music.Ui.load = function() {
 			listeners: {
 				render: function(t){
 					var searchTextField = new Ext.ToolTip({
-							target: 'NModMusicSearchTextField',
+							target: 'nmod-music-search-text-field',
 							html: 'Enter here what you are looking for. An artist name, album... You can set many words. Ex: 2006 ACDC'
 					});
 				},
@@ -866,13 +967,7 @@ NMod.Music.Ui.load = function() {
 			iconCls: 'ks-action-search-music-icon'
 	});
 	
-	/*var searchTextItem = new Ext.Toolbar.TextItem({
-	text: 'test'
-	});
 	
-	function updateSearchTextItem(){
-	searchTextItem.setText('');
-	}*/
 	/**
 	* Used in top toolbar
 	*/
@@ -889,7 +984,27 @@ NMod.Music.Ui.load = function() {
 	*/
 	var searchToolBar = new Ext.Toolbar({
 			id: 'NModMusicSearchToolBar',
-			items: [searchTextField, ' ', searchAction, /*' ', searchTextItem,*/ '->', searchDisplayedText]
+			items: [searchTextField, ' ', searchAction, '-',{
+					text: 'Cover flow',
+					iconCls: 'ks-action-search-coverflow-icon',
+					enableToggle: true,
+					toggleHandler: function(button, state){
+						Ext.getCmp('nmod-music-search-text-field').setDisabled(state);
+						searchAction.setDisabled(state);
+						var cardCt = Ext.getCmp('music-card');
+						if(state){
+							cardCt.getLayout().setActiveItem('music-card-coverflow-item');
+							cardCt.setHeight(250);
+							
+							Ext.getCmp('application-view-port').doLayout();
+							applyAlbumCover();
+							return;
+						}
+						cardCt.getLayout().setActiveItem('music-card-search-item');
+						
+					},
+					pressed: false
+			}, '->', searchDisplayedText]
 	});
 	
 	function getNextMusicRecordCallback(){

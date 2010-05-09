@@ -23,6 +23,10 @@ echo "Updating ui libs..."
 [ ! -f soundmanagerv295b-20100323.zip ] && wget "http://www.schillmania.com/projects/soundmanager2/download/soundmanagerv295b-20100323.zip" && rm -rf soundmanagerv2
 [ ! -d soundmanagerv2 ] && unzip soundmanagerv295b-20100323.zip -d soundmanagerv2
 
+# image flow
+[ ! -f "ImageFlow_1.3.0.zip" ] && wget "http://finnrudolph.de/content/ImageFlow_1.3.0.zip"
+[ ! -d "ImageFlow_1.3.0" ] && unzip "ImageFlow_1.3.0.zip" -d "imageflow_1.3.0"
+
 # jsoad
 # wget http://jsload.googlecode.com/files/JSLoad-v0.9.zip && unzip JSLoad-v0.9.zip -d jsload
 
