@@ -30,6 +30,7 @@
 #include <QSqlDriver>
 #include <QFileInfo>
 #include <QDir>
+#include <QSet>
 
 // App
 #include "n_path.h"
@@ -106,6 +107,7 @@ void NMusicDatabase::createAlbumTable()
             "CREATE TABLE IF NOT EXISTS music_album (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
             "name TEXT UNIQUE,"\
+            "main_artist TEXT,"\
             "deleted BOOLEAN DEFAULT 0 NOT NULL," \
             "front_cover_picture_file_hash TEXT," \
             "back_cover_picture_file_hash TEXT," \
@@ -179,11 +181,16 @@ bool NMusicDatabase::populateAlbum()
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT DISTINCT album "\
+    QString sql = "SELECT DISTINCT album, artist, ("\
+                  "    SELECT COUNT(DISTINCT artist) "\
+                  "    FROM file_metadata AS fm "\
+                  "    WHERE fm.album = file_metadata.album"\
+                  ") AS artist_number "\
                   "FROM file, file_metadata "\
                   "WHERE file.fk_file_metadata_id = file_metadata.id "\
                   "AND album IS NOT NULL "\
-                  "AND file.hash <> '' ";
+                  "AND album <> '' "\
+                  "AND file.hash <> ''";
 
     if (!query.prepare(sql))
     {
@@ -197,27 +204,38 @@ bool NMusicDatabase::populateAlbum()
         return false;
     }
 
-    int field = query.record().indexOf("album");
-
+    int albumField = query.record().indexOf("album");
+    int artistField = query.record().indexOf("artist");
+    int artistNumberField = query.record().indexOf("artist_number");
+    QSet<QString/*album*/> addedAlbums;
+    QString album, mainArtist;
     while (query.next()) {
-        if (!insertAlbum(query.value(field).toString()))
+        mainArtist.clear();
+        if (query.value(artistNumberField).toInt() == 1)
+            mainArtist = query.value(artistField).toString();
+        album = query.value(albumField).toString();
+        if (addedAlbums.contains(album))
+            continue;
+        addedAlbums.insert(album);
+        if (!insertAlbum(album, mainArtist))
             return false;
     }
 
     return true;
 }
 
-bool NMusicDatabase::insertAlbum(const QString & albumName)
+bool NMusicDatabase::insertAlbum(const QString & albumName, const QString & mainArtistName)
 {
     QSqlQuery query(*m_db);
-    if (!query.prepare("INSERT INTO music_album (name) "\
-                       "VALUES(:name)"))
+    if (!query.prepare("INSERT INTO music_album (name, main_artist) "\
+                       "VALUES(:name, :mainArtist)"))
     {
         NDatabase::debugLastQuery("insertAlbum prepare failed", query);
         return false;
     }
 
     query.bindValue(":name", albumName);
+    query.bindValue(":mainArtist", mainArtistName);
 
     if (!query.exec())
     {
@@ -895,7 +913,8 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT music_album.name album, music_album.front_cover_picture_file_hash fcpfh, "\
+    QString sql = "SELECT music_album.name album, music_album.main_artist artist, "\
+                  "       music_album.front_cover_picture_file_hash fcpfh, "\
                   "       music_album.back_cover_picture_file_hash bcpfh, "\
                   "       music_album.front_cover_id3picture_file_hash fcipfh, "\
                   "       music_album.back_cover_id3picture_file_hash bcipfh "\
@@ -991,6 +1010,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }
 
     int fieldAlbum = query.record().indexOf("album");
+    int fieldMainArtist = query.record().indexOf("artist");
     int fieldFrontCoverPicture = query.record().indexOf("fcpfh");
     int fieldBackCoverPicture = query.record().indexOf("bcpfh");
     int fieldFrontCoverID3Picture = query.record().indexOf("fcipfh");
@@ -1007,6 +1027,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         dataArray.setProperty(i, svAlbum);
         i++;
         svAlbum.setProperty("album", QScriptValue("album-all"));
+        svAlbum.setProperty("mainArtist", "");
         svAlbum.setProperty("frontCoverPictureFileHash", "");
         svAlbum.setProperty("backCoverPictureFileHash", "");
         svAlbum.setProperty("frontCoverID3PictureFileHash", "");
@@ -1017,6 +1038,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         QScriptValue svAlbum = se.newObject();
         dataArray.setProperty(i, svAlbum);
         svAlbum.setProperty("album", query.value(fieldAlbum).toString());
+        svAlbum.setProperty("mainArtist", query.value(fieldMainArtist).toString());
         svAlbum.setProperty("frontCoverPictureFileHash", query.value(fieldFrontCoverPicture).toString());
         svAlbum.setProperty("backCoverPictureFileHash", query.value(fieldBackCoverPicture).toString());
         svAlbum.setProperty("frontCoverID3PictureFileHash", query.value(fieldFrontCoverID3Picture).toString());
@@ -1032,6 +1054,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         dataArray.setProperty(i, svAlbum);
         i++;
         svAlbum.setProperty("album", QScriptValue("album-all"));
+        svAlbum.setProperty("mainArtist", "");
         svAlbum.setProperty("frontCoverPictureFileHash", "");
         svAlbum.setProperty("backCoverPictureFileHash", "");
         svAlbum.setProperty("frontCoverID3PictureFileHash", "");

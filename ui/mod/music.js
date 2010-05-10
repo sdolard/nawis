@@ -355,13 +355,17 @@ NMod.Music.Ui.load = function() {
 			idProperty: 'album',
 			totalProperty: 'totalcount',
 			root: 'data'
-	}, [{
+	}, [
+		{
 			name: 'album'
-	},{
-		name: 'frontCoverID3PictureFileHash'
-	},{
-		name: 'frontCoverPictureFileHash'
-	}]);
+		},{
+			name: 'mainArtist'
+		},{
+			name: 'frontCoverID3PictureFileHash'
+		},{
+			name: 'frontCoverPictureFileHash'
+		}
+	]);
 	
 	
 	/**
@@ -451,6 +455,9 @@ NMod.Music.Ui.load = function() {
 			album = String.format('All ({0})', albumStore.getTotalCount() - 1);
 		} else if (record.data.album === "") {
 			album = 'Unknown';
+		}
+		if (record.data.mainArtist.length > 0){
+			album += ' - ' + record.data.mainArtist;
 		}
 		return String.format(table, preview, album);
 	}
@@ -879,7 +886,12 @@ NMod.Music.Ui.load = function() {
     						} else if (album.frontCoverID3PictureFileHash) {
     							cover = NLib.Path.root('api/music/id3picture/' + album.frontCoverID3PictureFileHash);
     						}
-    						tpl.append('musicCoverFlow', [cover, album.album, album.album]);
+    						var albumTitle = album.album;
+    						if (album.mainArtist.length > 0){
+    							albumTitle += ' - ' + album.mainArtist;
+    						}
+    						//tpl.append('musicCoverFlow', [cover, albumTitle, album.album]);
+    						tpl.append('musicCoverFlow', [cover, albumTitle, albumTitle]);
     				});
     				
     				imageFlowInstance = new ImageFlow();
@@ -890,7 +902,7 @@ NMod.Music.Ui.load = function() {
     						circular: true,
     						glideToStartID: false,
     						imageCursor: 'pointer',
-    						preloadImages: false,
+    						preloadImages: true,
     						reflectionP: 0.0,
     						aspectRatio: 3.0, 
     						imagesM: 0.8, 

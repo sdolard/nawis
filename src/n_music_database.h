@@ -111,7 +111,7 @@ private:
     // album
     bool setAlbumDeleted(const QString albumName = "", bool deleted = true);
     bool populateAlbum();
-    bool insertAlbum(const QString & albumName);
+    bool insertAlbum(const QString & albumName, const QString & mainArtistName);
     bool removeDeletedAlbum();
 
     // artist

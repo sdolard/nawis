@@ -570,6 +570,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
         "    \"album\":\"&lt;album name&gt;\" // string<br>"\
+        "    \"mainArtist\":\"&lt;main album artist&gt;\" // string, empty if no artist or more than one<br>"\
         "    \"frontCoverPictureFileHash\":\"&lt;front cover picture file hash&gt;\" // string, use with api/picture/thumb/<br>"\
         "    \"backCoverPictureFileHash\":\"&lt;back cover picture file hash&gt;\" // string, use with api/picture/thumb/<br>"\
         "    \"frontCoverID3PictureFileHash\":\"&lt;front cover id3 picture file hash&gt;\" // string, use with api/music/id3picture/<br>"\
