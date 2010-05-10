@@ -159,6 +159,9 @@ void NDatabase::createFileMetadataTable()
             "  DELETE from file_metadata WHERE id = OLD.fk_file_metadata_id; "\
             "END; "))
         debugLastQuery("file CREATE TRIGGER delete_file_metadata failed", query);
+
+    if (!query.exec("CREATE INDEX IF NOT EXISTS idx_file_metadata_album_index ON file_metadata(album)"))
+        debugLastQuery("file_metadata CREATE INDEX idx_file_metadata_album_index failed", query);
 }
 
 void NDatabase::createFileTable()
