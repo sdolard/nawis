@@ -1744,9 +1744,13 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         sql += QString("OR title LIKE :title%1) ").arg(i);
     }
 
+    // TODO: review this sort (not really friendly...)
     // Sort and limit
+    QString sortField = jsFileStringToDBFileField(sort);
+   if (sortField =="music_album.name")
+       sortField +=", music_title.track_number";
     sql += QString(" ORDER BY %1 %2 ").
-           arg(jsFileStringToDBFileField(sort)).
+           arg(sortField).
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit

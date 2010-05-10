@@ -880,6 +880,9 @@ NMod.Music.Ui.load = function() {
     			success: function (response){
     				var data = Ext.util.JSON.decode(response.responseText);
     				Ext.each(data.data, function(album){
+    						if (album == 'album-all'){
+    							return true;
+    						}
     						var cover = NLib.Path.root('ui/res/nocover.jpg');
     						if (album.frontCoverPictureFileHash){
     							cover = NLib.Path.root(String.format('api/picture/resize/{0}?width=200&height=200', album.frontCoverPictureFileHash));
@@ -890,8 +893,8 @@ NMod.Music.Ui.load = function() {
     						if (album.mainArtist.length > 0){
     							albumTitle += ' - ' + album.mainArtist;
     						}
-    						//tpl.append('musicCoverFlow', [cover, albumTitle, album.album]);
     						tpl.append('musicCoverFlow', [cover, albumTitle, albumTitle]);
+    						
     				});
     				
     				imageFlowInstance = new ImageFlow();
