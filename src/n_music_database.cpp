@@ -43,6 +43,8 @@
 
 #include "n_music_database.h"
 
+// drop table music_album; drop table music_artist; drop table music_album_title; drop table music_genre; drop table music_title;
+
 NMusicDatabase * NMusicDatabase::m_instance = NULL;
 
 NMusicDatabase & NMusicDatabase::instance(QSqlDatabase *db)
@@ -798,11 +800,6 @@ bool NMusicDatabase::updateAlbumCover()
     // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
     QString sql;
-    /*sql = "SELECT music_album.id, music_album.name, file.hash, file.absolute_file_path, "\
-          "       file_metadata.has_id3_picture, file.relative_path, "\
-          "       music_album.front_cover_picture_file_hash, music_album.back_cover_picture_file_hash, "\
-          "       music_album.front_cover_id3picture_file_hash, music_album.back_cover_id3picture_file_hash "*/
-
 
     sql = "SELECT music_album.id, file.hash, file.absolute_file_path, file_metadata.has_id3_picture "\
           "FROM music_album, music_album_title, music_title, file, file_metadata "\
@@ -833,7 +830,6 @@ bool NMusicDatabase::updateAlbumCover()
 
     QSqlQuery q(*m_db);
     QString sql2;
-    // TODO: check picture proportions ?
     sql2 = "SELECT hash, absolute_file_path "\
            "FROM file "\
            "WHERE fk_file_category_id=:fk_file_category_id "\
@@ -962,7 +958,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }
 
     // Sort
-    sql += QString("GROUP BY music_album.name ORDER BY music_album.name ").
+    sql += QString("GROUP BY music_album.name ORDER BY music_album.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1005,9 +1001,9 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     {
         NDatabase::debugLastQuery("getAlbumList failed", query);
         return false;
-    } else {
+    }/* else {
         NLOGD("NMusicDatabase", query.lastQuery());
-    }
+    }*/
 
     int fieldAlbum = query.record().indexOf("album");
     int fieldMainArtist = query.record().indexOf("artist");
@@ -1138,9 +1134,9 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
     {
         NDatabase::debugLastQuery("getAlbumListCount failed", query);
         return 0;
-    } else {
+    }/* else {
         NLOGD("NMusicDatabase", query.lastQuery());
-    }
+    }*/
 
     if (!query.first())
         return 0;
@@ -1199,7 +1195,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_artist.name ORDER BY music_artist.name %2 ").
+    sql += QString("GROUP BY music_artist.name ORDER BY music_artist.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1391,7 +1387,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %2 ").
+    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1565,7 +1561,7 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_title.year ORDER BY music_title.year %2 ").
+    sql += QString("GROUP BY music_title.year ORDER BY music_title.year %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit

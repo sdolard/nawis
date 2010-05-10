@@ -685,9 +685,9 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
     {
         debugLastQuery("fileList failed", query);
         return false;
-    } else {
+    }/* else {
         NLOGD("NDatabase", QString("  %1").arg(query.lastQuery()));
-    }
+    }*/
 
     // Files fields
     int fieldId = query.record().indexOf("id");
