@@ -147,10 +147,26 @@ NMod.MusicPlayer.Ui.load = function(){
     					}
     			});
     			
-    			if (currentMusic.hasID3Picture) { 
+    			if (currentMusic.hasID3Picture ||
+    				currentMusic.frontCoverID3PictureFileHash.length > 0 ||
+    			currentMusic.frontCoverPictureFileHash.length > 0) { 
+    				var api;
+    				var hash;
+    				if (currentMusic.frontCoverID3PictureFileHash.length) {
+    					api= 'api/music/id3picture/';
+    					hash = currentMusic.frontCoverID3PictureFileHash;
+    				} else if (currentMusic.frontCoverPictureFileHash.length) {
+    					api = 'api/picture/thumb/';
+    					hash = currentMusic.frontCoverPictureFileHash;
+    				} else if (currentMusic.hasID3Picture) {
+    					api = 'api/music/id3picture/';
+    					hash = currentMusic.hash;
+    				}
+		
     				NMod.PicturePreview.Ui.overwrite({
+    						api: api,
     						isMusic: true,
-    						hash: currentMusic.hash,
+    						hash: hash,
     						sizeString: '',
     						name: currentMusic.album
     				});
@@ -350,7 +366,10 @@ NMod.MusicPlayer.Ui.load = function(){
             album: record.data.album,
             artist: record.data.artist,
             hash: record.data.hash,
-            hasID3Picture: record.data.hasID3Picture
+            hasID3Picture: record.data.hasID3Picture,
+            frontCoverPictureFileHash: record.data.frontCoverPictureFileHash,
+            frontCoverID3PictureFileHash: record.data.frontCoverID3PictureFileHash
+            
             // TODO duration ?
         };
     }

@@ -524,6 +524,10 @@ NMod.Music.Ui.load = function() {
 	}, {
 		name: 'hasID3Picture',
 		type: 'bool'
+	},{
+		name: 'frontCoverID3PictureFileHash'
+	},{
+		name: 'frontCoverPictureFileHash'
 	}]);
 	
 	/**
@@ -714,7 +718,11 @@ NMod.Music.Ui.load = function() {
 		// Preview
 		var preview = '<img src="{0}" height="16" alt="" title="">';
 		var previewP = Ext.BLANK_IMAGE_URL;
-		if (record.data.hasID3Picture) {
+		if (record.data.frontCoverID3PictureFileHash.length) {
+			previewP = NLib.Path.root('api/music/id3picture/' + record.data.frontCoverID3PictureFileHash);
+		} else if (record.data.frontCoverPictureFileHash.length) {
+			previewP = NLib.Path.root('api/picture/thumb/' + record.data.frontCoverPictureFileHash);
+		} else if (record.data.hasID3Picture) {
 			previewP = NLib.Path.root('api/music/id3picture/' + record.data.hash);
 		}
 		preview = String.format(preview, previewP);

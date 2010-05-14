@@ -50,17 +50,19 @@ NMod.PicturePreview.Ui.load = function(){
         initPictureTemplate(pictureTemplateEl);
     }
     
-    /*
+    /**
     * 
     */
     function overwritePictureTemplate(config){
-    	var url = NLib.Path.root('api/picture/resize/' + config.hash) + '?height=163&width=262';
-    	var name = '<a href="' + NLib.Path.root('api/picture/resize/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
-    	if (config.isMusic) {
-    		url = NLib.Path.root('api/music/id3picture/' + config.hash);
-    		name = '<a href="' + NLib.Path.root('api/music/id3picture/' + config.hash) + '" target="_blank" >' + config.name + '</a>';
+    	var height = config.height || 163;
+    	var width = config.width || 262;
+    	var api = config.api || 'api/picture/resize';
+    	if (api.charAt(api.length - 1) == '/') {
+    		api = api.slice(0, api.length - 1);
     	}
-    	
+    	var url = NLib.Path.root(String.format('{0}/{1}?height={2}&width={3}', api, config.hash, height, width));
+    	var name = String.format('<a href="{0}/{1}" target="_blank">{2}</a>', NLib.Path.root(api), config.hash, config.name);
+    		
         pictureTemplate.overwrite(pictureTemplateEl, {
         		url: url,
         		title: config.name,

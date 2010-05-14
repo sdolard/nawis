@@ -278,6 +278,7 @@ NMod.Search.Ui.load = function(){
 					}*/
 					if (isPictureRecord(r)) {
 						NMod.PicturePreview.Ui.overwrite({
+								api: 'api/picture/resize/',
 								hash: r.data.hash,
 								sizeString: NLib.Convert.byteToHuman(parseInt(r.data.size, 10)),
 								name: r.data.fileName
@@ -335,8 +336,8 @@ NMod.Search.Ui.load = function(){
 					sortable: true,
 					renderer: rendererToHumanByte,
 					dataIndex: 'size'
-				}, // DEBUG FIELD
-				/*{
+				} // DEBUG FIELD
+				/*,{
 					header: "relativePath",
 					width: 140,
 					sortable: true,

@@ -689,7 +689,9 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "    \"genre\":\"&lt;music genre&gt;\", // string<br>"\
         "    \"trackNumber\":&lt;trac number&gt;, // number<br>"\
         "    \"duration\":&lt;duration in second&gt;, // number<br>"\
-        "    \"hasID3Picture\":true&#124;false // boolean<br>"\
+        "    \"hasID3Picture\":true&#124;false // boolean, use with api/music/id3picture/<br>"\
+        "    \"frontCoverPictureFileHash\":\"&lt;front cover picture file hash&gt;\" // string, use with api/picture/thumb/<br>"\
+        "    \"frontCoverID3PictureFileHash\":\"&lt;front cover id3 picture file hash&gt;\" // string, use with api/music/id3picture/<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
         "  ]<br>"\

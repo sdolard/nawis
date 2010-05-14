@@ -1709,7 +1709,8 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
                   "       music_title.track_number, music_title.duration, music_title.has_id3_picture, "\
                   "       music_artist.name artist, music_genre.name genre, "\
                   "       file.file_name, file.hash, file.size, "\
-                  "       music_album.name album "\
+                  "       music_album.name album, music_album.front_cover_picture_file_hash fcpfh, "\
+                  "       music_album.front_cover_id3picture_file_hash fcifh "\
                   "FROM music_title "\
                   "  INNER JOIN music_genre "\
                   "    ON music_title.fk_music_genre_id = music_genre.id "\
@@ -1819,7 +1820,9 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     int fieldGenre = query.record().indexOf("genre");
     int fieldTrackNumber = query.record().indexOf("track_number");
     int fieldDuration = query.record().indexOf("duration");
-    int hasID3Picture = query.record().indexOf("has_id3_picture");
+    int fieldHasID3Picture = query.record().indexOf("has_id3_picture");
+    int fieldFcpfh = query.record().indexOf("fcpfh");
+    int fieldFcifh = query.record().indexOf("fcifh");
 
     int i = 0;
     while (query.next()) {
@@ -1841,7 +1844,9 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         svTitle.setProperty("genre", query.value(fieldGenre).toString());
         svTitle.setProperty("trackNumber", query.value(fieldTrackNumber).toInt());
         svTitle.setProperty("duration", query.value(fieldDuration).toInt());
-        svTitle.setProperty("hasID3Picture", query.value(hasID3Picture).toString());
+        svTitle.setProperty("hasID3Picture", query.value(fieldHasID3Picture).toString());
+        svTitle.setProperty("frontCoverID3PictureFileHash", query.value(fieldFcifh).toString());
+        svTitle.setProperty("frontCoverPictureFileHash", query.value(fieldFcpfh).toString());
     }
 
     return true;
