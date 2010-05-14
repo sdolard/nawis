@@ -45,7 +45,7 @@ void NHasherThread::run()
 {
     NLOGM("NServer", tr("Hashing files..."));
     Q_ASSERT(NDB.beginTransaction());
-    forever	{
+    forever{
         if (isStopping())
             break;
 
@@ -60,7 +60,7 @@ void NHasherThread::run()
 bool NHasherThread::hashFile()
 {
     // Get a non hashed file in database
-    const QFileInfo fi = NDB.fileToHash();
+    const QFileInfo fi = NDB.getFileToHash();
     if (!fi.exists())
     {
         Q_ASSERT_X(fi.fileName().isEmpty(), "hashFile",

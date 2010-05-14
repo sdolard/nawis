@@ -70,7 +70,7 @@ public:
     bool setFilesAsDeleted();
     bool removeDeletedFiles();
     bool addFile(const QFileInfo & fi, const NFileSuffix & suffix, const QString & rootPath);
-    const QFileInfo fileToHash();
+    const QFileInfo getFileToHash();
     void setFileHash(const QFileInfo & fi, const QString & hash);
 
     // file with no metadata

@@ -562,7 +562,10 @@ void NMusicDatabase::createTitleTable()
             "track_number INTEGER," \
             "year INTEGER," \
             "comment TEXT," \
-            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL"
+            "has_id3_picture BOOLEAN DEFAULT 0 NOT NULL,"\
+            "FOREIGN KEY (fk_file_id) REFERENCES file(id) ON DELETE CASCADE,"\
+            "FOREIGN KEY (fk_music_artist_id) REFERENCES music_artist(id) ON DELETE CASCADE,"\
+            "FOREIGN KEY (fk_music_genre_id) REFERENCES music_genre(id) ON DELETE CASCADE"
             ")"))
         NDatabase::debugLastQuery("music_title table creation failed", query);
 
@@ -571,16 +574,16 @@ void NMusicDatabase::createTitleTable()
         NDatabase::debugLastQuery("idx_music_title_index creation failed", query);
 
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_title_index_2 "\
-                    "ON music_title(fk_music_genre_id, fk_music_artist_id)"))
+                    "ON music_title(fk_music_genre_id, fk_music_artist_id, fk_file_id, id)"))
         NDatabase::debugLastQuery("idx_music_title_index_2 creation failed", query);
 
-    if (!query.exec(
+    /*if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_music_title " \
             "BEFORE DELETE ON file "\
             "FOR EACH ROW BEGIN "\
             "  DELETE from music_title WHERE fk_file_id = OLD.id; "\
             "END; "))
-        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_title failed", query);
+        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_title failed", query);*/
 }
 
 
@@ -698,12 +701,13 @@ void NMusicDatabase::createAlbumTitleTable()
 {
     QSqlQuery query(*m_db);
 
-    // TODO: use foreign key
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS music_album_title (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
             "fk_music_title_id INTEGER UNIQUE NOT NULL," \
-            "fk_music_album_id INTEGER NOT NULL" \
+            "fk_music_album_id INTEGER NOT NULL," \
+            "FOREIGN KEY (fk_music_title_id) REFERENCES music_title(id) ON DELETE CASCADE," \
+            "FOREIGN KEY (fk_music_album_id) REFERENCES music_album(id) ON DELETE CASCADE"
             ")"))
         NDatabase::debugLastQuery("music_album_title table creation failed", query);
 
@@ -711,13 +715,13 @@ void NMusicDatabase::createAlbumTitleTable()
                     "ON music_album_title(fk_music_album_id, fk_music_title_id)"))
         NDatabase::debugLastQuery("idx_music_album_title_index creation failed", query);
 
-    if (!query.exec(
+    /*if (!query.exec(
             "CREATE TRIGGER IF NOT EXISTS delete_music_album_title " \
             "BEFORE DELETE ON music_title "\
             "FOR EACH ROW BEGIN "\
             "  DELETE from music_album_title WHERE fk_music_title_id = OLD.id; "\
             "END; "))
-        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_album_title failed", query);
+        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_album_title failed", query);*/
 }
 
 bool NMusicDatabase::updateAlbumTitleTable()

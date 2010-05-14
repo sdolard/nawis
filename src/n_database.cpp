@@ -89,8 +89,9 @@ void NDatabase::createCategoryTable()
 
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS file_category (" \
-            "id INTEGER PRIMARY KEY NOT NULL," \
-            "name TEXT UNIQUE NOT NULL" \
+            "id INTEGER NOT NULL," \
+            "name TEXT NOT NULL," \
+            "PRIMARY KEY (id, name)" \
             ")"))
         debugLastQuery("file_category table creation failed", query);
 
@@ -156,7 +157,7 @@ void NDatabase::createFileMetadataTable()
             "CREATE TRIGGER IF NOT EXISTS delete_file_metadata " \
             "BEFORE DELETE ON file "\
             "FOR EACH ROW BEGIN "\
-            "  DELETE from file_metadata WHERE id = OLD.fk_file_metadata_id; "\
+            "  DELETE FROM file_metadata WHERE id = OLD.fk_file_metadata_id; "\
             "END; "))
         debugLastQuery("file CREATE TRIGGER delete_file_metadata failed", query);
 
@@ -426,7 +427,7 @@ bool NDatabase::addFile(const QFileInfo & fi, const NFileSuffix & suffix, const 
     return true;
 }
 
-const QFileInfo NDatabase::fileToHash()
+const QFileInfo NDatabase::getFileToHash()
 {
     QSqlQuery query(m_db);
 
@@ -449,7 +450,7 @@ const QFileInfo NDatabase::fileToHash()
         // we are looking for a file to hash
         if (!query.exec(sql_filetoHash))
         {
-            debugLastQuery("fileToHash failed (1)", query);
+            debugLastQuery("getFileToHash failed (1)", query);
             return QFileInfo();
         }
 
@@ -467,13 +468,13 @@ const QFileInfo NDatabase::fileToHash()
         query.clear();
         if (!query.prepare(sql_duplicated))
         {
-            debugLastQuery("fileToHash failed (2)", query);
+            debugLastQuery("getFileToHash failed (2)", query);
             return QFileInfo();
         }
         query.bindValue(":absolute_file_path", fiToHash.absoluteFilePath());
         if (!query.exec())
         {
-            debugLastQuery("fileToHash failed (3)", query);
+            debugLastQuery("getFileToHash failed (3)", query);
             return QFileInfo();
         }
         if (!query.first())
@@ -488,12 +489,12 @@ const QFileInfo NDatabase::fileToHash()
         query.clear();
         if (!query.prepare(sql_deleteFiletoHash))
         {
-            debugLastQuery("fileToHash failed (4)", query);
+            debugLastQuery("getFileToHash failed (4)", query);
         }
         query.bindValue(":absolute_file_path", fiToHash.absoluteFilePath());
         if (!query.exec())
         {
-            debugLastQuery("fileToHash failed (5)", query);
+            debugLastQuery("getFileToHash failed (5)", query);
         }
 
         // Update deleted status of duplicated file reference
