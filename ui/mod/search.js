@@ -136,6 +136,7 @@ NMod.Search.Ui.load = function(){
 	*/
 	var searchView = new Ext.ux.grid.livegrid.GridView({
 			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			forceFit: true,
 			listeners: {
 				cursormove: function(view, rowIndex, visibleRows, totalCount){
 					updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
@@ -311,18 +312,18 @@ NMod.Search.Ui.load = function(){
 				{
 					id: 'filenameCol',
 					header: "File name",
-					width: 20,
+					width: 180,
 					sortable: true,
 					dataIndex: 'fileName',
 					renderer: fileNameRenderer
 				}, {
 					header: "Added",
-					width: 140,
+					width: 100,
 					sortable: true,
 					dataIndex: 'added'
 				}, {
 					header: "Last modification",
-					width: 140,
+					width: 100,
 					sortable: true,
 					dataIndex: 'lastModified'
 				}, {
@@ -332,7 +333,7 @@ NMod.Search.Ui.load = function(){
 					dataIndex: 'fileCategory'
 				}, {
 					header: "Size",
-					width: 70,
+					width: 50,
 					sortable: true,
 					renderer: rendererToHumanByte,
 					dataIndex: 'size'

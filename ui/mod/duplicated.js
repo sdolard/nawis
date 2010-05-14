@@ -82,6 +82,7 @@ NMod.Duplicated.Ui.load = function(){
     */
     var duplicatedSearchView = new Ext.ux.grid.livegrid.GridView({
     		nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+    		forceFit: true,
     		listeners: {
     			cursormove: function(view, rowIndex, visibleRows, totalCount){
     				updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
@@ -160,13 +161,13 @@ NMod.Duplicated.Ui.load = function(){
     		}), {
     			id: 'filenameCol',
     			header: "File name",
-    			width: 20,
+    			width: 180,
     			sortable: true,
     			renderer: fileNameRenderer,
     			dataIndex: 'absoluteFilePath'
     		}, {
     			header: "Added",
-    			width: 140,
+    			width: 100,
     			sortable: true,
     			dataIndex: 'added'
     		}, {
@@ -176,7 +177,7 @@ NMod.Duplicated.Ui.load = function(){
     			dataIndex: 'fileCategory'
     		}, {
     			header: "Size",
-    			width: 70,
+    			width: 50,
     			sortable: true,
     			renderer: rendererToHumanByte,
     			dataIndex: 'size'

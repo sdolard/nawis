@@ -649,6 +649,7 @@ NMod.Music.Ui.load = function() {
 	*/
 	var titleView = new Ext.ux.grid.livegrid.GridView({
 			nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+			forceFit: true,
 			loadMask: {
 				msg: 'Please wait...'
 			},
@@ -750,13 +751,13 @@ NMod.Music.Ui.load = function() {
 			cm: new Ext.grid.ColumnModel([{
 						id: 'titleCol',
 						header: "Title",
-						width: 20,
+						width: 180,
 						sortable: true,
 						dataIndex: 'title',
 						renderer: titleRenderer
 			}, {
 				header: "Album",
-				width: 180,
+				width: 140,
 				sortable: true,
 				dataIndex: 'album',
 				renderer: albumRenderer
@@ -767,7 +768,7 @@ NMod.Music.Ui.load = function() {
 				dataIndex: 'artist'
 			}, {
 				header: 'Duration',
-				width: 50,
+				width: 60,
 				sortable: true,
 				dataIndex: 'duration',
 				renderer: durationRenderer
@@ -778,13 +779,13 @@ NMod.Music.Ui.load = function() {
 				dataIndex: 'genre'
 			}, {
 				header: 'Track',
-				width: 60,
+				width: 50,
 				sortable: true,
 				dataIndex: 'trackNumber',
 				renderer: trackRenderer
 			}, {
 				header: 'Year',
-				width: 60,
+				width: 50,
 				sortable: true,
 				dataIndex: 'year',
 				renderer: yearRenderer
