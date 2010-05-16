@@ -1032,6 +1032,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }/* else {
         NLOGD("NMusicDatabase", query.lastQuery());
     }*/
+    NLOGD("NMusicDatabase", query.lastQuery());
 
     int fieldAlbum = query.record().indexOf("album");
     int fieldMainArtist = query.record().indexOf("artist");
@@ -1095,7 +1096,7 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
     NStringMapList list;
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT count(DISTINCT music_album.name) "\
+    QString sql = "SELECT count(DISTINCT music_album.id) "\
                   "FROM music_album ";
 
     if (year >= 0 || !genre.isNull() || !artist.isNull() || searches.count()) {
@@ -1182,6 +1183,7 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
     }/* else {
         NLOGD("NMusicDatabase", query.lastQuery());
     }*/
+    NLOGD("NMusicDatabase", query.lastQuery());
 
     if (!query.first())
         return 0;
@@ -1337,7 +1339,7 @@ int NMusicDatabase::getArtistListCount(const QStringList & searches, int year, c
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT count(DISTINCT music_artist.name) "\
+    QString sql = "SELECT count(DISTINCT music_artist.id) "\
                   "FROM music_artist ";
 
     if (year >= 0 || !genre.isNull() || searches.count()) {
@@ -1552,7 +1554,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
 int NMusicDatabase::getGenreListCount(const QStringList & searches, int year)
 {
     QSqlQuery query(*m_db);
-    QString sql = "SELECT count(DISTINCT music_genre.name) "\
+    QString sql = "SELECT count(DISTINCT music_genre.id) "\
                   "FROM music_genre ";
 
     if (year >= 0 || searches.count()) {
@@ -1743,7 +1745,7 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
 int NMusicDatabase::getYearListCount(const QStringList & searches)
 {
     QSqlQuery query(*m_db);    
-    QString sql = "SELECT count(DISTINCT music_title.year) "\
+    QString sql = "SELECT count(DISTINCT music_title.id) "\
                   "FROM music_title ";
 
     if (searches.count()) {
@@ -1982,7 +1984,7 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
                                       int year)
 {
     QSqlQuery query(*m_db);
-    QString sql = "SELECT count(*) "\
+    QString sql = "SELECT count(music_title.id) "\
                   "FROM music_title "\
                   "  INNER JOIN music_genre "\
                   "    ON music_title.fk_music_genre_id = music_genre.id "\
