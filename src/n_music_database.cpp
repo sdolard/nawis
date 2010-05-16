@@ -1745,7 +1745,7 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
 int NMusicDatabase::getYearListCount(const QStringList & searches)
 {
     QSqlQuery query(*m_db);    
-    QString sql = "SELECT count(DISTINCT music_title.id) "\
+    QString sql = "SELECT count(DISTINCT music_title.year) "\
                   "FROM music_title ";
 
     if (searches.count()) {
