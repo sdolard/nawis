@@ -576,14 +576,6 @@ void NMusicDatabase::createTitleTable()
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_title_index_2 "\
                     "ON music_title(fk_music_genre_id, fk_music_artist_id, fk_file_id, id)"))
         NDatabase::debugLastQuery("idx_music_title_index_2 creation failed", query);
-
-    /*if (!query.exec(
-            "CREATE TRIGGER IF NOT EXISTS delete_music_title " \
-            "BEFORE DELETE ON file "\
-            "FOR EACH ROW BEGIN "\
-            "  DELETE from music_title WHERE fk_file_id = OLD.id; "\
-            "END; "))
-        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_title failed", query);*/
 }
 
 
@@ -716,14 +708,6 @@ void NMusicDatabase::createAlbumTitleTable()
     if (!query.exec("CREATE INDEX IF NOT EXISTS idx_music_album_title_index "\
                     "ON music_album_title(fk_music_album_id, fk_music_title_id)"))
         NDatabase::debugLastQuery("idx_music_album_title_index creation failed", query);
-
-    /*if (!query.exec(
-            "CREATE TRIGGER IF NOT EXISTS delete_music_album_title " \
-            "BEFORE DELETE ON music_title "\
-            "FOR EACH ROW BEGIN "\
-            "  DELETE from music_album_title WHERE fk_music_title_id = OLD.id; "\
-            "END; "))
-        NDatabase::debugLastQuery("file CREATE TRIGGER delete_music_album_title failed", query);*/
 }
 
 bool NMusicDatabase::updateAlbumTitleTable()
@@ -783,7 +767,7 @@ bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
     if (!albumName.isEmpty())
         sql = QString(sql).arg("SELECT id FROM music_album WHERE name = :album");
     else
-        sql = QString(sql).arg("SELECT id FROM music_album WHERE name IS NULL");
+        sql = QString(sql).arg("SELECT id FROM music_album WHERE (name IS NULL OR name = '')");
 
     if (!query.prepare(sql))
     {
@@ -921,7 +905,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT music_album.name album, music_album.main_artist artist, "\
+    QString sql = "SELECT music_album.id id, music_album.name album, music_album.main_artist artist, "\
                   "       music_album.front_cover_picture_file_hash fcpfh, "\
                   "       music_album.back_cover_picture_file_hash bcpfh, "\
                   "       music_album.front_cover_id3picture_file_hash fcipfh, "\
@@ -982,7 +966,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }
 
     // Sort
-    sql += QString("GROUP BY music_album.name ORDER BY music_album.name %1 ").
+    sql += QString("GROUP BY music_album.id ORDER BY music_album.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1034,6 +1018,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     }*/
     NLOGD("NMusicDatabase", query.lastQuery());
 
+    int fieldId = query.record().indexOf("id");
     int fieldAlbum = query.record().indexOf("album");
     int fieldMainArtist = query.record().indexOf("artist");
     int fieldFrontCoverPicture = query.record().indexOf("fcpfh");
@@ -1052,6 +1037,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         dataArray.setProperty(i, svAlbum);
         i++;
         // TODO: return id: cos album can be empty
+        svAlbum.setProperty("id", -1);
         svAlbum.setProperty("album", QScriptValue("album-all"));
         svAlbum.setProperty("mainArtist", "");
         svAlbum.setProperty("frontCoverPictureFileHash", "");
@@ -1063,6 +1049,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
     while (query.next()) {
         QScriptValue svAlbum = se.newObject();
         dataArray.setProperty(i, svAlbum);
+        svAlbum.setProperty("id", query.value(fieldId).toInt());
         svAlbum.setProperty("album", query.value(fieldAlbum).toString());
         svAlbum.setProperty("mainArtist", query.value(fieldMainArtist).toString());
         svAlbum.setProperty("frontCoverPictureFileHash", query.value(fieldFrontCoverPicture).toString());
@@ -1079,6 +1066,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         QScriptValue svAlbum = se.newObject();
         dataArray.setProperty(i, svAlbum);
         i++;
+        svAlbum.setProperty("id", -1);
         svAlbum.setProperty("album", QScriptValue("album-all"));
         svAlbum.setProperty("mainArtist", "");
         svAlbum.setProperty("frontCoverPictureFileHash", "");
@@ -1201,7 +1189,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT music_artist.name artist "\
+    QString sql = "SELECT music_artist.id id, music_artist.name artist "\
                   "FROM music_artist ";
 
     if (year >= 0 || !genre.isNull() || searches.count()) {
@@ -1253,7 +1241,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_artist.name ORDER BY music_artist.name %1 ").
+    sql += QString("GROUP BY music_artist.id ORDER BY music_artist.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1300,6 +1288,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
         return false;
     }
 
+    int fieldId = query.record().indexOf("id");
     int fieldArtist = query.record().indexOf("artist");
     int i = 0;
     // We add 1 to result to manage "artist-all"
@@ -1311,13 +1300,14 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
         QScriptValue svArtist = se.newObject();
         dataArray.setProperty(i, svArtist);
         i++;
+        svArtist.setProperty("id", -1);
         svArtist.setProperty("artist", QScriptValue("artist-all"));
     }
 
     while (query.next()) {
         QScriptValue svArtist = se.newObject();
         dataArray.setProperty(i, svArtist);
-        // TODO: return id: cos album can be empty
+        svArtist.setProperty("id", query.value(fieldId).toInt());
         svArtist.setProperty("artist", query.value(fieldArtist).toString());
         i++;
     }
@@ -1329,6 +1319,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
         QScriptValue svArtist = se.newObject();
         dataArray.setProperty(i, svArtist);
         i++;
+        svArtist.setProperty("id", -1);
         svArtist.setProperty("artist", QScriptValue("artist-all"));
     }
 
@@ -1430,7 +1421,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
                                   int limit, const QString & dir, int year)
 {
     QSqlQuery query(*m_db);
-    QString sql = "SELECT music_genre.name genre "\
+    QString sql = "SELECT music_genre.id, music_genre.name genre "\
                   "FROM music_genre ";
 
     if (year >= 0 || searches.count()) {
@@ -1469,7 +1460,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     }
 
     // Sort and limit
-    sql += QString("GROUP BY music_genre.name ORDER BY music_genre.name %1 ").
+    sql += QString("GROUP BY music_genre.id ORDER BY music_genre.name %1 ").
            arg(NDatabase::stringToSortDirection(dir));
 
     // limit
@@ -1515,6 +1506,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
         return false;
     }
 
+    int fieldId = query.record().indexOf("id");
     int fieldGenre = query.record().indexOf("genre");
 
     int i = 0;
@@ -1526,6 +1518,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     {
         QScriptValue svGenre = se.newObject();
         dataArray.setProperty(i, svGenre);
+        svGenre.setProperty("id", -1);
         svGenre.setProperty("genre", QScriptValue("genre-all"));
         i++;
     }
@@ -1533,7 +1526,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     while (query.next()) {
         QScriptValue svGenre = se.newObject();
         dataArray.setProperty(i, svGenre);
-        // TODO: return id: cos album can be empty
+        svGenre.setProperty("id", query.value(fieldId).toInt());
         svGenre.setProperty("genre", query.value(fieldGenre).toString());
         i++;
     }
@@ -1544,6 +1537,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     {
         QScriptValue svGenre = se.newObject();
         dataArray.setProperty(i, svGenre);
+        svGenre.setProperty("id", -1);
         svGenre.setProperty("genre", QScriptValue("genre-all"));
         i++;
     }
@@ -1932,6 +1926,7 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
     }/* else {
         //NLOGD("NMusicDatabase", query.lastQuery());
     }*/
+    NLOGD("NMusicDatabase", query.lastQuery());
 
     // Files fields
     int fieldId = query.record().indexOf("id");
@@ -2071,6 +2066,7 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
     }/*else {
         //NLOGD("NMusicDatabase", query.lastQuery());
     }*/
+    NLOGD("NMusicDatabase", query.lastQuery());
 
     if (!query.first())
         return 0;

@@ -144,6 +144,7 @@ private:
     void createFileTable();
     void createDuplicatedFileTable();
     void createUserTable();
+    void enableFk();
 
     QString jsFileStringToDBFileField(const QString & jsString);
 

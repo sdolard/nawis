@@ -569,6 +569,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "              // data.length is the number of items in relation to search and limit.<br>"\
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
+        "    \"id\":\"&lt;artist id&gt;\" // number<br>"\
         "    \"album\":\"&lt;album name&gt;\" // string<br>"\
         "    \"mainArtist\":\"&lt;main album artist&gt;\" // string, empty if no artist or more than one<br>"\
         "    \"frontCoverPictureFileHash\":\"&lt;front cover picture file hash&gt;\" // string, use with api/picture/thumb/<br>"\
@@ -603,6 +604,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "              // data.length is the number of items in relation to search and limit.<br>"\
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
+        "    \"id\":\"&lt;artist id&gt;\" // number<br>"\
         "    \"artist\":\"&lt;artist name&gt;\" // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -631,6 +633,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "              // data.length is the number of items in relation to search and limit.<br>"\
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
+        "    \"id\":\"&lt;genre id&gt;\" // number<br>"\
         "    \"genre\":\"&lt;genre name&gt;\" // string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -718,7 +721,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "              // data.length is the number of items in relation to search and limit.<br>"\
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
-        "    \"year\":\"&lt;album year&gt;\" // string<br>"\
+        "    \"year\":\"&lt;album year&gt;\" // (no id need, cos a year can not be empty (0 if no year is set), string<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
         "  ]<br>"\

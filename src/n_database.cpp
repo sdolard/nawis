@@ -241,12 +241,22 @@ void NDatabase::createUserTable()
 
 void NDatabase::createTables()
 {
+    // Enable foreign key
+   enableFk();
+
     // Order is important!
     createCategoryTable();
     createFileTable();
     createFileMetadataTable();
     createDuplicatedFileTable();
     createUserTable();
+}
+
+void NDatabase::enableFk()
+{
+    QSqlQuery query(m_db);
+    if (!query.exec("PRAGMA foreign_keys = ON"))
+        debugLastQuery("enableFk failed", query);
 }
 
 void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)

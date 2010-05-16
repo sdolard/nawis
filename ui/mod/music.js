@@ -139,7 +139,7 @@ NMod.Music.Ui.load = function() {
 	* Genre reader
 	*/
 	var genreReader = new Ext.data.JsonReader({
-			idProperty: 'genre', // TODO: change this by using an id, cos value can be empty
+			idProperty: 'id', 
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [{
@@ -247,7 +247,7 @@ NMod.Music.Ui.load = function() {
 	* Artist reader
 	*/		
 	var artistReader = new Ext.data.JsonReader({
-			idProperty: 'artist',// TODO: change this by using an id, cos value can be empty
+			idProperty: 'id',
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [{
@@ -354,7 +354,7 @@ NMod.Music.Ui.load = function() {
 	*/
 	
 	var albumReader = new Ext.data.JsonReader({
-			idProperty: 'album',// TODO: change this by using an id, cos value can be empty
+			idProperty: 'id',
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [
