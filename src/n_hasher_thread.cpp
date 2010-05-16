@@ -43,7 +43,7 @@ NHasherThread::NHasherThread(QObject * parent)
 
 void NHasherThread::run()
 {
-    NLOGM("NServer", tr("Hashing files..."));
+    NLOGM("Server", tr("Hashing files..."));
     Q_ASSERT(NDB.beginTransaction());
     forever{
         if (isStopping())
@@ -53,8 +53,8 @@ void NHasherThread::run()
             break;
     }
     NDB.commitTransaction();
-    NLOGM("NServer", tr("Hashing done."));
-    NLOGM("NServer", tr("%1 data shared").arg(NConvert_n::byteToHuman(NDB.sharedSize())));
+    NLOGM("Server", tr("Hashing done."));
+    NLOGM("Server", tr("%1 data shared").arg(NConvert_n::byteToHuman(NDB.sharedSize())));
 }
 
 bool NHasherThread::hashFile()

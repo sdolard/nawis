@@ -253,6 +253,7 @@ void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)
 {
     NLOGDD("NDatabase", "Data base error:");
     NLOGDD("NDatabase", QString("  %1").arg(msg));
+    NLOGDD("NDatabase", QString("  %1").arg(query.lastError().number()));
     NLOGDD("NDatabase", QString("  %1").arg(query.lastError().text()));
     NLOGDD("NDatabase", QString("  %1").arg(query.lastQuery()));
     Q_ASSERT(false);

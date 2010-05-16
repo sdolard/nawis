@@ -38,11 +38,11 @@ void NDaemon::start()
 
     NLog::start(); // log thead init
 
-    NLOGM("NServer", "--------------- new session ---------------");
+    NLOGM("Server", "--------------- new session ---------------");
 
     if (!NSERVER.start())
     {
-        NLOGMD("NServer can not start", NSERVER.errorMessage());
+        NLOGMD("Server can not start", NSERVER.errorMessage());
         app->quit();
     }
 }

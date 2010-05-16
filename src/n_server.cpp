@@ -58,7 +58,7 @@ NServer::NServer(QObject *parent)
 
 NServer::~NServer()
 {	
-    NLOGMD("NServer", "Stopping...");
+    NLOGMD("Server", "Stopping...");
     disconnect();
     m_jobTimer.stop();
     m_configFileChanged = false;
@@ -71,7 +71,7 @@ NServer::~NServer()
 
 bool NServer::start()
 {
-    NLOGM("NServer: configuration file path", NPath_n::config());
+    NLOGM("Server: configuration file path", NPath_n::config());
 
     // Start DB: must be created as first
     NDatabase::instance();
@@ -114,7 +114,7 @@ void NServer::stopTcpServer()
 
 bool NServer::restartTcpServer()
 {	
-    NLOGM("NServer", tr("Server %1 is restarting...").arg(NVersion_n::namedVersion(false)));
+    NLOGM("Server", tr("Server %1 is restarting...").arg(NVersion_n::namedVersion(false)));
     stopTcpServer();
     return startTcpServer();
 }
@@ -129,9 +129,9 @@ bool NServer::startTcpServer()
 
     if (m_server->start())
     {
-        NLOGM("NServer", tr("Server %1 is listening on tcp/%2; ssl: %3").arg(NVersion_n::namedVersion(false)).
+        NLOGM("Server", tr("Server %1 is listening on tcp/%2; ssl: %3").arg(NVersion_n::namedVersion(false)).
               arg(m_server->serverPort()).arg(QVariant(NCONFIG.isSslServer()).toString()));
-        NLOGM("NServer", tr("Waiting for connection..."));
+        NLOGM("Server", tr("Waiting for connection..."));
         return true;
     }
 
@@ -385,7 +385,7 @@ void NServer::onConfigFileChanged()
         !fileSuffixesChanged)
         return;
 
-    NLOGM("NServer", "Configuration changed");
+    NLOGM("Server", "Configuration changed");
     m_configFileChanged = true;
     m_jobTimer.stop();
     stopJobs();

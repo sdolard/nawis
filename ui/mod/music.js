@@ -8,6 +8,8 @@ Ext.namespace('NMod.Music.Ui');
 * Load module function
 */
 NMod.Music.Ui.load = function() {
+
+	var EMPTY_VALUE = '&lt;Not defined&gt;';
 	var imageFlowInstance;
 	
 	if (NMod.Music.Ui.loaded !== undefined) {
@@ -24,7 +26,7 @@ NMod.Music.Ui.load = function() {
 	* Year reader
 	*/
 	var yearReader = new Ext.data.JsonReader({
-			idProperty: 'year',
+			idProperty: 'year', //OK
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [{
@@ -120,7 +122,7 @@ NMod.Music.Ui.load = function() {
 								return String.format('All ({0})', yearStore.getTotalCount() - 1);
 							}
 							if (record.data.year === 0) {
-								return 'Unknown';
+								return EMPTY_VALUE;
 							}
 							return record.data.year;
 						}
@@ -137,7 +139,7 @@ NMod.Music.Ui.load = function() {
 	* Genre reader
 	*/
 	var genreReader = new Ext.data.JsonReader({
-			idProperty: 'genre',
+			idProperty: 'genre', // TODO: change this by using an id, cos value can be empty
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [{
@@ -228,7 +230,7 @@ NMod.Music.Ui.load = function() {
 								return String.format('All ({0})', genreStore.getTotalCount() - 1);
 							}
 							if (record.data.genre === "") {
-								return 'Unknown';
+								return EMPTY_VALUE;
 							}
 							return record.data.genre;
 						}
@@ -245,7 +247,7 @@ NMod.Music.Ui.load = function() {
 	* Artist reader
 	*/		
 	var artistReader = new Ext.data.JsonReader({
-			idProperty: 'artist',
+			idProperty: 'artist',// TODO: change this by using an id, cos value can be empty
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [{
@@ -335,7 +337,7 @@ NMod.Music.Ui.load = function() {
 								return String.format('All ({0})', artistStore.getTotalCount() - 1);
 							}
 							if (record.data.artist === "") {
-								return 'Unknown';
+								return EMPTY_VALUE;
 							}
 							return record.data.artist;
 						}
@@ -352,7 +354,7 @@ NMod.Music.Ui.load = function() {
 	*/
 	
 	var albumReader = new Ext.data.JsonReader({
-			idProperty: 'album',
+			idProperty: 'album',// TODO: change this by using an id, cos value can be empty
 			totalProperty: 'totalcount',
 			root: 'data'
 	}, [
@@ -454,7 +456,7 @@ NMod.Music.Ui.load = function() {
 		if (record.data.album === "album-all") {
 			album = String.format('All ({0})', albumStore.getTotalCount() - 1);
 		} else if (record.data.album === "") {
-			album = 'Unknown';
+			album = EMPTY_VALUE;
 		}
 		if (record.data.mainArtist.length > 0){
 			album += ' - ' + record.data.mainArtist;
@@ -677,7 +679,7 @@ NMod.Music.Ui.load = function() {
 	*/
 	function titleRenderer(val, p, record){
 		if (Ext.isEmpty(record.data.title)) {
-			return 'no title - ' + record.data.fileName;
+			return '<lt;No title@gt;> - ' + record.data.fileName;
 		}
 		return record.data.title;
 	}

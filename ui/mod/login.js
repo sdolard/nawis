@@ -1,7 +1,7 @@
 /**
 * @author sebastien
 */
-Ext.BLANK_IMAGE_URL = 'lib/ext-3.1.0/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = 'lib/ext-3.2.1/resources/images/default/s.gif';
 
 Ext.namespace('NMod.Login.Ui');
 /**
@@ -23,7 +23,7 @@ NMod.Login.Ui.load = function(){
 				method: 'POST',
 				clientValidation: true,
 				failure: function(form, action){
-					loginFormPanel.hide();
+					Ext.getCmp('login-form-panel').hide();
 					Ext.MessageBox.show({
 							title: 'nawis',
 							msg: 'Authentication failed.',
@@ -33,10 +33,10 @@ NMod.Login.Ui.load = function(){
 					setTimeout(function(){
 							Ext.MessageBox.hide();
 							loginFormPanel.show();
-							userNameTextField.focus();
+							Ext.getCmp('login-username-textfield').focus();
 					}, 300000);
 				},
-				success: function(form, action){
+				success: function(f, action){
 					loginFormPanel.hide();
 					var data = Ext.util.JSON.decode(action.response.responseText);
 					NLib.Session.setLevel(data.level);
@@ -47,10 +47,11 @@ NMod.Login.Ui.load = function(){
 	}
 	
 	
-	var userNameTextField = new Ext.form.TextField({
+	var userNameTextField = {
+			xtype: 'textfield',
 			fieldLabel: 'Username',
 			el: 'username',
-			id: 'username-text-field',
+			id: 'login-username-textfield',
 			inputType: 'text',
 			enableKeyEvents: true,
 			autoCreate: {
@@ -60,15 +61,17 @@ NMod.Login.Ui.load = function(){
 			listeners: {
     			keyup: function(tf, e){ // setup an onkeypress event handler
     				if (e.getKey() === e.ENTER && this.getValue().length > 0) {// listen for the ENTER key
-    					pwdTextField.focus();
+    					Ext.getCmp('pwd-username-textfield').focus();
     				}
     			}
     		}
-	});
+	};
 	
 
-	var pwdTextField = new Ext.form.TextField({
+	var pwdTextField =  {
+			xtype: 'textfield',
 			fieldLabel: 'Password',
+			id: 'pwd-username-textfield',
 			el: 'password',
 			inputType: 'password',
 			enableKeyEvents: true,
@@ -83,15 +86,16 @@ NMod.Login.Ui.load = function(){
     				}
     			}
     		}
-	});
+	};
 		
 
-	var loginButton = new Ext.Button({
+	var loginButton = {
+			xtype: 'button',
 			text: 'Login',
 			type: 'submit',
 			width: 75,
 			onClick: doSubmit
-	});
+	};
 	
 
 	var loginButtonHBox = new Ext.Container({
@@ -101,12 +105,12 @@ NMod.Login.Ui.load = function(){
 				align: 'middle',
 				pack: 'center'
 			},
-			//bodyCssClass: 'n-background',
 			items: loginButton
 	});
 	
-	var loginFormPanel = new Ext.form.FormPanel({
+	var loginFormPanel = new Ext.FormPanel({
 			id: 'login-form-panel',
+			renderTo: Ext.getBody(),
 			/*bodyCssClass: 'n-background',
 			defaults: {
 				bodyCssClass: 'n-background'
@@ -119,8 +123,7 @@ NMod.Login.Ui.load = function(){
 	
 	loginFormPanel.render(document.body);
 	Ext.get('login-form-panel').center();
-	
-    userNameTextField.focus(false, 500);
+    Ext.getCmp('login-username-textfield').focus(false, 500);
 
   
 	setTimeout(function(){
@@ -129,7 +132,7 @@ NMod.Login.Ui.load = function(){
 					remove: true
 			});
 	}, 250);
-}
+};
 
 Ext.onReady(function(){
 		Ext.QuickTips.init();

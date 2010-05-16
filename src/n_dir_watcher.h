@@ -79,9 +79,9 @@ protected:
 
 private:
     NDirWatcherThreadItems m_dirs;
-    QByteArray              m_hash;
-    QCryptographicHash     *m_hasher;
-    QDir                    m_dir;
+    QByteArray             m_hash;
+    QCryptographicHash    *m_hasher;
+    QDir                   m_dir;
     NDirList               m_sharedDirectories;
     NDirHash               m_notSharedDirs;
     NFileSuffixList        m_fileSuffixes;

@@ -97,7 +97,7 @@ NDirWatcherThread::~NDirWatcherThread()
 
 void NDirWatcherThread::run()
 {
-    NLOGM("NDirWatcherThread", "Looking for files modification...");
+    NLOGM("Server", "Looking for files modification...");
     parseSharedDirs();
 
     if (isStopping())
@@ -110,7 +110,7 @@ void NDirWatcherThread::run()
 
     emit hash(m_hash.toHex(), m_dirs);
 
-    NLOGM("NDirWatcherThread", "Looking for files modification finished.");
+    NLOGM("Server", "Looking for files modification finished.");
 }
 
 void NDirWatcherThread::parseSharedDirs()

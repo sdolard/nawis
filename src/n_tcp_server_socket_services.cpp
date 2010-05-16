@@ -1124,7 +1124,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
     }
     QString genre;
     if(session.url().hasQueryItem("genre"))// Cos of NULL test
-    {	genre = session.url().queryItemValue("genre");
+    {
+        genre = session.url().queryItemValue("genre");
         if (genre.isNull())
             genre = "";
         genre = NConvert_n::fromUTF8PercentEncoding(genre);
@@ -1350,7 +1351,6 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
           arg(limit).// 8
           arg(sort).// 9
           arg(dir));// 10
-
 
     int totalCount = NMDB.getTitleListCount(searches, album, artist, genre, year);
     QScriptEngine se;

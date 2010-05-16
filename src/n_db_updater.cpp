@@ -46,10 +46,10 @@ NDbUpdaterThread::NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject 
 void NDbUpdaterThread::run()
 {
     Q_ASSERT_X(NDB.beginTransaction(), "NDbUpdaterThread::run()", "NDB.beginTransaction()");
-    NLOGM("NServer", tr("Updating database..."));
+    NLOGM("Server", tr("Updating database..."));
     updateDB();
     NDB.commitTransaction();
-    NLOGM("NServer", tr("Database update done."));
+    NLOGM("Server", tr("Database update done."));
 }
 
 

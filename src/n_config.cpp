@@ -674,12 +674,12 @@ void NConfig::dumpSharedDirectoriesConfig()
     NLOGD("NConfig","m_dataMutex NConfig::dumpSharedDirectoriesConfig");
     if (m_sharedDirectories.isEmpty())
     {
-        NLOGM("NServer", tr("There is no shared directory"));
+        NLOGM("Server", tr("There is no shared directory"));
         return;
     }
     NLOGM("NServer", tr("Shared directories are: "));
     foreach (NDir NDir, m_sharedDirectories)
-        NLOGM("NServer", tr("  %1, %2, %3, %4").
+        NLOGM("Server", tr("  %1, %2, %3, %4").
               arg(NDir.dir().absolutePath()).
               arg(NDir.shared() ? "shared": "not shared").
               arg(NDir.recursive()? "recursive": "not recursive").

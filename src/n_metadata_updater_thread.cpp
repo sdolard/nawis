@@ -24,7 +24,7 @@ NMetadataUpdaterThread::~NMetadataUpdaterThread()
 
 void NMetadataUpdaterThread::run()
 {
-    NLOGM("NServer", tr("Metadata extraction..."));
+    NLOGM("Server", tr("Metadata extraction..."));
     Q_ASSERT(NDB.beginTransaction());
     forever	{
         if (isStopping())
@@ -34,7 +34,7 @@ void NMetadataUpdaterThread::run()
             break;
     }
     NDB.commitTransaction();
-    NLOGM("NServer", tr("Metadata extraction done."));
+    NLOGM("Server", tr("Metadata extraction done."));
 }
 
 bool NMetadataUpdaterThread::getFile()

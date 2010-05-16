@@ -86,7 +86,6 @@ NMusicDatabase::~NMusicDatabase()
 }
 
 void NMusicDatabase::updateDb(){
-    // TODO: manage transaction here.
     updateAlbumTable();
     updateArtistTable();
     updateGenreTable();
@@ -126,7 +125,7 @@ void NMusicDatabase::createAlbumTable()
 
 bool NMusicDatabase::updateAlbumTable()
 {
-    NLOGM("NMusicDatabase", "updateAlbumTable start");
+    NLOGD("NMusicDatabase", "updateAlbumTable start");
     NDB.beginTransaction();
     if (!setAlbumDeleted())
     {
@@ -147,7 +146,7 @@ bool NMusicDatabase::updateAlbumTable()
     }
 
     NDB.commitTransaction();
-    NLOGM("NMusicDatabase", "updateAlbumTable ends");
+    NLOGD("NMusicDatabase", "updateAlbumTable ends");
     return true;
 }
 
@@ -190,8 +189,6 @@ bool NMusicDatabase::populateAlbum()
                   ") AS artist_number "\
                   "FROM file, file_metadata "\
                   "WHERE file.fk_file_metadata_id = file_metadata.id "\
-                  "AND album IS NOT NULL "\
-                  "AND album <> '' "\
                   "AND file.hash <> ''";
 
     if (!query.prepare(sql))
@@ -241,9 +238,10 @@ bool NMusicDatabase::insertAlbum(const QString & albumName, const QString & main
 
     if (!query.exec())
     {
-        // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertAlbum failed", query);
-        return setAlbumDeleted(albumName, false);
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            return setAlbumDeleted(albumName, false);
+        NDatabase::debugLastQuery("insertAlbum failed", query);
+        return false;
     }
 
     return true;
@@ -283,7 +281,7 @@ void NMusicDatabase::createArtistTable()
 
 bool NMusicDatabase::updateArtistTable()
 {
-    NLOGM("NMusicDatabase", "updateArtistTable start");
+    NLOGD("NMusicDatabase", "updateArtistTable start");
     NDB.beginTransaction();
     if (!setArtistDeleted())
     {
@@ -304,7 +302,7 @@ bool NMusicDatabase::updateArtistTable()
     }
 
     NDB.commitTransaction();
-    NLOGM("NMusicDatabase", "updateArtistTable ends");
+    NLOGD("NMusicDatabase", "updateArtistTable ends");
     return true;
 }
 
@@ -341,9 +339,9 @@ bool NMusicDatabase::populateArtist()
     QSqlQuery query(*m_db);
 
     QString sql = "SELECT DISTINCT file_metadata.artist "\
-                  "FROM file, file_metadata "\
-                  "WHERE file.fk_file_metadata_id = file_metadata.id "\
-                  "AND file_metadata.artist IS NOT NULL "\
+                  "FROM file_metadata, file "\
+                  "WHERE file_metadata.artist IS NOT NULL "
+                  "AND file_metadata.id = file.fk_file_metadata_id "\
                   "AND file.hash <> '' ";
 
     if (!query.prepare(sql))
@@ -383,9 +381,10 @@ bool NMusicDatabase::insertArtist(const QString & artistName)
 
     if (!query.exec())
     {
-        // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertArtist failed", query);
-        return setArtistDeleted(artistName, false);
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            return setArtistDeleted(artistName, false);
+       NDatabase::debugLastQuery("insertArtist failed", query);
+        return false;
     }
 
     return true;
@@ -426,7 +425,7 @@ void NMusicDatabase::createGenreTable()
 
 bool NMusicDatabase::updateGenreTable()
 {
-    NLOGM("NMusicDatabase", "updateGenreTable start");
+    NLOGD("NMusicDatabase", "updateGenreTable start");
     NDB.beginTransaction();
     if (!setGenreDeleted())
     {
@@ -447,7 +446,7 @@ bool NMusicDatabase::updateGenreTable()
     }
 
     NDB.commitTransaction();
-    NLOGM("NMusicDatabase", "updateGenreTable ends");
+    NLOGD("NMusicDatabase", "updateGenreTable ends");
     return true;
 }
 
@@ -483,10 +482,10 @@ bool NMusicDatabase::populateGenre()
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT DISTINCT genre "\
-                  "FROM file, file_metadata "\
-                  "WHERE file.fk_file_metadata_id = file_metadata.id "\
-                  "AND genre IS NOT NULL "\
+    QString sql = "SELECT DISTINCT file_metadata.genre "\
+                  "FROM file_metadata, file  "\
+                  "WHERE file_metadata.genre IS NOT NULL "\
+                  "AND file_metadata.id = file.fk_file_metadata_id "\
                   "AND file.hash <> '' ";
 
     if (!query.prepare(sql))
@@ -526,9 +525,11 @@ bool NMusicDatabase::insertGenre(const QString & genreName)
 
     if (!query.exec())
     {
-        // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertGenre failed", query);
-        return setGenreDeleted(genreName, false);
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            return setGenreDeleted(genreName, false);
+
+        NDatabase::debugLastQuery("insertGenre failed", query);
+        return false;
     }
 
     return true;
@@ -550,7 +551,6 @@ void NMusicDatabase::createTitleTable()
 {
     QSqlQuery query(*m_db);
 
-    // TODO: use foreign key
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS music_title (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
@@ -589,7 +589,9 @@ void NMusicDatabase::createTitleTable()
 
 bool NMusicDatabase::updateTitleTable()
 {
-    NLOGM("NMusicDatabase", "updateTitleTable start");
+    // Music title are deleted from reference to file table.
+    // If a file is deleted, title is too.
+    NLOGD("NMusicDatabase", "updateTitleTable start");
     NDB.beginTransaction();
 
     if (!populateTitle())
@@ -599,7 +601,7 @@ bool NMusicDatabase::updateTitleTable()
     }
 
     NDB.commitTransaction();
-    NLOGM("NMusicDatabase", "updateTitleTable ends");
+    NLOGD("NMusicDatabase", "updateTitleTable ends");
     return true;
 }
 
@@ -612,7 +614,7 @@ bool NMusicDatabase::populateTitle()
                   "       file_metadata.year, file_metadata.comment, file_metadata.has_id3_picture "\
                   "FROM file, file_metadata " \
                   "WHERE file.fk_file_metadata_id = file_metadata.id "\
-                  "AND file.fk_file_category_id=:fk_file_category_id "\
+                  "AND file.fk_file_category_id = :fk_file_category_id "\
                   "AND file.hash <> '' ";
 
     if (!query.prepare(sql))
@@ -632,7 +634,6 @@ bool NMusicDatabase::populateTitle()
     int fieldId = query.record().indexOf("id");
     int fieldGenre = query.record().indexOf("genre");
     int fieldArtist = query.record().indexOf("artist");
-
     int fieldTitle = query.record().indexOf("title");
     int fieldDuration = query.record().indexOf("duration");
     int fieldTrackNumber = query.record().indexOf("track_number");
@@ -689,9 +690,10 @@ bool NMusicDatabase::insertTitle(int fileId, const QString & genre,
     query.bindValue(":has_id3_picture", hasId3Picture);
     if (!query.exec())
     {
-        // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertTitle failed", query);
-        return true;
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            return true;
+        NDatabase::debugLastQuery("insertTitle failed", query);
+        return false;
     }
 
     return true;
@@ -726,7 +728,7 @@ void NMusicDatabase::createAlbumTitleTable()
 
 bool NMusicDatabase::updateAlbumTitleTable()
 {
-    NLOGM("NMusicDatabase", "updateAlbumTitleTable start");
+    NLOGD("NMusicDatabase", "updateAlbumTitleTable start");
     NDB.beginTransaction();
 
     if (!populateAlbumTitle())
@@ -736,7 +738,7 @@ bool NMusicDatabase::updateAlbumTitleTable()
     }
 
     NDB.commitTransaction();
-    NLOGM("NMusicDatabase", "updateAlbumTitleTable ends");
+    NLOGD("NMusicDatabase", "updateAlbumTitleTable ends");
     return true;
 }
 
@@ -744,10 +746,10 @@ bool NMusicDatabase::populateAlbumTitle()
 {
     QSqlQuery query(*m_db);
 
-    QString sql = "SELECT music_title.id,file_metadata.album "\
+    QString sql = "SELECT music_title.id, file_metadata.album "\
                   "FROM music_title, file, file_metadata "\
-                  "WHERE music_title.fk_file_id=file.id "\
-                  "AND file.fk_file_metadata_id=file_metadata.id ";
+                  "WHERE music_title.fk_file_id = file.id "\
+                  "AND file.fk_file_metadata_id = file_metadata.id ";
 
     if (!query.prepare(sql))
     {
@@ -775,22 +777,28 @@ bool NMusicDatabase::populateAlbumTitle()
 bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
 {
     QSqlQuery query(*m_db);
-    if (!query.prepare("INSERT INTO music_album_title(fk_music_title_id, fk_music_album_id) "\
-                       "VALUES("\
-                       "  :titleId, "\
-                       "  (SELECT id FROM music_album where name=:album)"\
-                       ")"))
+    QString sql = "INSERT INTO music_album_title(fk_music_title_id, fk_music_album_id) "\
+                  "VALUES(:titleId, (%1))";
+
+    if (!albumName.isEmpty())
+        sql = QString(sql).arg("SELECT id FROM music_album WHERE name = :album");
+    else
+        sql = QString(sql).arg("SELECT id FROM music_album WHERE name IS NULL");
+
+    if (!query.prepare(sql))
     {
         NDatabase::debugLastQuery("insertAlbumTitle prepare failed", query);
         return false;
     }
 
     query.bindValue(":titleId", titleId);
-    query.bindValue(":album", albumName);
+    if (!albumName.isEmpty())
+        query.bindValue(":album", albumName);
     if (!query.exec())
     {
-        // uncomment for DEBUG if needed
-        //NDatabase::debugLastQuery("insertAlbumTitle failed", query);
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            return true;
+        NDatabase::debugLastQuery("insertAlbumTitle failed", query);
         return true;
     }
 
@@ -800,7 +808,7 @@ bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
 
 bool NMusicDatabase::updateAlbumCover()
 {
-    NLOGM("NMusicDatabase", "updateAlbumCover start");
+    NLOGD("NMusicDatabase", "updateAlbumCover start");
     // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
     QString sql;
@@ -901,7 +909,7 @@ bool NMusicDatabase::updateAlbumCover()
     insertAlbumFrontCoverPictureFileHash(fcpfhHash);
     insertAlbumFrontCoverId3Picture(fcifhHash);
 
-    NLOGM("NMusicDatabase", "updateAlbumCover ends");
+    NLOGD("NMusicDatabase", "updateAlbumCover ends");
     return true;
 }
 
@@ -946,16 +954,28 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
     if (!artist.isNull()){
         NDatabase::addAND(sql, &AND);
+        if (artist.isEmpty())
+            sql += "(music_artist.name = '' OR  music_artist.name is NULL) ";
+        else
         sql += "music_artist.name = :artist ";
     }
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -981,12 +1001,16 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
-    if (!artist.isNull())
+    if (!artist.isEmpty())
         query.bindValue(":artist", artist);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1026,6 +1050,7 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         QScriptValue svAlbum = se.newObject();
         dataArray.setProperty(i, svAlbum);
         i++;
+        // TODO: return id: cos album can be empty
         svAlbum.setProperty("album", QScriptValue("album-all"));
         svAlbum.setProperty("mainArtist", "");
         svAlbum.setProperty("frontCoverPictureFileHash", "");
@@ -1099,16 +1124,28 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
 
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
     if (!artist.isNull()){
         NDatabase::addAND(sql, &AND);
+        if (artist.isEmpty())
+            sql += "(music_artist.name = '' OR  music_artist.name is NULL) ";
+        else
         sql += "music_artist.name = :artist ";
     }
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1122,12 +1159,16 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
-    if (!artist.isNull())
+    if (!artist.isEmpty())
         query.bindValue(":artist", artist);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1187,12 +1228,23 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
 
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
 
+
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1218,10 +1270,14 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1259,6 +1315,7 @@ bool NMusicDatabase::getArtistList(QScriptEngine & se, QScriptValue & dataArray,
     while (query.next()) {
         QScriptValue svArtist = se.newObject();
         dataArray.setProperty(i, svArtist);
+        // TODO: return id: cos album can be empty
         svArtist.setProperty("artist", query.value(fieldArtist).toString());
         i++;
     }
@@ -1309,12 +1366,21 @@ int NMusicDatabase::getArtistListCount(const QStringList & searches, int year, c
 
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1328,10 +1394,14 @@ int NMusicDatabase::getArtistListCount(const QStringList & searches, int year, c
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1381,10 +1451,16 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
         NDatabase::addAND(sql, &AND);
         sql += "music_title.year = :year ";
     }
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1413,6 +1489,10 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
         query.bindValue(":year", year);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1451,6 +1531,7 @@ bool NMusicDatabase::getGenreList(QScriptEngine & se, QScriptValue & dataArray,
     while (query.next()) {
         QScriptValue svGenre = se.newObject();
         dataArray.setProperty(i, svGenre);
+        // TODO: return id: cos album can be empty
         svGenre.setProperty("genre", query.value(fieldGenre).toString());
         i++;
     }
@@ -1494,10 +1575,16 @@ int NMusicDatabase::getGenreListCount(const QStringList & searches, int year)
         NDatabase::addAND(sql, &AND);
         sql += "music_title.year = :year ";
     }
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1513,6 +1600,10 @@ int NMusicDatabase::getGenreListCount(const QStringList & searches, int year)
         query.bindValue(":year", year);
 
     for (int i = 0; i < searches.count(); ++i){
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1554,11 +1645,17 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
     }
 
     bool AND = false;
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_title.year = :year%1 ").arg(i);
-        sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
+
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1583,7 +1680,10 @@ bool NMusicDatabase::getYearList(QScriptEngine & se, QScriptValue & dataArray, i
     }
 
     for (int i = 0; i < searches.count(); ++i){
-        query.bindValue(QString(":year%1").arg(i), QString("%%1%").arg(searches.at(i)));
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1658,11 +1758,16 @@ int NMusicDatabase::getYearListCount(const QStringList & searches)
     }
 
     bool AND = false;
-
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_title.year = :year%1 ").arg(i);
-        sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR music_title.title LIKE :title%1) ").arg(i);
@@ -1675,7 +1780,10 @@ int NMusicDatabase::getYearListCount(const QStringList & searches)
     }
 
     for (int i = 0; i < searches.count(); ++i){
-        query.bindValue(QString(":year%1").arg(i), QString("%%1%").arg(searches.at(i)));
+         searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1728,32 +1836,46 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         NDatabase::addAND(sql, &AND);
         sql += "year = :year ";
     }
-
+    if (!album.isNull()){
+        NDatabase::addAND(sql, &AND);
+        if (album.isEmpty())
+            sql += "(music_album.name = '' OR  music_album.name is NULL) ";
+        else
+            sql += "music_album.name = :album ";
+    }
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
     if (!artist.isNull()){
         NDatabase::addAND(sql, &AND);
+        if (artist.isEmpty())
+            sql += "(music_artist.name = '' OR  music_artist.name is NULL) ";
+        else
         sql += "music_artist.name = :artist ";
     }
-    if (!album.isNull()){
-        NDatabase::addAND(sql, &AND);
-        sql += "music_album.name = :album ";
-    }
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR title LIKE :title%1) ").arg(i);
     }
 
-    // TODO: review this sort (not really friendly...)
     // Sort and limit
     QString sortField = jsFileStringToDBFileField(sort);
-   if (sortField =="music_album.name")
-       sortField +=", music_title.track_number";
+    if (sortField =="music_album.name")
+        sortField += QString(" %1,  music_title.track_number").arg(NDatabase::stringToSortDirection(dir));
     sql += QString(" ORDER BY %1 %2 ").
            arg(sortField).
            arg(NDatabase::stringToSortDirection(dir));
@@ -1774,15 +1896,18 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
-    if (!artist.isNull())
+    if (!artist.isEmpty())
         query.bindValue(":artist", artist);
-    if (!album.isNull())
+    if (!album.isEmpty())
         query.bindValue(":album", album);
 
     for (int i = 0; i < searches.count(); ++i){
-        QString s = searches.at(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
@@ -1875,22 +2000,37 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
         NDatabase::addAND(sql, &AND);
         sql += "year = :year ";
     }
-
+    if (!album.isNull()){
+        NDatabase::addAND(sql, &AND);
+        if (album.isEmpty())
+            sql += "(music_album.name = '' OR  music_album.name is NULL) ";
+        else
+            sql += "music_album.name = :album ";
+    }
     if (!genre.isNull()){
         NDatabase::addAND(sql, &AND);
-        sql += "music_genre.name = :genre ";
+        if (genre.isEmpty())
+            sql += "(music_genre.name = '' OR  music_genre.name is NULL) ";
+        else
+            sql += "music_genre.name = :genre ";
     }
     if (!artist.isNull()){
         NDatabase::addAND(sql, &AND);
+        if (artist.isEmpty())
+            sql += "(music_artist.name = '' OR  music_artist.name is NULL) ";
+        else
         sql += "music_artist.name = :artist ";
     }
-    if (!album.isNull()){
-        NDatabase::addAND(sql, &AND);
-        sql += "music_album.name = :album ";
-    }
+    bool intConv;
     for (int i = 0; i < searches.count(); ++i){
         NDatabase::addAND(sql, &AND);
-        sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+            sql += QString("(music_title.year = :year%1 ").arg(i);
+            sql += QString("OR music_genre.name LIKE :genre%1 ").arg(i);
+        } else {
+            sql += QString("(music_genre.name LIKE :genre%1 ").arg(i);
+        }
         sql += QString("OR music_artist.name LIKE :artist%1 ").arg(i);
         sql += QString("OR music_album.name LIKE :album%1 ").arg(i);
         sql += QString("OR title LIKE :title%1) ").arg(i);
@@ -1904,15 +2044,18 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
 
     if (year >= 0)
         query.bindValue(":year", year);
-    if (!genre.isNull())
+    if (!genre.isEmpty())
         query.bindValue(":genre", genre);
-    if (!artist.isNull())
+    if (!artist.isEmpty())
         query.bindValue(":artist", artist);
-    if (!album.isNull())
+    if (!album.isEmpty())
         query.bindValue(":album", album);
 
     for (int i = 0; i < searches.count(); ++i){
-        QString s = searches.at(i);
+        searches.at(i).toInt(&intConv);
+        if (intConv) {
+             query.bindValue(QString(":year%1").arg(i), QString("%1").arg(searches.at(i)));
+        }
         query.bindValue(QString(":genre%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":artist%1").arg(i), QString("%%1%").arg(searches.at(i)));
         query.bindValue(QString(":album%1").arg(i), QString("%%1%").arg(searches.at(i)));
