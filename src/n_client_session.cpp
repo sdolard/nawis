@@ -134,8 +134,9 @@ bool NClientSession::supportCompression(NCompress_n::CompressionType ct) const
     // Accept-Encoding gzip,deflate
     QStringList list = m_request.value("Accept-Encoding").split(",", QString::SkipEmptyParts);
     QStringList trimmedList;
-    foreach(QString s, list)
-        trimmedList.append(s.trimmed());
+    for(int i = 0; i < list.count(); i++)
+        trimmedList.append(list[i].trimmed());
+
     return trimmedList.contains(NCompress_n::toString(ct), Qt::CaseInsensitive);
 }
 
@@ -145,9 +146,9 @@ const QString NClientSession::contentTypeCharset() const
         return "";
 
     QStringList contentTypes = m_request.contentType().split("; ", QString::SkipEmptyParts);
-    foreach(QString ct, contentTypes)
+    for(int i = 0; i< contentTypes.count(); i++)
     {
-        if (ct.compare("charset=UTF-8", Qt::CaseInsensitive))
+        if (contentTypes[i].compare("charset=UTF-8", Qt::CaseInsensitive))
             return "UTF8";
     }
     return "";
@@ -161,9 +162,9 @@ const NStringMap NClientSession::postDataToMap() const
     else
         stringList = QString(m_postData).split("&");
     NStringMap postParamList;
-    foreach (QString s, stringList)
+    for(int i = 0; i < stringList.count(); i++)
     {
-        QStringList data = s.split("=");
+        QStringList data = stringList[i].split("=");
         if (data.count() ==  0)
             continue;
         if (data.count() ==  1)

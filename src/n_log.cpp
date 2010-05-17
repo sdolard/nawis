@@ -128,8 +128,8 @@ void NLogger::log(const QString & context, const QString & msg, NLog::LogType lt
 
 void NLogger::log(const QString & context, const QStringList & msgList, NLog::LogType lt)
 {
-    foreach(QString msg, msgList)
-        log(context, msg, lt);
+    for(int i = 0; i < msgList.count(); i++)
+        log(context, msgList[i], lt);
 }
 
 void NLogger::debug(const QString & context, const QString & msg)

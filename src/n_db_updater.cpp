@@ -67,7 +67,7 @@ void NDbUpdaterThread::parseSharedFiles()
     NLOGD("NDbUpdaterThread", "parseSharedFiles start");
     m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
     m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-    foreach(NDirWatcherThreadItem item, m_dirs)
+    foreach(NDirWatcherThreadItem item, m_dirs) // todo: use QHashIterator
     {
         parseFiles(item.path(), item.rootPath());
 
@@ -85,8 +85,9 @@ void NDbUpdaterThread::parseFiles(const QString & path, const QString & rootPath
         return;
 
     QFileInfoList list = m_dir.entryInfoList();
-    foreach(QFileInfo fi, list)
+    for(int i = 0; i < list.count(); i++)
     {
+        const QFileInfo & fi = list[i];
         if (isStopping())
             break;
 

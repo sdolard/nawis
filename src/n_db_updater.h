@@ -42,8 +42,8 @@ protected:
 private:
     NDirWatcherThreadItems m_dirs;
     NFileSuffixList        m_fileSuffixes;
-    QStringList             m_fileNameFilters;
-    QDir                    m_dir;
+    QStringList            m_fileNameFilters;
+    QDir                   m_dir;
 
     void updateDB();
     void parseFiles(const QString & path, const QString & rootPath);

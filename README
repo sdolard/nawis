@@ -28,14 +28,17 @@ Build need
      Read http://wiki.github.com/sdolard/nawis/start-nawis for details
      
 6) A demo web ui i available. 
-     You must set the web ui directory in nawis config file.
-     Edit ~/.config/nawis/nawis.ini
-     > server def webui=<your ui absolute path>
-     Ex on my Mac:
-       server def webui=/Users/sebastiend/Documents/dev/nawis/ui
+     It's available on "ui" directory on root projet directory.
+     You must set this web ui directory in nawis config file.
+       Edit ~/.config/nawis/nawis.ini
+       > server def webui=<your ui absolute path>
+       Ex on my Mac:
+         server def webui=/Users/sebastiend/Documents/dev/nawis/ui
      
 7) By defaut, nawis is listening on 6391 http port
     Open your favorite browser on http://localhost:6391
+    If you want to enable ssl, go there:http://wiki.github.com/sdolard/nawis/how-enable-ssl-using-self-signed-certificate
+    http and https could not be enabled together for now (this is planned for a futur version).
 
 8) Default auth is:
      login: admin

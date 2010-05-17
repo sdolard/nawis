@@ -117,18 +117,19 @@ void NDirWatcherThread::parseSharedDirs()
 {
     //NLOGD("NDirWatcherThread", "parseSharedDirs start");
 
-    foreach(NDir NDir, m_sharedDirectories)
+    for(int i = 0; i < m_sharedDirectories.count(); i++)
     {
+        const NDir & dir = m_sharedDirectories[i];
         if (isStopping())
             break;
 
-        if (!NDir.shared())
+        if (!dir.shared())
             continue;
 
-        if (!NDir.dir().exists())
+        if (!dir.dir().exists())
             continue;
 
-        parseDir(NDir.dir().absolutePath(), NDir.recursive(), NDir.dir().absolutePath());
+        parseDir(dir.dir().absolutePath(), dir.recursive(), dir.dir().absolutePath());
     }
     //NLOGD("NDirWatcherThread", "parseSharedDirs stop");
 }
@@ -158,8 +159,9 @@ void NDirWatcherThread::parseDir(const QString & path, bool recursive, const QSt
 
     d.setFilter(QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QFileInfoList list = d.entryInfoList();
-    foreach(QFileInfo fi, list)
+    for(int i = 0; i < list.count(); i++)
     {
+        const QFileInfo & fi = list[i];
         if (isStopping())
             break;
         //qDebug(qPrintable(fi.absoluteFilePath()));
@@ -202,8 +204,9 @@ void NDirWatcherThread::updateItemHash(NDirWatcherThreadItem & item)
     if (!m_dir.exists())
         return;
     QFileInfoList list = m_dir.entryInfoList();
-    foreach(QFileInfo fi, list)
+    for(int i = 0; i < list.count(); i++)
     {
+        const QFileInfo & fi = list[i];
         NFileSuffix suffix = m_fileSuffixes.category(fi); // Optimized
         if (!suffix.isValid())
             continue;

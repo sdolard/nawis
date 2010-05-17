@@ -130,11 +130,13 @@ void NConfig::save()
     if (!m_fileLoaded)
         return;
 
-    /* Sharing group
-	 */
+    /**
+    * Sharing group
+    */
     m_settings.deleteGroup(NCONFIG_SHARED_DIR);
-    foreach(NDir dir, m_sharedDirectories)
+    for(int i = 0; i < m_sharedDirectories.count(); i++)
     {
+        const NDir & dir = m_sharedDirectories[i];
         m_settings.beginGroup(NCONFIG_SHARED_DIR);
         m_settings.setValue(NCONFIG_SHARED_DIR, NCONFIG_SHARED_DIR_PATH_KEY,
                             dir.dir().path());
@@ -145,8 +147,9 @@ void NConfig::save()
         m_settings.endGroup();
     }
 
-    /* Advanced group
-	 */
+    /**
+    * Advanced group
+    */
     m_settings.setValue(NCONFIG_ADV, NCONFIG_ADV_LAST_DIR_UPD_KEY,
                         m_lastDirUpdate);
     m_settings.setValue(NCONFIG_ADV, NCONFIG_ADV_DIR_FINGER_PRINT_KEY,
@@ -399,8 +402,7 @@ void NConfig::writeDefaultConfigFile()
     /* Movie group
 	 */
     QStringList suffixList;
-    suffixList << "avi" << "srt" << "mpg" << "mkv" << "divx"
-            << "xvid" << "mpeg";
+    suffixList << "avi" << "srt" << "mpg" << "mkv" << "divx" << "xvid" << "mpeg";
     QString suffix;
     foreach (suffix, suffixList)
     {
