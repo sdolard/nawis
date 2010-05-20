@@ -47,9 +47,9 @@ public:
 
     bool operator==(const NFileSuffix & fileSuffix) const;
 private:
-    QString                          m_name;
+    QString                         m_name;
     NFileCategory_n::FileCategory   m_category;
-    bool                             m_shared;
+    bool                            m_shared;
 
 };
 

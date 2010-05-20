@@ -78,9 +78,9 @@ NLogDatabase::~NLogDatabase()
 void NLogDatabase::create()
 {
     QSqlQuery query(m_db);
-    /* Database creation
-	*
-	*/
+    /**
+    * Database creation
+    */
     // log table creation
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS logs (" \
@@ -135,10 +135,8 @@ bool NLogDatabase::addLog(const QString & log)
     query.bindValue(":date", QDateTime::currentDateTime().toString(SQLITE_DATETIME));
     if (!query.exec())
     {
-#ifdef DEBUG
-        // uncomment if needed
-        debugLastQuery("addLog failed", query);
-#endif
+        if (query.lastError().number() != SQLITE_CONSTRAINT)
+            debugLastQuery("addLog failed", query);
         return false;
     }
     return true;
@@ -153,6 +151,7 @@ bool NLogDatabase::getLogList(QScriptEngine & se, QScriptValue & dataArray,
     QString sql = "SELECT id, date, log " \
                   "FROM logs ";
 
+    // TODO: update this stuped split
     QStringList searches = search.split("+", QString::SkipEmptyParts);
     searches = NConvert_n::fromUTF8PercentEncoding(searches);
     for (int i = 0; i < searches.count(); ++i)
@@ -181,9 +180,7 @@ bool NLogDatabase::getLogList(QScriptEngine & se, QScriptValue & dataArray,
     {
         debugLastQuery("logList failed", query);
         return false;
-    }/* else
-		debugLastQuery("logList succeed", query);
-	 */
+    }
 
     int fieldDate = query.record().indexOf("date");
     int fieldLog = query.record().indexOf("log");
@@ -209,6 +206,7 @@ int NLogDatabase::getLogListCount(const QString & search)
     QString sql = "SELECT COUNT(*) " \
                   "FROM logs ";
 
+    // TODO: update this stuped split
     QStringList searches = search.split("+", QString::SkipEmptyParts);
     searches = NConvert_n::fromUTF8PercentEncoding(searches);
     for (int i = 0; i < searches.count(); ++i)

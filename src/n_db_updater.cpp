@@ -67,7 +67,7 @@ void NDbUpdaterThread::parseSharedFiles()
     NLOGD("NDbUpdaterThread", "parseSharedFiles start");
     m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
     m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-    foreach(NDirWatcherThreadItem item, m_dirs) // todo: use QHashIterator
+    foreach(NDirWatcherThreadItem item, m_dirs)
     {
         parseFiles(item.path(), item.rootPath());
 

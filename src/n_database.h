@@ -152,6 +152,7 @@ private:
     bool setDuplicatedFileAsNotDeleted(const QFileInfo & fi);
     bool isDuplicatedFile(const QString & hash, const QFileInfo & newFi);
     bool setFileAsNotDeleted(const QString & absoluteFilePath, const QDateTime & lastModified);
+    const QFileInfo getDbFileToHash();
 };
 
 #endif //N_DATABASE_H

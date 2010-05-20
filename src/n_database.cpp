@@ -112,12 +112,11 @@ void NDatabase::createCategoryTable()
         query.bindValue(":id", NFileCategory_n::fileCategoryId(fc));
         query.bindValue(":name", NFileCategory_n::fileCategoryName(fc));
 
-        /*#ifdef DEBUG
-                 if (!query.exec())
-                 debugLastQuery("createDefautValues failed", query);
-                 #else*/
-        query.exec();
-        //#endif //DEBUG
+        if (!query.exec())
+        {
+            if (query.lastError().number() != SQLITE_CONSTRAINT)
+                debugLastQuery("createCategoryTable: createDefautValues failed", query);
+        }
     }
 }
 
@@ -168,8 +167,6 @@ void NDatabase::createFileMetadataTable()
 void NDatabase::createFileTable()
 {
     QSqlQuery query(m_db);
-
-    //TODO: Create a temp table to manage file to delete ?
 
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS file (" \
@@ -242,7 +239,7 @@ void NDatabase::createUserTable()
 void NDatabase::createTables()
 {
     // Enable foreign key
-   enableFk();
+    enableFk();
 
     // Order is important!
     createCategoryTable();
@@ -349,9 +346,10 @@ bool NDatabase::setFileAsNotDeleted(const QString & absoluteFilePath, const QDat
         debugLastQuery("setFileAsNotDeleted failed", query);
         return false;
     }
-    return true;
+    return query.numRowsAffected() == 1;
 }
 
+// This function is OK
 bool NDatabase::setDuplicatedFileAsNotDeleted(const QFileInfo & fi)
 {
     if (!fi.isFile())
@@ -360,7 +358,7 @@ bool NDatabase::setDuplicatedFileAsNotDeleted(const QFileInfo & fi)
     QSqlQuery query(m_db);
     if (!query.prepare("UPDATE duplicated_file SET deleted = 0 "\
                        "WHERE absolute_file_path = :absolute_file_path "\
-                       "AND last_modified = :last_modified")) // same file, no update hash needed
+                       "AND last_modified = :last_modified")) // It has to be the same file, during all scan update
     {
         debugLastQuery("setDuplicatedFileAsNotDeleted prepare failed", query);
         return false;
@@ -374,7 +372,6 @@ bool NDatabase::setDuplicatedFileAsNotDeleted(const QFileInfo & fi)
     }
     return true;
 }
-
 
 bool NDatabase::removeDeletedFiles()
 {
@@ -417,7 +414,7 @@ bool NDatabase::addFile(const QFileInfo & fi, const NFileSuffix & suffix, const 
                        ":added, :size, :last_modified)"))
     {
         debugLastQuery("addFile prepare failed", query);
-        return setFileAsNotDeleted(absoluteFilePath, lastModified);
+        return false;
     }
 
     query.bindValue(":file_name", fi.fileName());
@@ -430,36 +427,39 @@ bool NDatabase::addFile(const QFileInfo & fi, const NFileSuffix & suffix, const 
 
     if (!query.exec())
     {
-        // uncomment if needed
-        //debugLastQuery("addFile failed", query);
-        return setFileAsNotDeleted(absoluteFilePath, lastModified);
-    }
+        if (query.lastError().number() == SQLITE_CONSTRAINT){
+            if (setFileAsNotDeleted(absoluteFilePath, lastModified))
+                return true;
+            query.clear();
+            if (!query.prepare("DELETE FROM file "\
+                               "WHERE absolute_file_path = :absolute_file_path "))
+                debugLastQuery("addFile prepare failed (1)", query);
 
+            query.bindValue(":absolute_file_path", absoluteFilePath);
+            if (!query.exec())
+                debugLastQuery("addFile prepare failed (2)", query);
+
+            return addFile(fi, suffix, rootPath);
+        }
+        debugLastQuery("addFile failed", query);
+        return false;
+    }
     return true;
 }
 
+// Algo is ok but it's unreadable (optimized) :)
 const QFileInfo NDatabase::getFileToHash()
 {
     QSqlQuery query(m_db);
-
-    QString sql_filetoHash = "SELECT absolute_file_path "\
-                             "FROM file "\
-                             "WHERE hash IS NULL "\
-                             "AND deleted = 0 "\
-                             "LIMIT 1 ";
-
-    QString sql_duplicated = "SELECT file.absolute_file_path "\
-                             "FROM duplicated_file, file "\
-                             "WHERE duplicated_file.hash = file.hash "\
-                             "AND duplicated_file.absolute_file_path = :absolute_file_path "\
-                             "AND file.deleted = 0 ";
-
-    QString sql_deleteFiletoHash = "DELETE FROM file "\
-                                   "WHERE absolute_file_path = :absolute_file_path ";
-
     while (true) {
-        // we are looking for a file to hash
-        if (!query.exec(sql_filetoHash))
+        /**
+        * Step 1: we are looking for a file to hash
+        */
+        if (!query.exec("SELECT absolute_file_path "\
+                        "FROM file "\
+                        "WHERE hash IS NULL "\
+                        "AND deleted = 0 "\
+                        "LIMIT 1 "))
         {
             debugLastQuery("getFileToHash failed (1)", query);
             return QFileInfo();
@@ -468,16 +468,20 @@ const QFileInfo NDatabase::getFileToHash()
         if (!query.first())
             return QFileInfo(); // no more file to hash
 
-
-        // we are looking for a file to hash referenced in duplicated file table
-        // If it's exists, we are looking if "original file exists yet"
-        // if not, it's a new file,
-        // if it's exists, no need to hash the file, we delete the file in hash table
-        // we flag duplicated file as not deleted
-        // and looking for another file to hash until there is no more file to hash
-        QFileInfo fiToHash(query.value(0).toString());
+        QFileInfo fiToHash(query.value(0).toString()); // Here is the file to hash
         query.clear();
-        if (!query.prepare(sql_duplicated))
+
+        /**
+        * Step 2
+        * Is this an already referenced duplicated file ?
+        * Reference is updated when hash is set for a file
+        * So this step already used after the FIRST FULL files scan
+        */
+        if (!query.prepare("SELECT file.absolute_file_path "\
+                           "FROM file, duplicated_file "\
+                           "WHERE file.deleted = 0 "\
+                           "AND duplicated_file.absolute_file_path = :absolute_file_path "\
+                           "AND file.hash = duplicated_file.hash"))
         {
             debugLastQuery("getFileToHash failed (2)", query);
             return QFileInfo();
@@ -488,17 +492,33 @@ const QFileInfo NDatabase::getFileToHash()
             debugLastQuery("getFileToHash failed (3)", query);
             return QFileInfo();
         }
-        if (!query.first())
-            return fiToHash; // no duplicated file reference
+        if (!query.first()){
+            /**
+             * Step 3: there is no duplicated file reference
+             * We check if new file to hash still exists
+             */
+            if (fiToHash.exists())
+                return fiToHash;
+        } else {
+            /**
+             * Step 3 ': there is no duplicated file reference
+             */
+            QFileInfo dupFi(query.value(0).toString());
+            if (!dupFi.exists()){// Duplicated file no more not exists
+                if (fiToHash.exists())
+                    return fiToHash;
+            } else
+                // Update deleted status of duplicated file reference
+                setDuplicatedFileAsNotDeleted(fiToHash);
+        }
 
-        QFileInfo refFi(query.value(0).toString());
-        if (!refFi.exists()) // Original file do not exists
-            return fiToHash;
-
-        // we delete the file in hash table and looking for another file to hash
-        // until there is no more file to hash
+        /**
+         * Step 4: all test has been done: we can delete the file to hash from table
+         * and looking for another file to hash until there is no more file to hash
+         */
         query.clear();
-        if (!query.prepare(sql_deleteFiletoHash))
+        if (!query.prepare("DELETE FROM file "\
+                           "WHERE absolute_file_path = :absolute_file_path "))
         {
             debugLastQuery("getFileToHash failed (4)", query);
         }
@@ -507,9 +527,6 @@ const QFileInfo NDatabase::getFileToHash()
         {
             debugLastQuery("getFileToHash failed (5)", query);
         }
-
-        // Update deleted status of duplicated file reference
-        setDuplicatedFileAsNotDeleted(fiToHash);
     }
 }
 
@@ -611,7 +628,6 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
                             const QString & sort, const QString & dir)
 {
     // TODO: do category only search
-
     // TODO: LEFT OUTER JOIN file_metadata > if file metadata is empty, a record is not necessary(db will be more light)
     QSqlQuery query(m_db);
     QString sql = "SELECT file.id id, file.file_name, file.relative_path, file.hash, "\
@@ -1033,11 +1049,16 @@ QFileInfo NDatabase::file(const QString & fileHash)
     return QFileInfo(query.value(0).toString());
 }
 
+// Called in setFileHash: this function is ok
 bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
 {
-    // called in setFileHash
+    /**
+      * Step 1: is this hash already exists in file table?
+      */
     QSqlQuery query(m_db);
-    if (!query.prepare("SELECT file_name,relative_path,absolute_file_path FROM file WHERE hash = :hash"))
+    if (!query.prepare("SELECT file_name, relative_path, absolute_file_path "\
+                       "FROM file "\
+                       "WHERE hash = :hash"))
     {
         debugLastQuery("isDuplicatedFileprepare failed (1)", query);
         return false;
@@ -1054,6 +1075,9 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
     if (!fi.exists())
         return false;
 
+    /**
+      * Step 2: We insert file in duplicated table or update delete flag if it exists
+      */
     QString relativeFilePath = QDir::toNativeSeparators(QString("%1/%2").
                                                         arg(query.value(1).toString()).
                                                         arg(query.value(0).toString()));
@@ -1083,13 +1107,16 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
 
     if (!query.exec())
     {
-        // uncomment if needed
-        //debugLastQuery("isDuplicatedFile failed (2)", query); //If file alreay exist, insert failed, it's normal.
-        setDuplicatedFileAsNotDeleted(newFi);
+        if (query.lastError().number() == SQLITE_CONSTRAINT)
+            setDuplicatedFileAsNotDeleted(newFi);
+        else
+            debugLastQuery("isDuplicatedFile failed (2)", query); //If file alreay exist, insert failed, it's normal.
     }
-
     query.clear();
 
+    /**
+      * Step 3: We delete file, cos it now is in duplicated file table
+      */
     if (!query.prepare("DELETE FROM file WHERE absolute_file_path = :absolute_file_path"))
     {
         debugLastQuery("isDuplicatedFile prepare failed (3)", query);
@@ -1101,10 +1128,10 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
         debugLastQuery("isDuplicatedFile failed (3)", query);
         return false;
     }
-
     return true;
 }
 
+// TODO: review this: related to addFile and getFileHash
 void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
 {
     Q_ASSERT(fi.exists());
@@ -1115,8 +1142,10 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
     QString addedDateTime;
     QSqlQuery query(m_db);
 
-    // We are looking for a previous file with same hash in order to not update
-    // added dateTime
+    /**
+      * Step 1: we are looking for a previous file with same hash
+      * in order to not update added dateTime
+      */
     if (!query.prepare("SELECT added FROM file WHERE hash = :hash"))
     {
         debugLastQuery("setFileHash prepare failed (1)", query);
@@ -1134,13 +1163,17 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
         addedDateTime = query.value(0).toString();
         query.clear();
 
-        // Looking for file exists yet, doubled file
-
+        /**
+          * Step 1.1: Looking for file exists yet, doubled file
+          */
         if (isDuplicatedFile(hash, fi))
             return;
 
-        // we delete previous instance of this hash
-        if (!query.prepare("DELETE FROM file WHERE hash = :hash"))
+        // Step 1.2 is not valid!
+        /**
+          * Step 1.2: we delete previous instance of this hash (we've got added datetime)
+          */
+        /*if (!query.prepare("DELETE FROM file WHERE hash = :hash"))
         {
             debugLastQuery("setFileHash prepare failed (2)", query);
             return;
@@ -1151,10 +1184,15 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
             debugLastQuery("setFileHash failed (2)", query);
             return;
         }
-        query.clear();
+        query.clear();*/
+
+        /**
+          * Step 1.3: we update previous instance of this hash
+          */
         if (!query.prepare("UPDATE file SET hash = :hash, added = :added "\
                            "WHERE absolute_file_path = :absolute_file_path "\
                            "AND last_modified = :last_modified"))
+
         {
             debugLastQuery("setFileHash prepare failed (3)", query);
             return;
@@ -1168,9 +1206,31 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
             debugLastQuery("setFileHash failed (3)", query);
             return;
         }
+
+        /**
+          * Step 1.4: File has changed or is changing since db insert to hash process,
+          * we delete it, we can not do anything else
+          */
+        if(query.numRowsAffected() == 0)
+        {
+            if (!query.prepare("DELETE FROM file WHERE absolute_file_path = :absolute_file_path"))
+            {
+                debugLastQuery("setFileHash prepare failed (3.1)", query);
+                return;
+            }
+            query.bindValue(":absolute_file_path", fi.absoluteFilePath());
+            if (!query.exec())
+            {
+                debugLastQuery("setFileHash failed (3.1)", query);
+                return;
+            }
+        }
         return;
     }
 
+    /**
+      * Step 2: file has not been updated
+      */
     query.clear();
     if (!query.prepare("UPDATE file SET hash = :hash "\
                        "WHERE absolute_file_path = :absolute_file_path "\
@@ -1187,7 +1247,25 @@ void NDatabase::setFileHash(const QFileInfo & fi, const QString & hash)
         debugLastQuery("setFileHash failed (4)", query);
         return;
     }
-    return;
+
+    /**
+      * Step 3:File has changed or is changing since db insert to hash process,
+      * we delete it, we can not do anything else
+      */
+    if(query.numRowsAffected() == 0)
+    {
+        if (!query.prepare("DELETE FROM file WHERE absolute_file_path = :absolute_file_path"))
+        {
+            debugLastQuery("setFileHash prepare failed (5)", query);
+            return;
+        }
+        query.bindValue(":absolute_file_path", fi.absoluteFilePath());
+        if (!query.exec())
+        {
+            debugLastQuery("setFileHash failed (5)", query);
+            return;
+        }
+    }
 }
 
 qint64 NDatabase::sharedSize()

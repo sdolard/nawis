@@ -402,7 +402,7 @@ void NConfig::writeDefaultConfigFile()
     /* Movie group
 	 */
     QStringList suffixList;
-    suffixList << "avi" << "srt" << "mpg" << "mkv" << "divx" << "xvid" << "mpeg";
+    suffixList << "avi" << "srt" << "mpg" << "mkv" << "divx" << "xvid" << "mpeg" << "mov" << "wmv";
     QString suffix;
     foreach (suffix, suffixList)
     {

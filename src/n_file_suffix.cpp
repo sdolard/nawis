@@ -64,7 +64,6 @@ void NFileSuffixList::dump() const
         NLOGD("NFileSuffixList", QString("    shared:%1").arg(QVariant(suffix.shared()).toString()));
         NLOGD("NFileSuffixList", QString("    category:%1").arg(NFileCategory_n::fileCategoryName(suffix.category())));
     }
-
 }
 
 const QStringList NFileSuffixList::suffixList(NFileCategory_n::FileCategory fc) const
@@ -78,7 +77,6 @@ const QStringList NFileSuffixList::suffixList(NFileCategory_n::FileCategory fc) 
             continue;
         suffixList << suffix.name();
     }
-
     return suffixList;
 }
 
