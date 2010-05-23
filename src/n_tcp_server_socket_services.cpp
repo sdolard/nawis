@@ -344,7 +344,7 @@ NResponse & NTcpServerSocketServices::svcRedirectToTUI(int *statusCode,
 {
     *statusCode = N_HTTP_MOVED_PERMANENTLY;
     response.httpHeader().setValue("Location", QString("http%1://%2:%3/ui").
-                                   arg(NCONFIG.isSslServer() ? "s" : "").
+                                   arg(session.isSsl() ? "s" : "").
                                    arg(session.host()).
                                    arg(session.port()));
     response.add10yExpiresHttpHeader();
@@ -383,7 +383,7 @@ NResponse & NTcpServerSocketServices::svcGetUI(int *statusCode,
         if (uiPath.endsWith("/"))
             uiPath.remove(path.length() - 1, 1);
         response.httpHeader().setValue("Location", QString("http%1://%2:%3/ui%4/index.html").
-                                       arg(NCONFIG.isSslServer() ? "s" : "").
+                                       arg(session.isSsl() ? "s" : "").
                                        arg(session.host()).
                                        arg(session.port()).
                                        arg(uiPath));
@@ -396,6 +396,8 @@ NResponse & NTcpServerSocketServices::svcGetUI(int *statusCode,
     // Redirection to ui/index.hlml if not authenticated
     //NLOGD("fileSuffix", fileSuffix);
     //NLOGD("nawis_sessionid", session.sessionId());
+    //NLOGD("path", path);
+    //NLOGD("m_authSessionHash.isValid(session)", QVariant(m_authSessionHash.isValid(session)).toString());
     if (fileSuffix == "html" &&
         uiPath != "/index.html" &&
         !m_authSessionHash.isValid(session))
@@ -920,7 +922,7 @@ NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
         svRoot.setProperty(RSP_MSG, QScriptValue("Authentication succeed"));
         svRoot.setProperty("level", QScriptValue(NTcpServerAuthSession::levelToString(authSession.level())));
-        response.setSessionCookie(authSession.sessionId());
+        response.setSessionCookie(authSession.sessionId(), session.isSsl());
         NLOGM("Authentication login succeed", QString("%1@%2; level: %3; user agent: %4").
               arg(authSession.login()).
               arg(authSession.address()).

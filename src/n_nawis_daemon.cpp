@@ -41,10 +41,7 @@ void NDaemon::start()
     NLOGM("Server", "--------------- new session ---------------");
 
     if (!NSERVER.start())
-    {
-        NLOGMD("Server can not start", NSERVER.errorMessage());
         app->quit();
-    }
 }
 
 void NDaemon::stop()

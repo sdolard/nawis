@@ -198,7 +198,7 @@ bool NTcpServerSocket::requestIsComplete()
 void NTcpServerSocket::prepareResponse()
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssWriting);
-    m_response =  NTSSERVICES.response(NClientSession(m_request, m_postData, &m_sslSocket));
+    m_response =  NTSSERVICES.response(NClientSession(m_request, m_postData, &m_sslSocket, m_ssl));
     m_postData.clear();
     m_request = QHttpRequestHeader();
 }
@@ -303,9 +303,9 @@ void NTcpServerSocket::sslModeChanged ( QSslSocket::SslMode mode )
     }
 }
 
-void NTcpServerSocket::sslPeerVerifyError ( const QSslError &  )
+void NTcpServerSocket::sslPeerVerifyError ( const QSslError &  error)
 {
-    //NLOGD("sslPeerVerifyError", error.errorString());
+    NLOGD("sslPeerVerifyError", error.errorString());
 }
 
 void NTcpServerSocket::sslErrors ( const QList<QSslError> & errors )
@@ -314,7 +314,7 @@ void NTcpServerSocket::sslErrors ( const QList<QSslError> & errors )
     foreach(QSslError error, errors){
         sslErrors.append(error.errorString());
     }
-    //NLOGD("sslPeerVerifyError", sslErrors.join("\n"));
+    NLOGD("sslPeerVerifyError", sslErrors.join("\n"));
 }
 
 bool NTcpServerSocket::initSsl()

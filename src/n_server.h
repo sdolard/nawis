@@ -37,7 +37,7 @@ public:
     bool stop();
     bool pause();
     bool resume();
-    QString & errorMessage();
+    //QString & errorMessage();
 
     int jobStatus() const;
     static const QString jobToString(int job);
@@ -51,33 +51,41 @@ private:
     static NServer           *m_instance;
     int                       m_currentJob;
     NTcpServer               *m_server;
+    NTcpServer               *m_sslServer;
     NDirWatcherThreadItems    m_dirs;
     NDbUpdaterThread         *m_dbUpdaterJob;
     NDirWatcherThread        *m_dirWatcherJob;
     NHasherThread            *m_hasherJob;
     NMetadataUpdaterThread   *m_metadataUpdaterJob;
     NMusicDbUpdaterThread    *m_musicDbUpdaterJob;
-    QString                   m_errorMessage;
+    //QString                   m_errorMessage;
     QTimer                    m_jobTimer;
     NDirList                  m_sharedDirectories;
     NFileSuffixList           m_fileSuffixes;
     bool                      m_configFileChanged;
 
+    // TCP
     bool startTcpServer();
     bool restartTcpServer();
     void stopTcpServer();
+
+    // TCP SSL
+    bool startSslTcpServer();
+    bool restartSslTcpServer();
+    void stopSslTcpServer();
 
     void stopJobs();
     void stopJob(int job);
     void startJobs();
     void startJob(int job);
 
+    QString socketErrorToString(QAbstractSocket::SocketError error);
+
 private slots:
     void onJobTimerTimeout();
     void onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs);
     void onJobTerminated();
 };
-
 
 #endif // N_SERVER_H
 

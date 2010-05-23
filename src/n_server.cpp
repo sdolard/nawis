@@ -40,6 +40,7 @@ NServer::NServer(QObject *parent)
     m_configFileChanged    = false;
     m_currentJob           = JT_NONE;
     m_server               = NULL;
+    m_sslServer            = NULL;
     m_dbUpdaterJob         = NULL;
     m_dirWatcherJob        = NULL;
     m_hasherJob            = NULL;
@@ -64,6 +65,7 @@ NServer::~NServer()
     m_configFileChanged = false;
     stopJobs();
     stopTcpServer();
+    stopSslTcpServer();
     NDatabase::deleteInstance();
     NConfig::deleteInstance();
     NLOGDB.deleteInstance();
@@ -71,12 +73,18 @@ NServer::~NServer()
 
 bool NServer::start()
 {
-    NLOGM("Server: configuration file path", NPath_n::config());
+    NLOGMD("Server: configuration file path", NPath_n::config());
 
     // Start DB: must be created as first
     NDatabase::instance();
 
-    if (!startTcpServer())
+    bool started = false;
+    if (!NCONFIG.isOnlySslServerEnabled())
+        started = startTcpServer();
+    if (NCONFIG.isSslServerEnabled())
+        started = started && startSslTcpServer();
+
+    if (!started)
         return false;
 
     NCONFIG.dumpSharedDirectoriesConfig();
@@ -89,18 +97,20 @@ bool NServer::start()
 bool NServer::stop()
 {
     stopTcpServer();
+    stopSslTcpServer();
     return true;
 }
 
 bool NServer::pause()
 {
     stopTcpServer();
+    stopSslTcpServer();
     return true;
 }
 
 bool NServer::resume()
 {
-    return restartTcpServer();
+    return restartTcpServer() && restartSslTcpServer();
 }
 
 void NServer::stopTcpServer()
@@ -108,15 +118,37 @@ void NServer::stopTcpServer()
     // It's not a thread, this code is ok
     if (m_server == NULL)
         return;
+    NLOGMD("Server", tr("TCP server is stopping..."));
     delete m_server;
     m_server = NULL;
+    NLOGMD("Server", tr("TCP server is stopped"));
+}
+
+void NServer::stopSslTcpServer()
+{
+    // It's not a thread, this code is ok
+    if ( m_sslServer == NULL)
+        return;
+    NLOGMD("Server", tr("SSL TCP server is stopping..."));
+    delete m_sslServer;
+    m_sslServer = NULL;
+    NLOGMD("Server", tr("SSL TCP server is stopped"));
 }
 
 bool NServer::restartTcpServer()
 {	
-    NLOGM("Server", tr("Server %1 is restarting...").arg(NVersion_n::namedVersion(false)));
     stopTcpServer();
-    return startTcpServer();
+    if (!NCONFIG.isOnlySslServerEnabled())
+        return startTcpServer();
+    return false;
+}
+
+bool NServer::restartSslTcpServer()
+{
+    stopSslTcpServer();
+    if (NCONFIG.isSslServerEnabled())
+        return  startSslTcpServer();
+    return false;
 }
 
 bool NServer::startTcpServer()
@@ -124,94 +156,117 @@ bool NServer::startTcpServer()
     if (m_server) // already running
         return true;
 
-    m_server = new NTcpServer(this);
-    m_errorMessage.clear();
+    NLOGMD("Server", tr("TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
+    m_server = new NTcpServer(NCONFIG.serverPort(), false, this);
 
     if (m_server->start())
     {
-        NLOGM("Server", tr("Server %1 is listening on tcp/%2; ssl: %3").arg(NVersion_n::namedVersion(false)).
-              arg(m_server->serverPort()).arg(QVariant(NCONFIG.isSslServer()).toString()));
-        NLOGM("Server", tr("Waiting for connection..."));
+        NLOGMD("Server", tr("TCP Server is listening on %1").arg(m_server->serverPort()));
+        NLOGMD("Server", tr("TCP Server is waiting for connection..."));
         return true;
     }
 
-    m_errorMessage = tr("Server not able to listen on tcp/%1: %2\n").
+    NLOGMD("Server", tr("TCP server not able to listen on %1: %2\n").
                      arg(NCONFIG.serverPort()).
-                     arg(m_server->errorString());
+                     arg(m_server->errorString()));
 
-    m_errorMessage += tr("Solution: ");
-    switch (m_server->serverError())
+    NLOGMD("Solution: ", socketErrorToString(m_server->serverError()));
+    return false;
+}
+
+bool NServer::startSslTcpServer()
+{
+    if (m_sslServer) // already running
+        return true;
+
+    NLOGMD("Server", tr("SSL TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
+    m_sslServer = new NTcpServer(NCONFIG.serverSslPort(), true, this);
+
+    if (m_sslServer->start())
+    {
+        NLOGMD("Server", tr("SSL TCP Server is listening on %1").arg(m_sslServer->serverPort()));
+        NLOGMD("Server", tr("SSL TCP Server is waiting for connection..."));
+        return true;
+    }
+
+    NLOGMD("Server", tr("SSL TCP server not able to listen on %1: %2\n").
+                     arg(NCONFIG.serverSslPort()).
+                     arg(m_sslServer->errorString()));
+
+    NLOGMD("Solution: ", socketErrorToString(m_sslServer->serverError()));
+    return false;
+}
+
+QString NServer::socketErrorToString(QAbstractSocket::SocketError error)
+{
+    switch (error)
     {
     case QAbstractSocket::AddressInUseError:
-        m_errorMessage += tr("Try to run server on another port");
-        break;
+        return  tr("Try to run server on another port");
+
     case QAbstractSocket::ConnectionRefusedError:
-        m_errorMessage += tr("Connection Refused Error");
-        break;
+        return tr("Connection Refused Error");
+
     case QAbstractSocket::SocketAccessError:
-        m_errorMessage += tr("Set an other server port.");
-        break;
+        return tr("Set an other server port.");
+
     case QAbstractSocket::SocketResourceError:
-        m_errorMessage += tr("Socket Resource Error");
-        break;
+        return tr("Socket Resource Error");
+
     case QAbstractSocket::SocketTimeoutError:
-        m_errorMessage += tr("Socket Timeout Error");
-        break;
+        return tr("Socket Timeout Error");
+
     case QAbstractSocket::DatagramTooLargeError:
-        m_errorMessage += tr("Datagram Too Large Erro");
-        break;
+        return tr("Datagram Too Large Erro");
+
     case QAbstractSocket::NetworkError:
-        m_errorMessage += tr("Network Error");
-        break;
+        return tr("Network Error");
+
     case QAbstractSocket::SocketAddressNotAvailableError:
-        m_errorMessage += tr("Socket Address Not Available Error");
-        break;
+        return tr("Socket Address Not Available Error");
+
     case QAbstractSocket::UnsupportedSocketOperationError:
-        m_errorMessage += tr("Unsupported Socket Operation Error");
-        break;
+        return tr("Unsupported Socket Operation Error");
+
     case QAbstractSocket::UnfinishedSocketOperationError:
-        m_errorMessage += tr("Unfinished Socket Operation Error");
-        break;
+        return tr("Unfinished Socket Operation Error");
+
     case QAbstractSocket::ProxyAuthenticationRequiredError:
-        m_errorMessage += tr("Proxy Authentication Required Error");
-        break;
+        return tr("Proxy Authentication Required Error");
+
     case QAbstractSocket::UnknownSocketError:
-        m_errorMessage += tr("Unknown Socket Error");
-        break;
+        return tr("Unknown Socket Error");
+
     case QAbstractSocket::RemoteHostClosedError:
-        m_errorMessage += tr("Remote Host Closed Error");
-        break;
+        return tr("Remote Host Closed Error");
+
     case QAbstractSocket::HostNotFoundError:
-        m_errorMessage += tr("Host Not Found Error");
-        break;
+        return tr("Host Not Found Error");
+
     case QAbstractSocket::SslHandshakeFailedError:
-        m_errorMessage += tr("The SSL/TLS handshake failed.");
-        break;
+        return tr("The SSL/TLS handshake failed.");
+
 #if QT_VERSION >= 0x040500
     case QAbstractSocket::ProxyConnectionRefusedError:
-        m_errorMessage += tr("Proxy Connection Refused Error");
-        break;
-    case QAbstractSocket::ProxyConnectionClosedError:
-        m_errorMessage += tr("Proxy Connection Closed Error");
-        break;
-    case QAbstractSocket::ProxyConnectionTimeoutError:
-        m_errorMessage += tr("Proxy Connection Timeout Error");
-        break;
-    case QAbstractSocket::ProxyNotFoundError:
-        m_errorMessage += tr("Proxy Not Found Error");
-        break;
-    case QAbstractSocket::ProxyProtocolError:
-        m_errorMessage += tr("Proxy Protocol Error");
-        break;
-#endif
-    }
-    m_errorMessage += "\n";
-    return false;
-}             
+        return tr("Proxy Connection Refused Error");
 
-QString & NServer::errorMessage()
-{          
-    return m_errorMessage;
+    case QAbstractSocket::ProxyConnectionClosedError:
+        return tr("Proxy Connection Closed Error");
+
+    case QAbstractSocket::ProxyConnectionTimeoutError:
+        return tr("Proxy Connection Timeout Error");
+
+    case QAbstractSocket::ProxyNotFoundError:
+        return tr("Proxy Not Found Error");
+
+    case QAbstractSocket::ProxyProtocolError:
+        return tr("Proxy Protocol Error");
+#endif
+    default:
+        Q_ASSERT_X(false, "NServer::SocketErrorToString",
+                   qPrintable(QString("Unmanaged socker error: %1").arg(error)));
+        return tr("Unknown QAbstractSocket error");
+    }
 }
 
 void NServer::onJobTimerTimeout()
@@ -372,14 +427,24 @@ void NServer::onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs)
 }
 
 void NServer::onConfigFileChanged()
-{	
-    if (NCONFIG.serverPort() != m_server->serverPort())
-    {
+{
+    if ((m_server && NCONFIG.isOnlySslServerEnabled()) ||
+          (!m_server && !NCONFIG.isOnlySslServerEnabled()) ||
+          (m_server && NCONFIG.serverPort() != m_server->serverPort())
+        )
         restartTcpServer();
-        NCONFIG.dumpSharedDirectoriesConfig();
-    }
+
+    if ((m_sslServer && !NCONFIG.isSslServerEnabled()) ||
+         (!m_sslServer && NCONFIG.isSslServerEnabled()) ||
+         (m_sslServer && NCONFIG.serverSslPort() != m_sslServer->serverPort())
+        )
+        restartSslTcpServer();
 
     bool sharedDirectoriesChanged = NCONFIG.sharedDirectories() != m_sharedDirectories;
+
+    if (sharedDirectoriesChanged)
+        NCONFIG.dumpSharedDirectoriesConfig();
+
     bool fileSuffixesChanged = NCONFIG.fileSuffixes() != m_fileSuffixes;
     if (!sharedDirectoriesChanged &&
         !fileSuffixesChanged)

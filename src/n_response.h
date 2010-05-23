@@ -43,37 +43,37 @@ public:
 
     DataType dataType();
 
-    /*
-		return -1 if an error occured
-		return 0 if buffer is not empty (it will not be updated)
-		return buffer size if it has been updated
-	*/
+    /**
+    * Return -1 if an error occured
+    * Return 0 if buffer is not empty (it will not be updated)
+    * Return buffer size if it has been updated
+    */
     int updateFileBuffer();
 
-    /*
-	* Add expires header 10 years from now
-	*/
+    /**
+    * Add expires header 10 years from now
+    */
     void add10yExpiresHttpHeader();
 
-    /*
-	* Return true if data are gzipped
-	*/
+    /**
+    * Return true if data are gzipped
+    */
     bool isGZipped() const;
 
-    /*
-	* Return true if data are deflated
-	*/
+    /**
+    * Return true if data are deflated
+    */
     bool isDeflated() const;
 
-    /*
-	* Remove default UTF8 charset
-	*/
+    /**
+    * Remove default UTF8 charset
+    */
     void removeDefaultCharset();
 
-    /*
-	 * Set session id cookie
-	 */
-    void setSessionCookie(const QString & sessionId);
+    /**
+    * Set session id cookie
+    */
+    void setSessionCookie(const QString & sessionId, bool secured = true);
     void clearSessionCookie();
 
 private:

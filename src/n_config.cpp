@@ -41,8 +41,12 @@
 #define NCONFIG_SERVER                            "server"
 #define NCONFIG_SERVER_PORT_KEY                   "port"
 #define NCONFIG_SERVER_PORT_VALUE                 6391
+#define NCONFIG_SERVER_PORT_SSL_KEY               "port_ssl"
+#define NCONFIG_SERVER_PORT_SSL_VALUE             6392
 #define NCONFIG_SERVER_SSL_KEY                    "ssl"
 #define NCONFIG_SERVER_SSL_VALUE                  "false"
+#define NCONFIG_SERVER_SSL_ONLY_KEY               "ssl_only"
+#define NCONFIG_SERVER_SSL_ONLY_VALUE             "false"
 #define NCONFIG_SERVER_SSL_CA_CERTIFICATE_KEY     "ssl_ca_certificate"
 #define NCONFIG_SERVER_SSL_PRIVATE_KEY_KEY        "ssl_privare_key"
 #define NCONFIG_SERVER_SSL_PRIVATE_KEY_PWD_KEY    "ssl_privare_key_password"
@@ -52,7 +56,6 @@
 #define NCONFIG_SERVER_ADMIN_USER_VALUE           "admin"
 #define NCONFIG_SERVER_ADMIN_PASSWORD_KEY         "admin_password"
 #define NCONFIG_SERVER_ADMIN_PASSWORD_VALUE       "admin"
-
 
 #define NCONFIG_NODE                              "node"
 #define NCONFIG_NODE_ADDRESS_KEY                  "address"
@@ -173,19 +176,29 @@ bool NConfig::load()
     if (m_version < NCONFIG_GENERAL_VERSION_VALUE)
         writeDefaultConfigFile();
 
-    /* Server
-	 */
+    /**
+    * Server
+    */
     m_serverPort = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY,
                                     NCONFIG_SERVER_PORT_VALUE).toInt();
+    m_serverSslPort = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_SSL_KEY,
+                                    NCONFIG_SERVER_PORT_SSL_VALUE).toInt();
+    if (m_serverPort == m_serverSslPort)
+        m_serverSslPort++;
+
     m_serverPub.setPath(m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY).toString());
     m_serverAdminUser =  m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY,
                                           NCONFIG_SERVER_ADMIN_USER_VALUE).toString();
     m_serverAdminPassword =  m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_PASSWORD_KEY,
                                               NCONFIG_SERVER_ADMIN_PASSWORD_VALUE).toString();
 
-    // SSL
-    m_serverSsl = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_KEY,
+    /**
+    * SSL
+    */
+    m_sslServerEnabled = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_KEY,
                                    NCONFIG_SERVER_SSL_VALUE).toBool();
+    m_onlySslServerEnabled = m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_ONLY_KEY,
+                                   NCONFIG_SERVER_SSL_ONLY_VALUE).toBool();
     m_serverSslCaCertificate = m_settings.value(NCONFIG_SERVER,
                                                 NCONFIG_SERVER_SSL_CA_CERTIFICATE_KEY, "To define").toString();
     m_serverSslLocalCertificate = m_settings.value(NCONFIG_SERVER,
@@ -195,15 +208,16 @@ bool NConfig::load()
     m_serverSslPrivateKeyPwd = m_settings.value(NCONFIG_SERVER,
                                                 NCONFIG_SERVER_SSL_PRIVATE_KEY_PWD_KEY, "To define").toString();
 
-    /* Node
-	 */
+    /**
+    * Node
+    */
     m_referenceServer = m_settings.value(NCONFIG_NODE, NCONFIG_NODE_ADDRESS_KEY).toString();
     if (m_referenceServer.isEmpty())
         m_referenceServer = "127.0.0.1";
 
-
-    /* Sharing group
-	 */
+    /**
+    * Sharing group
+    */
     m_sharedDirectories.clear();
     int size = m_settings.groupSize(NCONFIG_SHARED_DIR);
     for (int i = 0; i < size; ++i) {
@@ -218,8 +232,9 @@ bool NConfig::load()
     }
 
     m_fileSuffixes.clear();
-    /* Movie group
-	 */
+    /**
+    * Movie group
+    */
     size = m_settings.groupSize(NCONFIG_MOVIE_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -231,8 +246,9 @@ bool NConfig::load()
         m_fileSuffixes.insert(fs.name(), fs);
     }
 
-    /* Music group
-	 */
+    /**
+    * Music group
+    */
     size = m_settings.groupSize(NCONFIG_MUSIC_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -244,8 +260,9 @@ bool NConfig::load()
         m_fileSuffixes.insert(fs.name(), fs);
     }
 
-    /* Picture group
-	 */
+    /**
+    * Picture group
+    */
     size = m_settings.groupSize(NCONFIG_PICTURE_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -257,8 +274,9 @@ bool NConfig::load()
         m_fileSuffixes.insert(fs.name(), fs);
     }
 
-    /* Archive group
-	 */
+    /**
+    * Archive group
+    */
     size = m_settings.groupSize(NCONFIG_ARCHIVE_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -270,8 +288,9 @@ bool NConfig::load()
         m_fileSuffixes.insert(fs.name(), fs);
     }
 
-    /* Document group
-	 */
+    /**
+    * Document group
+    */
     size = m_settings.groupSize(NCONFIG_DOCUMENT_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -284,8 +303,9 @@ bool NConfig::load()
     }
 
 
-    /* Other group
-	 */
+    /**
+    *  Other group
+    */
     size = m_settings.groupSize(NCONFIG_OTHER_SUFFIX);
     for (int i = 0; i < size; ++i) {
         NFileSuffix fs;
@@ -297,7 +317,9 @@ bool NConfig::load()
         m_fileSuffixes.insert(fs.name(), fs);
     }
 
-    // Advanced
+    /**
+    * Advanced
+    */
     m_dirUpdateDelay = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_DIR_UPD_DELAY_KEY,
                                         NCONFIG_ADV_DIR_UPD_DELAY_VALUE).toInt();
     m_lastDirUpdate = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_LAST_DIR_UPD_KEY).toDateTime();
@@ -322,11 +344,14 @@ void NConfig::writeDefaultConfigFile()
     m_settings.setValue(NCONFIG_GENERAL, NCONFIG_GENERAL_VERSION_KEY,
                         NCONFIG_GENERAL_VERSION_VALUE);
 
-    /* Server group
-	 */
+    /**
+    * Server group
+    */
     // port
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY, -1).toInt() == -1)
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_PORT_KEY, NCONFIG_SERVER_PORT_VALUE);
+    if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_PORT_SSL_KEY, -1).toInt() == -1)
+        m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_PORT_SSL_KEY, NCONFIG_SERVER_PORT_SSL_VALUE);
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY).toString().isEmpty())
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY, "");
     //Login & pwd
@@ -337,6 +362,8 @@ void NConfig::writeDefaultConfigFile()
     // SSL
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_KEY).toString().isEmpty())
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_SSL_KEY, false);
+    if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_ONLY_KEY).toString().isEmpty())
+        m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_SSL_ONLY_KEY, false);
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_CA_CERTIFICATE_KEY).toString().isEmpty())
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_SSL_CA_CERTIFICATE_KEY, "To define");
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_LOCAL_CERTIFICATE_KEY).toString().isEmpty())
@@ -346,8 +373,9 @@ void NConfig::writeDefaultConfigFile()
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_SSL_PRIVATE_KEY_PWD_KEY).toString().isEmpty())
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_SSL_PRIVATE_KEY_PWD_KEY, "To define");
 
-    /* Node group
-	 */
+    /**
+    * Node group
+    */
     // Node address
     if (!m_settings.groupValueExists(NCONFIG_NODE, NCONFIG_NODE_ADDRESS_KEY,
                                      ""))
@@ -357,8 +385,9 @@ void NConfig::writeDefaultConfigFile()
         m_settings.endGroup();
     }
 
-    /* Sharing group
-	 */
+    /**
+    * Sharing group
+    */
     if (m_settings.groupSize(NCONFIG_SHARED_DIR) == 0)
     {
         m_settings.beginGroup(NCONFIG_SHARED_DIR);
@@ -399,8 +428,9 @@ void NConfig::writeDefaultConfigFile()
         m_settings.endGroup();
     }
 
-    /* Movie group
-	 */
+    /**
+    * Movie group
+    */
     QStringList suffixList;
     suffixList << "avi" << "srt" << "mpg" << "mkv" << "divx" << "xvid" << "mpeg" << "mov" << "wmv";
     QString suffix;
@@ -416,8 +446,9 @@ void NConfig::writeDefaultConfigFile()
         }
     }
 
-    /* Music group
-	 */
+    /**
+    * Music group
+    */
     suffixList.clear();
     suffixList << "mp3" << "mpc" << "flac" << "ogg";
     foreach (suffix, suffixList)
@@ -432,8 +463,9 @@ void NConfig::writeDefaultConfigFile()
         }
     }
 
-    /* Picture group
-	 */
+    /**
+    * Picture group
+    */
     suffixList.clear();
     suffixList << "jpg" << "png" << "jpeg" << "bmp" << "tiff";
     foreach (suffix, suffixList)
@@ -448,8 +480,9 @@ void NConfig::writeDefaultConfigFile()
         }
     }
 
-    /* Archive group
-	 */
+    /**
+    * Archive group
+    */
     suffixList.clear();
     suffixList << "rar" << "zip" << "7z" << "gz" << "bz2" << "tar" << "iso";
     foreach (suffix, suffixList)
@@ -465,8 +498,9 @@ void NConfig::writeDefaultConfigFile()
     }
 
 
-    /* Document group
-	 */
+    /**
+    * Document group
+    */
     suffixList.clear();
     suffixList << "txt" << "nfo" << "doc" << "pdf" << "odt" << "xls" << "ods" << "ppt" << "pptx";
     foreach (suffix, suffixList)
@@ -481,8 +515,9 @@ void NConfig::writeDefaultConfigFile()
         }
     }
 
-    /* Other group
-	 */
+    /**
+    * Other group
+    */
     suffixList.clear();
     suffixList << tr("To define");
     foreach (suffix, suffixList)
@@ -497,7 +532,9 @@ void NConfig::writeDefaultConfigFile()
         }
     }
 
-    // Advanced group
+    /**
+    * Advanced group
+    */
     if (m_settings.value(NCONFIG_ADV, NCONFIG_ADV_DIR_UPD_DELAY_KEY, -1).toInt() == -1)
         m_settings.setValue(NCONFIG_ADV, NCONFIG_ADV_DIR_UPD_DELAY_KEY,
                             NCONFIG_ADV_DIR_UPD_DELAY_VALUE);
@@ -513,28 +550,36 @@ void NConfig::writeDefaultConfigFile()
 int NConfig::serverPort()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::serverPort");
     return m_serverPort;
+}
+
+int NConfig::serverSslPort()
+{
+    QMutexLocker locker(&m_dataMutex);
+    return m_serverSslPort;
 }
 
 const QDir NConfig::serverPub()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::serverPub");
     return m_serverPub;
 }
 
-bool NConfig::isSslServer()
+bool NConfig::isSslServerEnabled()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "NConfig::isSslServer");
-    return m_serverSsl;
+    return m_sslServerEnabled;
+}
+
+bool NConfig::isOnlySslServerEnabled()
+{
+    QMutexLocker locker(&m_dataMutex);
+    return m_onlySslServerEnabled;
 }
 
 const QString NConfig::AdminUser()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::AdminUser");
     return m_serverAdminUser;
 }
 
@@ -692,14 +737,12 @@ void NConfig::dumpSharedDirectoriesConfig()
 const QByteArray & NConfig::dbPwdHashKey()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::dbPwdHashKey");
     return m_dbPwdHashKey;
 }
 
 const QSslConfiguration & NConfig::sslCfg()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::sslCfg");
     return m_sslCfg;
 }
 
@@ -707,12 +750,14 @@ void NConfig::genSslCfg()
 {
     m_sslCfg = QSslConfiguration();
 
-    if (!m_serverSsl)
+    if (!m_sslServerEnabled)
         return;
-    m_sslCfg.setProtocol(QSsl::AnyProtocol);
-    m_sslCfg.setPeerVerifyMode (QSslSocket::VerifyNone);
+    m_sslCfg.setProtocol(QSsl::SslV3);
+    m_sslCfg.setPeerVerifyMode (QSslSocket::QueryPeer);
 
-    // Ca certificate
+    /**
+    * Ca certificate
+    */
     // "/Users/sebastiend/Documents/dev/nawis/ca/sebastiend.crt"
     /*NLOGD("genSslCfg", m_serverSslCaCertificate);
 	 NLOGD("genSslCfg", m_serverSslLocalCertificate);
@@ -731,7 +776,9 @@ void NConfig::genSslCfg()
         return;
     }
 
-    // Private key
+    /**
+    * Private key
+    */
     // "/Users/sebastiend/Documents/dev/nawis/ca/sebastiend.key"
     QFile file(m_serverSslPrivateKey);
     file.open(QIODevice::ReadOnly);
@@ -741,8 +788,10 @@ void NConfig::genSslCfg()
         m_sslCfg = QSslConfiguration();
         return;
     }
-    // Private key password
-    // "test"
+
+    /**
+    * Private key password
+    */
     QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, m_serverSslPrivateKeyPwd.toUtf8());
     if (key.isNull()){
         NLOGM("NConfig::genSslCfg", QString("No ssl private key valid found: %1").arg(m_serverSslPrivateKey));
@@ -752,7 +801,9 @@ void NConfig::genSslCfg()
     m_sslCfg.setPrivateKey(key);
     file.close();
 
-    // Local certificate
+    /**
+    * Local certificate
+    */
     // Same as Ca Certificate fo self signed cert
     // "/Users/sebastiend/Documents/dev/nawis/ca/sebastiend.crt"
     file.setFileName(m_serverSslLocalCertificate);
@@ -763,8 +814,10 @@ void NConfig::genSslCfg()
         m_sslCfg = QSslConfiguration();
         return;
     }
-    // Private key password
-    // "test"
+
+    /**
+    * Private key password
+    */
     QSslCertificate localCertificate(&file);
     if (!localCertificate.isValid()){
         NLOGM("NConfig::genSslCfg", "Local certificate is not valid: %1.");

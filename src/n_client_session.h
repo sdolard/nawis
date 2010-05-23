@@ -39,7 +39,7 @@ class NClientSession
 {
 public:
     NClientSession(const QHttpRequestHeader & request, const QByteArray & postData,
-                   QAbstractSocket *socket);
+                   QAbstractSocket *socket, bool ssl);
     NClientSession(const NClientSession & session);
 
     const QHttpRequestHeader & request() const;
@@ -47,19 +47,13 @@ public:
     const QAbstractSocket    * socket() const;
     const QUrl               & url() const;
 
-    /*
-	* Return true if session is coming from localhost (ipv6 ready)
-	*/
+    // Return true if session is coming from localhost (ipv6 ready)
     bool isLocal() const;
 
-    /*
-	* Peer address
-	*/
+    // Peer address
     const QString peerAddress() const;
 
-    /*
-	* Return service associated to url
-	*/
+    // Return service associated to url
     NService_n::NService getHTTPMethodService() const;
 
     void getServices(NService_n::NService* services) const;
@@ -67,14 +61,10 @@ public:
     // Return last URL path
     const QString resource() const;
 
-    /*
-	* return true if we can compress (gzip or deflate)
-	*/
+    // Return true if we can compress (gzip or deflate)
     bool supportCompression(NCompress_n::CompressionType ct) const;
 
-    /*
-	* Return post data to a NStringMap
-	*/
+    // Return post data to a NStringMap
     const NStringMap postDataToMap() const;
 
     const QString host() const;
@@ -90,6 +80,8 @@ public:
 
     const QString contentTypeCharset() const;
 
+    bool isSsl() const;
+
 private:
     QHttpRequestHeader m_request;
     QByteArray         m_postData;
@@ -98,6 +90,7 @@ private:
     QString            m_sessionId;
     QString            m_userAgent;
     bool               m_isInternetExplorer;
+    bool               m_ssl;
 
     const QStringList paths() const;
     const QString getSessionId() const;

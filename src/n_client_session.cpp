@@ -32,13 +32,15 @@
 
 
 NClientSession::NClientSession(const QHttpRequestHeader & request,
-                               const QByteArray & postData, QAbstractSocket *socket)
-                                   :m_request(request), m_postData(postData), m_socket(socket)
+                               const QByteArray & postData, QAbstractSocket *socket,
+                               bool ssl)
+                                   :m_request(request), m_postData(postData),
+                                   m_socket(socket), m_ssl(ssl)
 {
     Q_ASSERT(socket);
 
     QByteArray url;
-    url.append(NCONFIG.isSslServer() ? "https://" : "http://");
+    url.append(m_ssl ? "https://" : "http://");
     url.append(request.value("host"));
     url.append(request.path());
     m_url = QUrl(url);
@@ -58,6 +60,7 @@ NClientSession::NClientSession(const NClientSession & session)
     this->m_sessionId = session.m_sessionId;
     this->m_userAgent = session.m_userAgent;
     this->m_isInternetExplorer = session.m_isInternetExplorer;
+    this->m_ssl = session.m_ssl;
 }
 
 const QString NClientSession::getSessionId() const {
@@ -211,4 +214,9 @@ const QString NClientSession::userAgent() const
 bool NClientSession::isInternetExplorer() const
 {
     return m_isInternetExplorer;
+}
+
+bool NClientSession::isSsl() const
+{
+    return m_ssl;
 }

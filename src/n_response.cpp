@@ -272,13 +272,13 @@ void NResponse::add10yExpiresHttpHeader(){
     m_httpHeader.setValue("Expires", NDate_n::toHTMLDateTime(TenYearsFromNow));
 }
 
-void NResponse::setSessionCookie(const QString & sessionId)
+void NResponse::setSessionCookie(const QString & sessionId, bool secured)
 {
     QNetworkCookie sessionCookie;
     sessionCookie.setHttpOnly (true);
     sessionCookie.setName ("nawis_sessionId");
     sessionCookie.setPath ("/");
-    sessionCookie.setSecure (NCONFIG.isSslServer());
+    sessionCookie.setSecure(secured);
     sessionCookie.setValue(sessionId.toAscii());
 
     m_httpHeader.setValue("Set-Cookie", sessionCookie.toRawForm(QNetworkCookie::Full));

@@ -8,13 +8,23 @@
 
 #include "n_thread.h"
 
+
+/**
+* NTcpServer
+*   NTcpServerThread
+*       NSocketManager
+*/
+
 class NTcpServerThread;
 
+/**
+* NTcpServer
+*/
 class NTcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    NTcpServer(QObject *parent = 0);
+    NTcpServer(quint16 port, bool ssl, QObject *parent = 0);
     ~NTcpServer();
 
     bool start();
@@ -23,17 +33,41 @@ signals:
     void newIncommingConnection(int socketDescriptor);
 
 private:
+    quint16           m_port;
+    bool              m_ssl;
     NTcpServerThread *m_tcpServerThread;
 
 protected:
     void incomingConnection(int socketDescriptor);
 };
 
+/**
+* NTcpServerThread
+*/
+class NTcpServerThread: public NThread
+{
+    Q_OBJECT
+public:
+    NTcpServerThread(QObject * parent, NTcpServer *tcpServer, bool ssl);
+
+protected:
+    void run();
+
+private:
+    NTcpServer     *m_tcpServer;
+    bool            m_ssl;
+    QTimer         *m_authExpirationTimer;
+};
+
+
+/**
+* NSocketManager
+*/
 class NSocketManager: public QObject {
     Q_OBJECT
 
 public:
-    NSocketManager(bool ssl):m_ssl(ssl){};
+    NSocketManager(bool ssl):m_ssl(ssl){}
 
 public slots:
     void newConnection(int socketDescriptor);
@@ -41,21 +75,6 @@ public slots:
 
 private:
     bool m_ssl;
-};
-
-class NTcpServerThread: public NThread
-{
-    Q_OBJECT
-public:
-    NTcpServerThread(QObject * parent, NTcpServer *tcpServer);
-
-protected:
-    void run();
-
-private:
-    bool             m_ssl;
-    NTcpServer     *m_tcpServer;
-    QTimer          *m_authExpirationTimer;
 };
 
 

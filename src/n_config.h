@@ -46,8 +46,10 @@ public:
     // TODO: set server compression optionnal
     // TODO: disable auth, but listen only on localhost/127.0.0.1
     int serverPort();
+    int serverSslPort();
     const QDir serverPub();
-    bool isSslServer();
+    bool isSslServerEnabled();
+    bool isOnlySslServerEnabled();
     const QString AdminUser();
     const QString AdminPassword();
     const NDirList sharedDirectories();
@@ -82,8 +84,10 @@ private:
     NSettings              m_settings;
     int                    m_version;
     int                    m_serverPort;
+    int                    m_serverSslPort;
     QDir                   m_serverPub;
-    bool                   m_serverSsl;
+    bool                   m_sslServerEnabled;
+    bool                   m_onlySslServerEnabled;
     QString                m_serverSslCaCertificate;
     QString                m_serverSslLocalCertificate;
     QString                m_serverSslPrivateKey;

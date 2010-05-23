@@ -14,10 +14,16 @@
 
 #include "n_tcp_server.h"
 
-NTcpServer::NTcpServer(QObject *parent)
-    :QTcpServer(parent)
+/*******************************************************************************
+*  NTcpServer
+*******************************************************************************/
+NTcpServer::NTcpServer(quint16 port, bool ssl, QObject *parent)
+    :QTcpServer(parent),
+    m_port(port),
+    m_ssl(ssl)
+
 {
-    m_tcpServerThread = new NTcpServerThread(this, this);
+    m_tcpServerThread = new NTcpServerThread(this, this, m_ssl);
     m_tcpServerThread->start();
 }
 
@@ -34,7 +40,7 @@ NTcpServer::~NTcpServer()
 
 bool NTcpServer::start()
 {
-    return listen(QHostAddress::Any, NCONFIG.serverPort());
+    return listen(QHostAddress::Any, m_port);
 }
 
 void NTcpServer::incomingConnection(int socketDescriptor)
@@ -42,33 +48,14 @@ void NTcpServer::incomingConnection(int socketDescriptor)
     emit newIncommingConnection(socketDescriptor);
 }
 
-/*******************************************************************************
-*  NSocketManager
-*******************************************************************************/
-void NSocketManager::newConnection(int socketDescriptor)
-{
-    NTcpServerSocket *socket = new NTcpServerSocket(m_ssl);
-    if (!socket->setSocketDescriptor(socketDescriptor))
-    {
-        NLOGM("NTcpServerThread", "bindSocketDescriptors() setSocketDescriptor failed");
-        delete socket;
-        return;
-    }
-}
-
-void NSocketManager::onTimeToChechAuth()
-{
-    NTSSERVICES.removeExpiredSession();
-}
 
 /*******************************************************************************
 *  NTcpServerThread
 *******************************************************************************/
-NTcpServerThread::NTcpServerThread(QObject * parent, NTcpServer *tcpServer)
-    :NThread(parent), m_tcpServer(tcpServer)
+NTcpServerThread::NTcpServerThread(QObject * parent, NTcpServer *tcpServer, bool ssl)
+    :NThread(parent), m_tcpServer(tcpServer), m_ssl(ssl)
 {
     Q_ASSERT(tcpServer != NULL);
-    m_ssl = NCONFIG.isSslServer();
 }
 
 void NTcpServerThread::run()
@@ -86,3 +73,22 @@ void NTcpServerThread::run()
     exec();
 }
 
+/*******************************************************************************
+*  NSocketManager
+*******************************************************************************/
+void NSocketManager::newConnection(int socketDescriptor)
+{
+    NTcpServerSocket *socket = new NTcpServerSocket(m_ssl);
+    if (!socket->setSocketDescriptor(socketDescriptor))
+    {
+        NLOGM("NTcpServerThread",
+              QString("bindSocketDescriptors() setSocketDescriptor failed (ssl: %1)").
+              arg(QVariant(m_ssl).toString()));
+        delete socket;
+    }
+}
+
+void NSocketManager::onTimeToChechAuth()
+{
+    NTSSERVICES.removeExpiredSession();
+}
