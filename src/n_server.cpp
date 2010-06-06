@@ -85,8 +85,10 @@ bool NServer::start()
         started = started && startSslTcpServer();
 
     if (!started)
+    {
+        NLOGMD("Server issue", "Can not start");
         return false;
-
+    }
     NCONFIG.dumpSharedDirectoriesConfig();
 
     m_jobTimer.start(TIMER_INTERVAL);
@@ -110,7 +112,15 @@ bool NServer::pause()
 
 bool NServer::resume()
 {
-    return restartTcpServer() && restartSslTcpServer();
+    if (NCONFIG.isOnlySslServerEnabled() && !NCONFIG.isSslServerEnabled())
+        return true; // None is running (due to config), but everything is ok
+
+    bool restarted = false;
+    if (!NCONFIG.isOnlySslServerEnabled())
+        restarted = restartTcpServer();
+    if (NCONFIG.isSslServerEnabled())
+        restarted = restarted && restartSslTcpServer();
+    return restarted;
 }
 
 void NServer::stopTcpServer()
@@ -147,7 +157,7 @@ bool NServer::restartSslTcpServer()
 {
     stopSslTcpServer();
     if (NCONFIG.isSslServerEnabled())
-        return  startSslTcpServer();
+        return startSslTcpServer();
     return false;
 }
 

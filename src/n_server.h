@@ -37,7 +37,6 @@ public:
     bool stop();
     bool pause();
     bool resume();
-    //QString & errorMessage();
 
     int jobStatus() const;
     static const QString jobToString(int job);
@@ -58,7 +57,6 @@ private:
     NHasherThread            *m_hasherJob;
     NMetadataUpdaterThread   *m_metadataUpdaterJob;
     NMusicDbUpdaterThread    *m_musicDbUpdaterJob;
-    //QString                   m_errorMessage;
     QTimer                    m_jobTimer;
     NDirList                  m_sharedDirectories;
     NFileSuffixList           m_fileSuffixes;
