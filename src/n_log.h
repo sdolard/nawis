@@ -100,7 +100,7 @@ public:
     NLogThread(NLog * log)
         :m_log(log){
         Q_ASSERT(m_log != NULL);
-    };
+    }
 
 protected:
     void run();

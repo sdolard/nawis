@@ -43,7 +43,7 @@
 #include "n_image.h"
 #include "n_config.h"
 #include "n_server.h"
-#include "n_stream_writer.h"
+//#include "n_stream_writer.h"
 #include "n_json.h"
 #include "n_file_category.h"
 
@@ -60,6 +60,7 @@
 #define RSP_MSG_INVALID_JSON           "invalid JSON"
 #define RSP_MSG_INVALID_INDEX          "invalid index"
 #define RSP_MSG_INVALID_INDEX_PROPERTY "invalid index property"
+#define RSP_MSG_INVALID_USER           "invalid user"
 #define RSP_MSG_ERROR_OCCURRED         "An error occured"
 #define RSP_COUNT                      "totalcount"
 #define RSP_DATA                       "data"
@@ -233,9 +234,9 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
 
     case SVC_API_AUTH:
         return svcAuth(session, response);
-        // TODO: user managment
-        /*case SVC_API_USER:
-		return svcUser(session, response);*/
+
+    case SVC_API_USER:
+        return svcUser(session, response);
 
     case SVC_FAVICON:
         return svcGetFavicon(response);
@@ -315,7 +316,7 @@ NResponse & NTcpServerSocketServices::svcGetServiceHelp(NService_n::NService* se
                 arg(NTcpServerAuthSession::levelToString(services[i].requiredLevel)).
                 arg(services[i].httpMethod).
                 arg(services[i].params.isEmpty() ? "none": services[i].params).
-                arg(services[i].postData.isEmpty() ? "none": services[i].postData).
+                arg(services[i].content.isEmpty() ? "none": services[i].content).
                 arg(services[i].returns);
 
         servicesHelp += "<hr />";
@@ -703,8 +704,8 @@ NResponse & NTcpServerSocketServices::svcPostSharedDir(const NClientSession & se
     //NLOGD("NTcpServerSocketServices::svcPostSharedDir", session.postData());
 
     QScriptEngine se;
-    QScriptValue svReadData = se.evaluate("data = " + session.postData());
-    svReadData = se.toObject(svReadData);
+    se.evaluate("var data = " + QString::fromUtf8(session.content()));
+    QScriptValue svReadData = se.globalObject().property("data").property("data");
     NDir dir = NDir(svReadData.property("path").toString(),
                     svReadData.property("recursive").toBool(),
                     svReadData.property("shared").toBool());
@@ -714,6 +715,8 @@ NResponse & NTcpServerSocketServices::svcPostSharedDir(const NClientSession & se
     QScriptValue svRoot = se.newObject();
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_LOADED));
+
+    // we add new user to response
     QScriptValue svData = se.newArray(1);
     svRoot.setProperty(RSP_DATA, svData);
     QScriptValue svDir = se.newObject();
@@ -734,26 +737,25 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
 
-    QScriptValue svReadData = se.evaluate("data = " + session.postData());
-    if (se.hasUncaughtException()){
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-        NLOGD("NTcpServerSocketServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
-        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
-        response.setData(NJson::serializeToQByteArray(svRoot));
-        return response;
-    }
-
-    QScriptValue svReadDir = svReadData.property("data").toObject();
-    QString strId = svReadDir.property("id").toString();
+    QString strId = session.resource();
     NLOGD("svcPutSharedDir strId", strId);
     bool ok;
     int id = strId.toInt(&ok);
     if (!ok)
     {
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_SUCCESS, QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_INDEX_PROPERTY));
         //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    se.evaluate("var data = " + QString::fromUtf8(session.content()));
+    if (se.hasUncaughtException()){
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
+        NLOGD("NTcpServerSocketServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
+        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -768,11 +770,11 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
         return response;
     }
 
+    QScriptValue svReadDir = se.globalObject().property("data").property("data");
     QString path = svReadDir.property("path").toString();
     QString recursive = svReadDir.property("recursive").toString();
     QString shared = svReadDir.property("shared").toString();
 
-    NLOGD("strId", strId);
     NLOGD("path", path);
     NLOGD("recursive", recursive);
     NLOGD("shared", shared);
@@ -801,7 +803,7 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
 
 NResponse & NTcpServerSocketServices::svcDeleteSharedDir(const NClientSession & session, NResponse & response)
 {
-    NLOGD("NTcpServerSocketServices::svcDeleteSharedDir", session.postData());
+    NLOGD("NTcpServerSocketServices::svcDeleteSharedDir", session.resource());
     int id = 0;
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
@@ -842,11 +844,13 @@ void NTcpServerSocketServices::removeExpiredSession()
 
 NResponse & NTcpServerSocketServices::svcAuth(const NClientSession & session, NResponse & response)
 {
-    if (session.request().method() == "POST")
+    if (session.request().method() == "POST") {
         return svcPostAuth(session, response);
+    }
 
-    if (session.request().method() == "DELETE")
+    if (session.request().method() == "DELETE") {
         return svcDeleteAuth(session, response);
+    }
 
     if (session.request().method() == "GET")
     {
@@ -862,12 +866,15 @@ NResponse & NTcpServerSocketServices::svcAuth(const NClientSession & session, NR
 
 NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session, NResponse & response)
 {
+    // TODO: do automated test
+
     QScriptEngine se;
     QString login;
-    QString pwd;
+    QString password;
+    // "json" contentType
     if (session.request().contentType() == NMimeType_n::fileSuffixToMIME("json")){
         QScriptValue svReadRoot = se.newObject();
-        QScriptValue svReadData = se.evaluate("data = " + session.postData());
+        se.evaluate("var data = " + QString::fromUtf8(session.content()));
         if (se.hasUncaughtException()){
             svReadRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
             svReadRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
@@ -876,16 +883,16 @@ NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session
             response.setData(NJson::serializeToQByteArray(svReadRoot));
             return response;
         }
-        svReadData = se.toObject(svReadData);
+        QScriptValue svReadData = se.globalObject().property("data").property("data");
         login = svReadData.property("username").toString();
-        pwd = svReadData.property("password").toString();
+        password = svReadData.property("password").toString();
     }
-
+    // "form" contentType
     if (session.request().contentType() == NMimeType_n::fileSuffixToMIME("form"))
     {
-        const NStringMap data = session.postDataToMap();
+        const NStringMap data = session.contentToMap();
         login = data["username"];
-        pwd = data["password"];
+        password = data["password"];
     }
 
 
@@ -896,7 +903,7 @@ NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session
 
     // Admin auth
     if (NCONFIG.AdminUser() == login &&
-        NCONFIG.AdminPassword() == pwd)
+        NCONFIG.AdminPassword() == password)
     {
         level = level | AUTH_LEVEL_ADMIN;
 
@@ -1009,14 +1016,21 @@ NResponse & NTcpServerSocketServices::svcLookForModification(NResponse & respons
 
 NResponse & NTcpServerSocketServices::svcUser(const NClientSession & session, NResponse & response)
 {
-    if (session.request().method() == "GET")
-        return svcGetUser(session, response);
-
-    if (session.request().method() == "POST")
+    if (session.request().method() == "POST") {
         return svcPostUser(session, response);
+    }
 
-    if (session.request().method() == "DELETE")
+    if (session.request().method() == "PUT") {
+        return svcPutUser(session, response);
+    }
+
+    if (session.request().method() == "GET") {
+        return svcGetUser(session, response);
+    }
+
+    if (session.request().method() == "DELETE") {
         return svcDeleteUser(session, response);
+    }
 
     Q_ASSERT(false);
     return response;
@@ -1025,81 +1039,220 @@ NResponse & NTcpServerSocketServices::svcUser(const NClientSession & session, NR
 NResponse & NTcpServerSocketServices::svcGetUser(const NClientSession & session, NResponse & response)
 {		
     bool ok;
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
     int start = session.url().queryItemValue("start").toInt();
+    if (!ok)
+        start = 0;
     int limit  = session.url().queryItemValue("limit").toInt(&ok);
     if (!ok)
         limit = 25;
-    QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
+    QString sort = session.url().queryItemValue("sort");
+    QString search = session.url().queryItemValue("search");
+    QStringList searches = search.split("+", QString::SkipEmptyParts);
+    searches = NConvert_n::fromUTF8PercentEncoding(searches);
 
     const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
     NLOGM(session.socket()->peerAddress().toString(),
           tr("%1 is looking for users: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
-         arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(sort).arg(dir));
+         arg(authSession.login()). // 1
+         arg(NConvert_n::fromUTF8PercentEncoding(search)).// 2
+         arg(start).// 3
+         arg(limit).// 4
+         arg(sort).// 5
+         arg(dir));// 6
 
     int totalCount = NDB.getUserListCount(searches);
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QScriptValue svData = se.newArray(totalCount);
     svRoot.setProperty(RSP_DATA, svData);
+
     bool succeed = NDB.getUserList(se, svData, searches, start, limit, sort, dir);
+
     setJsonRootReponse(svRoot, totalCount, succeed);
+
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
 
 NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session, NResponse & response)
 {
-    NStringMap params = session.postDataToMap();
-    QString firstName = params.value("firstName");
-    NLOGD("svcUserRegister firstName", firstName);
-    QString lastName = params.value("lastName");
-    QString email = params.value("email");
-    QString password = params.value("password");
+    QScriptEngine se;
+    QScriptValue svRoot = se.newObject();
 
-    NStringMap user = NDB.getUser(email);
-    KsStreamWriter sw(&response.data(), session);
+    se.evaluate("var data = " + QString::fromUtf8(session.content()));
+    if (se.hasUncaughtException()){
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
+        NLOGD("NTcpServerSocketServices::svcPostUser", se.uncaughtExceptionBacktrace());
+        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
 
-    if (user.count() == 0)
+    QScriptValue svReadUser = se.globalObject().property("data").property("data");
+    QString email = svReadUser.property("email").toString();
+    QString name = svReadUser.property("name").toString();
+    QString password = NCONFIG.toPasswordHash(svReadUser.property("password").toString());
+
+    NLOGD("email", email);
+    NLOGD("name", name);
+    NLOGD("password", password);
+
+    // User already exists?
+    NStringMap user = NDB.getUserByEmail(email);
+
+    if (user.count() > 0) // User already exists
     {
-        if (NDB.registerUser(firstName, lastName, email, password))
-        {
-            sw.writeTokenBool(RSP_SUCCESS, true);
-            sw.writeToken(RSP_MSG, QString("User %1 registered").arg(email));
-            NLOGM("Registration succeed", QString("%1(%2); user agent: %3").
-                  arg(email).
-                  arg(session.peerAddress()).
-                  arg(session.userAgent()));
-        } else {
-            sw.writeTokenBool(RSP_SUCCESS, false);
-            sw.writeToken(RSP_MSG, "Unknown reason");
-            NLOGM("Registration failed", QString("unknown error; %1(%2); user agent: %3").
-                  arg(email).
-                  arg(session.peerAddress()).
-                  arg(session.userAgent()));
-        }
-    } else {
-        sw.writeTokenBool(RSP_SUCCESS, false);
-        sw.writeToken(RSP_MSG, "Already registered");
-        NLOGM("Registration failed", QString("already_registered; %1(%2); user agent: %3").
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, "User already exists");
+        NLOGM("Registration failed", QString("already registered; %1(%2); user agent: %3").
               arg(email).
               arg(session.peerAddress()).
               arg(session.userAgent()));
-        //TODO:  Did he lost his password ?
+
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
     }
+
+    // User do not exists
+    int userId = NDB.addUser(name, email, password);
+    if (userId < 0) // Error
+    {
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        QString errorMsg;
+        switch(userId){
+        case DB_USER_ERROR_INVALID_PARAMS:
+            errorMsg = "Invalid params";
+            break;
+        case  DB_USER_ERROR_QUERY:
+            errorMsg = "Query error";
+            break;
+        }
+        svRoot.setProperty(RSP_MSG, errorMsg);
+        NLOGM("User add failed", QString("%1; %2(%3); user agent: %4").
+              arg(errorMsg).
+              arg(email).
+              arg(session.peerAddress()).
+              arg(session.userAgent()));
+
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
+    svRoot.setProperty(RSP_MSG, QString("User %1 added (account not enabled").arg(email));
+    NLOGM("User add succeed", QString("%1(%2); user agent: %3").
+          arg(email).
+          arg(session.peerAddress()).
+          arg(session.userAgent()));
+
+    // We add new user to response
+    QScriptValue svData = se.newArray(1);
+    svRoot.setProperty(RSP_DATA, svData);
+    QScriptValue svUser = se.newObject();
+    svData.setProperty(0, svUser);
+    svUser.setProperty("id", userId);
+    svUser.setProperty("name", name);
+    svUser.setProperty("email", email);
+    svUser.setProperty("enabled", false);
+
+    response.setData(NJson::serializeToQByteArray(svRoot));
+    return response;
+}
+
+NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session, NResponse & response)
+{
+    //NLOGD("NTcpServerSocketServices::svcPutSharedDir", session.postData());
+    QScriptEngine se;
+    QScriptValue svRoot = se.newObject();
+
+    QString strId = session.resource();
+    NLOGD("svcPutUser strId", strId);
+    bool ok;
+    int id = strId.toInt(&ok);
+    if (!ok)
+    {
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_USER));
+        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    se.evaluate("var data = " + QString::fromUtf8(session.content()));
+    if (se.hasUncaughtException()){
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
+        NLOGD("NTcpServerSocketServices::svcPutUser", se.uncaughtExceptionBacktrace());
+        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    NStringMap user = NDB.getUserById(id);
+    if (user.count()  == 0)
+    {
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_USER));
+        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    QScriptValue svReadUser = se.globalObject().property("data").property("data");
+    QString email = svReadUser.property("email").toString();
+    QString password = NCONFIG.toPasswordHash(svReadUser.property("password").toString());
+    QString name = svReadUser.property("name").toString();
+    QString preferences = svReadUser.property("preferences").toString();
+    QString enabled = svReadUser.property("enabled").toString();
+
+    email = email.isEmpty() ? user["email"] : email;
+    password = password.isEmpty() ? user["password"] : password;
+    name = name.isEmpty() ? user["name"] : name;
+    preferences = preferences.isEmpty() ? user["preferences"] : preferences;
+    enabled = enabled.isEmpty() ? user["enabled"] : enabled;
+
+    NLOGD("email", email);
+    NLOGD("password", password);
+    NLOGD("name", name);
+    NLOGD("preferences", preferences);
+    NLOGD("enabled", enabled);
+
+    if (!NDB.updateUser(id, email, password, name, preferences, QVariant(enabled).toBool())) {
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_ERROR_OCCURRED));
+        response.setData(NJson::serializeToQByteArray(svRoot));
+        return response;
+    }
+
+    svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
+    svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_UPDATED).arg(id)));
+    QScriptValue svData = se.newArray();
+    svRoot.setProperty(RSP_DATA, svData);
+    QScriptValue svDir = se.newObject();
+    svData.setProperty(0, svDir);
+    svDir.setProperty("id", id);
+    svDir.setProperty("email", email);
+    svDir.setProperty("name", name);
+    svDir.setProperty("preferences", preferences);
+    svDir.setProperty("enabled", enabled);
+
+    response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
 
 NResponse & NTcpServerSocketServices::svcDeleteUser(const NClientSession & session, NResponse & response)
 {	
+    NLOGD("NTcpServerSocketServices::svcDeleteUser", session.resource());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QString id = session.resource();
-    svRoot.setProperty(RSP_SUCCESS , QScriptValue(NDB.deleteUser(id)));
-    svRoot.setProperty(RSP_MSG, QScriptValue(QString("User %1 deleted").arg(id)));
+    bool userDeleted =  NDB.deleteUser(id);
+    svRoot.setProperty(RSP_SUCCESS , QScriptValue(userDeleted));
+    svRoot.setProperty(RSP_MSG, userDeleted ?
+                       QScriptValue(QString("User %1 deleted").arg(id)) :
+                       QScriptValue(QString("User %1 not deleted").arg(id)));
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
@@ -1296,7 +1449,6 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
                                                        NResponse & response)
 {
     bool ok;
-
     int start = session.url().queryItemValue("start").toInt();
     if (!ok)
         start = 0;

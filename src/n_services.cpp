@@ -26,7 +26,7 @@ NService_n::NService NService_n::nsServiceNone =
     "", // fullService;
     "", // httpMethod
     "", // params
-    "", // postData
+    "", // content
     "", // returns
     NULL
 };
@@ -46,7 +46,7 @@ NService_n::NService NService_n::nsServices[] =
         "api", // fullService
         "GET", // httpMethod
         "", // params
-        "", // postData
+        "", // content
         "API help", // returns
         NService_n::nsAPIServices
     },
@@ -60,7 +60,7 @@ NService_n::NService NService_n::nsServices[] =
         "favicon.ico", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "favicon.ico file", // returns
         NULL
     },
@@ -74,7 +74,7 @@ NService_n::NService NService_n::nsServices[] =
         "help", // fullService
         "GET", // httpMethod
         "", // params
-        "", // postData
+        "", // content
         "Full api help", // returns
         NULL
     },
@@ -88,7 +88,7 @@ NService_n::NService NService_n::nsServices[] =
         "ui", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "Ui files", // returns
         NULL
     },
@@ -99,8 +99,8 @@ NService_n::nsServiceNone
 /* 
  * nsAPIServices
  */
-NService_n::NService NService_n::nsAPIServices[] =
-{  {
+NService_n::NService NService_n::nsAPIServices[] = {
+    {
         SVC_API_AUTH, // id
         "auth", // service
         false, // authRequired
@@ -110,11 +110,10 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/auth", // fullService
         "GET", // httpMethod
         "", // params
-        "", // postData
+        "", // content
         "Authentication help", // returns
         NULL
-    },
-{
+    },{
         SVC_API_AUTH, // id
         "auth", // service
         false, // authRequired
@@ -131,7 +130,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "}</pre>"\
         "or FORM:<pre><br>"\
         "  username=&lt;username&gt;, // string <br>"\
-        "  password=&lt;password&gt; // string</pre>", // postData
+        "  password=&lt;password&gt; // string</pre>", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -143,8 +142,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "<li>user</li>"\
         "<li>admin</li></ul>", // returns
         NULL
-    },
-{
+    },{
         SVC_API_AUTH, // id
         "auth", // service
         true, // authRequired
@@ -154,7 +152,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/auth", // fullService
         "DELETE", // httpMethod
         "", // params
-        "", // postData
+        "", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -162,8 +160,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "}</pre>"\
         "In case of success, server will clear value of \"nawis_sessionId\" cookie", // returns
         NULL
-    },
-{
+    },{
         SVC_API_CFG, // id
         "cfg", // service
         true, // authRequired
@@ -173,7 +170,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/cfg", // fullService
         "GET", // httpMethod
         "", // params
-        "", // postData
+        "", // content
         "Configuration commands help", // returns
         NService_n::nsAPICfgServices
     },{
@@ -186,7 +183,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/download/&lt;file hash&gt;", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "The file<br>"\
         "&lt;file hash&gt; is a md5 hash of file to download", // returns
         NULL
@@ -200,11 +197,10 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/duplicated", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "", // returns
         nsAPIDuplicatedServices
-    },
-{
+    },{
         SVC_API_FILE, // id
         "file", // service
         false, // authRequired
@@ -214,11 +210,10 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/file", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "File command help", // returns
         NService_n::nsAPIFileServices
-    },
-{
+    },{
         SVC_API_LOG, // id
         "log", // service
         true, // authRequired
@@ -232,7 +227,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -244,8 +239,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "  },...<br>"
         "]}</pre>", // returns
         NULL
-    },
-{
+    },{
         SVC_API_LOG, // id
         "log", // service
         true, // authRequired
@@ -255,8 +249,8 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/log", // fullService
         "DELETE", // httpMethod
         "[help]", // params
-        "", // postData
-        "JSON"
+        "", // content
+        "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"message\":\"&lt;delete message&gt;\" // string <br>"\
@@ -272,11 +266,10 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/music", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "Music command help", // returns
         NService_n::nsAPIMusicServices
-    },
-{
+    },{
         SVC_API_NOP, // id
         "nop", // service
         true, // authRequired
@@ -286,7 +279,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/nop", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "JSON"
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -298,10 +291,10 @@ NService_n::NService NService_n::nsAPIServices[] =
         "<li>JT_WATCH_FILES: server is looking for file system modification</li>"\
         "<li>JT_DB_UPDATE: server database update pending</li>"\
         "<li>JT_HASH: file hash pending</li>"\
-        "<li>JT_GET_METADATA: file metadata extraction pending</li></ul>", // returns
+        "<li>JT_GET_METADATA: file metadata extraction pending</li></ul>"\
+        "<li>JT_BUILD_MUSIC_DB: music database build pending</li></ul>", // returns
         NULL
-    },
-{
+    },{
         SVC_API_PICTURE, // id
         "picture", // service
         true, // authRequired
@@ -311,7 +304,7 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/picture", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "Picture command help", // returns
         NService_n::nsAPIPictureServices
     },{
@@ -324,67 +317,130 @@ NService_n::NService NService_n::nsAPIServices[] =
         "api/search", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "Search command help", // returns
         NService_n::nsAPISearchServices
-    }/*,
-{
-		SVC_API_USER, // id
-		"user", // service
-		true, // authRequired
-		AUTH_LEVEL_ADMIN, // requiredLevel
-		"0.1.0", // history
-		"User registration.", // comment
-		"api/user", // fullService
-		"GET", // httpMethod
-		"[help]", // params
-		"", // postData
-		"User command help", // returns
-		NULL
-	},
-{
-		SVC_API_USER, // id
-		"user", // service
-		true, // authRequired
-		AUTH_LEVEL_ADMIN, // requiredLevel
-		"0.1.0", // history
-		"User registration.", // comment
-		"api/user", // fullService
-		"DELETE", // httpMethod
-		"[help]", // params
-		"", // postData
-		"User command help", // returns
-		NULL
-	},{
-		SVC_API_USER, // id
-		"user", // service
-		true, // authRequired
-		AUTH_LEVEL_ADMIN, // requiredLevel
-		"0.1.0", // history
-		"User registration.", // comment
-		"api/user", // fullService
-		"PUT", // httpMethod
-		"[help]", // params
-		"", // postData
-		"User command help", // returns
-		NULL
-	},
-{
-		SVC_API_USER, // id
-		"user", // service
-		true, // authRequired
-		AUTH_LEVEL_ADMIN, // requiredLevel
-		"0.1.0", // history
-		"User registration.", // comment
-		"api/user", // fullService
-		"POST", // httpMethod
-		"[help]", // params
-		"", // postData
-		"User command help", // returns
-		NULL
-	}*/,
-	   NService_n::nsServiceNone
-       };
+    },{
+        SVC_API_USER, // id
+        "user", // service
+        true, // authRequired
+        AUTH_LEVEL_ADMIN, // requiredLevel
+        "0.1.0", // history
+        "Return user list.", // comment
+        "api/user", // fullService
+        "GET", // httpMethod
+        "search: &lt;text to search&gt; // optionnal<br>"\
+        "sort: &lt;sorted field&gt; // optionnal, default \"size\", see returned item field for selection<br>"\
+        "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
+        "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
+        "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
+        "", // content
+        "JSON<pre>{<br>"\
+        "  \"success\":true&#124;false, // boolean<br>"\
+        "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+        "              // This value is not in relation to limit params.<br>"\
+        "              // data.length is the number of items in relation to search and limit.<br>"\
+        "  \"message\":\"&lt;loaded message&gt;\",<br>"\
+        "  \"data\":[{ // array of result<br>"\
+        "    \"id\":&lt;id of item&gt;, // number<br>"\
+        "    \"email\":\"&lt;user email&gt;\", // string<br>"\
+        "    \"name\":\"&lt;user name&gt;\",// string<br>"\
+        "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "  },<br>"\
+        "  ... // other items<br>"\
+        "  ]<br>"\
+        "}</pre>", // returns
+        NULL
+    }, {
+        SVC_API_USER, // id
+        "user", // service
+        true, // authRequired
+        AUTH_LEVEL_ADMIN, // requiredLevel
+        "0.1.0", // history
+        "Delete a user", // comment
+        "api/user/&lt;id&gt", // fullService
+        "DELETE", // httpMethod
+        "[help]<br>"\
+        "Just put id to delete (as last path) at the end of the url<br>"\
+        "  Example: api/user/<b>/4</b>", // params
+        "", // content
+        "JSON"\
+        "<pre>{<br>"\
+        "  \"success\":true&#124;false, // boolean<br>"\
+        "  \"message\":\"&lt;delete message&gt;\" // string <br>"\
+        "}</pre>", // returns
+        NULL
+    },{
+        SVC_API_USER, // id
+        "user", // service
+        true, // authRequired
+        AUTH_LEVEL_ADMIN, // requiredLevel
+        "0.1.0", // history
+        "Used to modify user properties", // comment
+        "api/user/&lt;id&gt;", // fullService
+        "PUT", // httpMethod
+        "[help]<br>"\
+        "Add id to update at the end of the url<br>"\
+        "Example: api/user<b>/4</b>", // params
+        "JSON"\
+        "<pre>{<br>"\
+        "  \"data\":{<br>"\
+        "    \"email\":\"&lt;user email&gt;\", // string<br>"\
+        "    \"name\":\"&lt;user name&gt;\",// string<br>"\
+        "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "    \"id\":&lt;id to update&gt; // number <br>"\
+        "  }<br>"\
+        "}</pre>", // content
+        "JSON"\
+        "<pre>{<br>"\
+        "  \"success\":true&#124;false, // boolean<br>"\
+        "  \"message\":\"&lt;put message&gt;\", // string<br>"\
+        "  \"data\":[{ // array<br>"\
+        "    \"id\":&lt;id&gt;, // number<br>"\
+        "    \"email\":\"&lt;user email&gt;\", // string<br>"\
+        "    \"name\":\"&lt;user name&gt;\",// string<br>"\
+        "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "  }]<br>"\
+        "}</pre>", // returns
+        NULL
+    }, {
+        SVC_API_USER, // id
+        "user", // service
+        true, // authRequired
+        AUTH_LEVEL_ADMIN, // requiredLevel
+        "0.1.0", // history
+        "Add a user. Account is default deactivated.", // comment
+        "api/user", // fullService
+        "POST", // httpMethod
+        "[help]", // params
+        "JSON"\
+        "<pre>{<br>"\
+        "  \"data\": // an object with a data property<br>"\
+        "  {<br>"\
+        "    \"email\":\"&lt;user email&gt;\", // string<br>"\
+        "    \"name\":\"&lt;user name&gt;\",// string<br>"\
+        "    \"password\":\"&lt;user password&gt;\",// string<br>"\
+        "  }<br>"\
+        "}</pre>", // content
+        "JSON"\
+        "<pre>{<br>"\
+        "  \"success\":true&#124;false, // boolean<br>"\
+        "  \"message\":\"&lt;post message&gt;\", // string<br>"\
+        "  \"data\":[{<br>"\
+        "    \"id\":&lt;id&gt;, // number: id is set by server<br>"\
+        "    \"email\":\"&lt;user email&gt;\", // string<br>"\
+        "    \"name\":\"&lt;user name&gt;\",// string<br>"\
+        "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "  }<br>"\
+        "]}</pre>", // returns
+        NULL
+    },
+NService_n::nsServiceNone
+};
 
 /* 
  *nsAPICfgServices
@@ -401,7 +457,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "api/cfg/shareddir", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -429,9 +485,9 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "api/cfg/shareddir/&lt;id&gt;", // fullService
         "DELETE", // httpMethod
         "[help]<br>"\
-        "Just put id to delete at the end of the url<br>"\
+        "Just put id to delete (as last path) at the end of the url<br>"\
         "Example: api/cfg/shareddir<b>/4</b>", // params
-        "", // postData
+        "", // content
         "JSON"
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -445,7 +501,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         true, // authRequired
         AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
-        "Manage shared directory", // comment
+        "Add a shared directory", // comment
         "api/cfg/shareddir", // fullService
         "POST", // httpMethod
         "[help]", // params
@@ -457,7 +513,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "    \"shared\":true&#124;false, // boolean<br>"\
         "    \"recursive\":true&#124;false // boolean<br>"\
         "  }<br>"\
-        "}</pre>", // postData
+        "}</pre>", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -468,7 +524,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "    \"recursive\":true&#124;false, // boolean<br>"\
         "    \"shared\":true&#124;false, // boolean<br>"\
         "    \"exists\":true&#124;false // boolean<br>"\
-        "  }<br>"
+        "  }<br>"\
         "]}</pre>", // returns
         NULL
     },
@@ -492,7 +548,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "    \"recursive\":true&#124;false, // optionnal, boolean<br>"\
         "    \"id\":&lt;id to update&gt; // number <br>"\
         "  }<br>"\
-        "}</pre>", // postData
+        "}</pre>", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
@@ -529,7 +585,7 @@ NService_n::NService NService_n::nsAPIFileServices[] =
         "api/file/updatedb", // fullService
         "GET", // httpMethod
         "[help]", // params
-        "", // postData
+        "", // content
         "JSON"\
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean <br>"\
@@ -561,7 +617,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "year:  &lt;music year&gt; // optionnal<br>"\
         "genre: &lt;music genre&gt; // optionnal<br>"\
         "artist: &lt;music artist&gt; // optionnal", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -596,7 +652,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal<br>"\
         "genre: &lt;music genre&gt; // optionnal", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -625,7 +681,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit<br>"\
         "year:  &lt;music year&gt; // optionnal", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -651,7 +707,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "GET", // httpMethod
         "Put &lt;music file hash&gt; at the end of the url<br>"\
         "Example: api/music/id3picture<b>/62f6287d95fafa0a8c56287e41760f33</b>", // params
-        "", // postData
+        "", // content
         "A picture. Format is in mimeType response.", // returns
         NULL
     },{
@@ -672,7 +728,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "genre: &lt;music genre&gt; // optionnal<br>"\
         "artist: &lt;music artist&gt; // optionnal<br>"\
         "album: &lt;music album&gt; // optionnal", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -713,7 +769,7 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit",  // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -750,7 +806,7 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
         "width: &lt;required picture width&gt; // optionnal, default \"800\"<br>"\
         "height: &lt;required picture height&gt; // optionnal, default \"600\"<br>"\
         "Resize is always proportional.", // params
-        "", // postData
+        "", // content
         "A jpeg picture", // returns
         NULL
     },{
@@ -764,7 +820,7 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
         "GET", // httpMethod
         "Put &lt;picture file hash&gt; at the end of the url<br>"\
         "Example: api/picture/thumb<b>/62f6287d95fafa0a8c56287e41760f33</b>", // params
-        "", // postData
+        "", // content
         "A jpeg picture", // returns
         NULL
     },
@@ -791,7 +847,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -826,7 +882,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -861,7 +917,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -917,7 +973,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -952,7 +1008,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -996,7 +1052,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1031,7 +1087,7 @@ NService_n::NService NService_n::nsAPISearchServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1087,7 +1143,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1095,7 +1151,9 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "              // data.length is the number of items in relation to search and limit.<br>"\
         "  \"message\":\"&lt;loaded message&gt;\",<br>"\
         "  \"data\":[{ // array of result<br>"\
-        "    \"id\":&lt;id of item&gt;, // number<br>"\
+        "    \"id\":&lt;id of item&gt;, // number, fileId and originialFileId concat<br>"\
+        "    \"fileId\":&lt;file id&gt;, // number<br>"\
+        "    \"originialFileId\":&lt;original file id&gt;, // number<br>"\
         "    \"fileName\":\"&lt;file name&gt;\", // string<br>"\
         "    \"relativePath\":\"&lt;relative path&gt;\",// relative in relation to shared dir, string<br>"\
         "    \"absoluteFilePath\":\"&lt;absolute file path&gt;\", // string<br>"\
@@ -1123,7 +1181,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1158,7 +1216,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1194,7 +1252,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1230,7 +1288,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1266,7 +1324,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1302,7 +1360,7 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
         "dir: &lt;ASC&#124;DESC&gt; // sort direction, optionnal, default \"ASC\"<br>"\
         "start: &lt;start offset&gt; // optionnal, default \"0\"<br>"\
         "limit: &lt;result limit&gt; // optionnal, default \"25\", -1 for no limit", // params
-        "", // postData
+        "", // content
         "JSON<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
@@ -1353,8 +1411,8 @@ NService_n::NService NService_n::getHTTPMethodService(NService* rootServices, co
             } else {
                 if (level+1 >= paths.count())
                     return rootServices[i];
-                else
-                    return NService_n::getHTTPMethodService(rootServices[i].subServices, paths, httpMethod, level + 1);
+
+                return NService_n::getHTTPMethodService(rootServices[i].subServices, paths, httpMethod, level + 1);
             }
         }
         ++i;
@@ -1364,7 +1422,6 @@ NService_n::NService NService_n::getHTTPMethodService(NService* rootServices, co
 
 void NService_n::getServices(NService* rootServices, const QStringList & paths,
                              NService* services, int * size, int level)
-
 {
     if (paths.count() == 0)
         return;
@@ -1391,7 +1448,6 @@ void NService_n::getServices(NService* rootServices, const QStringList & paths,
 }
 
 void NService_n::getAllServices(NService* rootServices, NService* services, int * size)
-
 {
     int i = 0;
     while (true)

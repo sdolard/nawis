@@ -137,7 +137,6 @@ NMod.Main.Ui.load = function(){
 		/*
 		* User Components are only loaded for local connection on server
 		*/
-		/* TODO: not for first version
 		NMod.User.Ui.load();
 		var userTab = new Ext.form.FormPanel({
 				layout: 'fit',
@@ -146,7 +145,7 @@ NMod.Main.Ui.load = function(){
 				items: NMod.User.Ui.mainPanel,
 				tbar: NMod.User.Ui.toolBar
 		});
-		applicationTabs.add(userTab);*/
+		applicationTabs.add(userTab);
 		
 		
 		/*

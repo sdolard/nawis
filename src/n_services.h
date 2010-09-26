@@ -51,7 +51,7 @@
 #define     SVC_API_SEARCH_MUSIC                   (SVC_API_SEARCH | 0x00005000)
 #define     SVC_API_SEARCH_OTHER                   (SVC_API_SEARCH | 0x00006000)
 #define     SVC_API_SEARCH_PICTURE                 (SVC_API_SEARCH | 0x00007000)
-//#define   SVC_API_USER                                    (SVC_API | 0x000000B0)
+#define   SVC_API_USER                                    (SVC_API | 0x000000B0)
 #define SVC_FAVICON                                                 (0x00000002)
 #define SVC_HELP                                                    (0x00000003)
 #define SVC_UI                                                      (0x00000004)
@@ -69,7 +69,7 @@ namespace NService_n
         QString  fullService;
         QString  httpMethod;
         QString  params;
-        QString  postData;
+        QString  content;
         QString  returns;
         NService* subServices;
     };

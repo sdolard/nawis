@@ -40,6 +40,7 @@
 #include "n_log.h"
 #include "n_convert.h"
 #include "n_database.h"
+#include "n_sqlite_error.h"
 
 #include "n_music_database.h"
 

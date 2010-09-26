@@ -29,7 +29,7 @@
 
 class NDir {
 public:
-    NDir() {};
+    NDir() {}
     NDir(const QString & path, bool recursive, bool shared);
 
     bool recursive() const;  //default is true

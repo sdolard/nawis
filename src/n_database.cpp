@@ -37,6 +37,7 @@
 #include "n_log.h"
 #include "n_convert.h"
 #include "n_music_database.h"
+#include "n_sqlite_error.h"
 
 #include "n_database.h"
 
@@ -227,11 +228,11 @@ void NDatabase::createUserTable()
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS user (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "login TEXT UNIQUE NOT NULL," \
-            "pwd TEXT NOT NULL," \
-            "email TEXT NOT NULL," \
-            "preference TEXT," \
-            "NAME TEXT" \
+            "email TEXT UNIQUE NOT NULL," \
+            "password TEXT NOT NULL," \
+            "name TEXT NOT NULL," \
+            "preferences TEXT," \
+            "enabled BOOLEAN DEFAULT 0 NOT NULL" \
             ")"))
         debugLastQuery("user table creation failed", query);
 }
@@ -879,10 +880,11 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     QString sql = "SELECT duplicated_file.id, duplicated_file.file_name, "\
                   "duplicated_file.relative_path, duplicated_file.absolute_file_path, "\
                   "duplicated_file.hash, duplicated_file.added, duplicated_file.size, "\
-                  "duplicated_file.fk_file_category_id, file.absolute_file_path original_absolute_file_path "\
-                  "FROM file, duplicated_file "\
-                  "WHERE file.hash = duplicated_file.hash "\
-                  "AND file.hash <> '' ";
+                  "duplicated_file.fk_file_category_id, "\
+                  "file.absolute_file_path original_absolute_file_path, file.id original_file_id "\
+                  "FROM duplicated_file "\
+                  "  INNER JOIN file ON duplicated_file.hash = file.hash "\
+                  "WHERE file.hash <> '' ";
 
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (duplicated_file.relative_path LIKE :duplicated_relative_path%1  OR "\
@@ -949,6 +951,7 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
     int fieldAdded = query.record().indexOf("added");
     int fieldSize = query.record().indexOf("size");
     int fieldOriginalAbsoluteFilePath = query.record().indexOf("original_absolute_file_path");
+    int fieldOriginalFileId = query.record().indexOf("original_file_id");
 
     int i = 0;
     while (query.next()) {
@@ -956,7 +959,9 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
         dataArray.setProperty(i, svfile);
 
         // Files field
-        svfile.setProperty("id", query.value(fieldId).toInt());
+        svfile.setProperty("id", QString(query.value(fieldId).toString() + query.value(fieldOriginalFileId).toString()).toInt()); // Cos it can have many duplicated files of same file
+        svfile.setProperty("fileId", query.value(fieldId).toInt());
+        svfile.setProperty("originalFileId", query.value(fieldOriginalFileId).toInt());
         svfile.setProperty("fileName", query.value(fieldFileName).toString());
         svfile.setProperty("relativePath", query.value(fieldRelativePath).toString());
         svfile.setProperty("absoluteFilePath", query.value(fieldAbsoluteFilePath).toString());
@@ -976,10 +981,10 @@ bool NDatabase::getDuplicatedFileList(QScriptEngine & se, QScriptValue & dataArr
 int NDatabase::getDuplicatedFileListCount(const QStringList & searches, NFileCategory_n::FileCategory fc)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT COUNT(*) " \
-                  "FROM file, duplicated_file "\
-                  "WHERE file.hash = duplicated_file.hash "\
-                  "AND file.hash <> '' ";
+    QString sql = "SELECT COUNT(duplicated_file.hash) " \
+                  "FROM duplicated_file "\
+                  "  INNER JOIN file ON duplicated_file.hash = file.hash "\
+                  "WHERE file.hash <> '' ";
 
     for (int i = 0; i < searches.count(); ++i)
         sql += QString("AND (duplicated_file.relative_path LIKE :duplicated_relative_path%1  OR "\
@@ -1375,15 +1380,10 @@ QString NDatabase::stringToUserField(const QString & field)
 {
     if (field.isEmpty() ||
         (field != "id" &&
-         field != "lastName"&&
-         field != "firstName"&&
          field != "email"&&
-         field != "password"&&
-         field != "passwordRequested"&&
-         field != "level"&&
-         field != "registered")
+         field != "name")
         )
-        return "lastName";
+        return "email";
 
     return field;
 }
@@ -1393,13 +1393,12 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
                             const QString & sort, const QString & dir)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT id, lastName, firstName, email, password, passwordRequested, level, registered FROM users ";
+    QString sql = "SELECT * FROM user ";
 
     bool selector = false;
-
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
-        sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
+        sql += QString("(name LIKE :name%1 OR email LIKE :email%1) ").arg(i);
     }
 
     // Sort and limit
@@ -1417,16 +1416,15 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
 
     if (!query.prepare(sql))
     {
-        debugLastQuery("userList prepare failed", query);
+        debugLastQuery("getUserList prepare failed", query);
         return false;
     }
 
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":lastName%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":firstName%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":email%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":name%1").arg(i), QString("%%1%").arg(s));
     }
 
     // Limit
@@ -1439,34 +1437,26 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
 
     if (!query.exec())
     {
-        debugLastQuery("userList failed", query);
+        debugLastQuery("getUserList failed", query);
         return false;
     }
 
     int fieldId = query.record().indexOf("id");
-    int fieldLastName = query.record().indexOf("lastName");
-    int fieldFirstName = query.record().indexOf("firstName");
     int fieldEmail = query.record().indexOf("email");
-    int fieldPassword = query.record().indexOf("password");
-    int fieldpasswordRequested = query.record().indexOf("passwordRequested");
-    int fieldLevel = query.record().indexOf("level");
-    int fieldRegistered = query.record().indexOf("registered");
+    int fieldName = query.record().indexOf("name");
+    int fieldPreferences = query.record().indexOf("preferences");
+    int fieldEnabled = query.record().indexOf("enabled");
 
     int i = 0;
     while (query.next()) {
         QScriptValue svUser = se.newObject();
         dataArray.setProperty(i, svUser);
         i++;
-
         svUser.setProperty("id", query.value(fieldId).toInt());
-        svUser.setProperty("lastName", query.value(fieldLastName).toString());
-        svUser.setProperty("firstName", query.value(fieldFirstName).toString());
         svUser.setProperty("email", query.value(fieldEmail).toString());
-        svUser.setProperty("password", query.value(fieldPassword).toString());
-        svUser.setProperty("passwordRequested", query.value(fieldpasswordRequested).toBool());
-        svUser.setProperty("level", query.value(fieldLevel).toString());
-        svUser.setProperty("registered", query.value(fieldRegistered).toBool());
-
+        svUser.setProperty("name", query.value(fieldName).toString());
+        svUser.setProperty("preferences", query.value(fieldPreferences).toString());
+        svUser.setProperty("enabled", query.value(fieldEnabled).toBool());
     }
     return true;
 }
@@ -1474,31 +1464,30 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
 int NDatabase::getUserListCount(const QStringList & searches)
 {
     QSqlQuery query(m_db);
-    QString sql = "SELECT count(*) FROM users ";
+    QString sql = "SELECT count(id) FROM user ";
 
     bool selector = false;
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
-        sql += QString("(lastName LIKE :lastName%1 OR firstName LIKE :firstName%1 OR email LIKE :email%1) ").arg(i);
+        sql += QString("(name LIKE :name%1 OR email LIKE :email%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
     {
-        debugLastQuery("fileListCount prepare failed", query);
+        debugLastQuery("getUserListCount prepare failed", query);
         return 0;
     }
 
     for (int i = 0; i < searches.count(); ++i)
     {
         QString s = searches.at(i);
-        query.bindValue(QString(":lastName%1").arg(i), QString("%%1%").arg(s));
-        query.bindValue(QString(":firstName%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":email%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":name%1").arg(i), QString("%%1%").arg(s));
     }
 
     if (!query.exec())
     {
-        debugLastQuery("fileListCount failed", query);
+        debugLastQuery("getUserListCount failed", query);
         return 0;
     }
 
@@ -1512,53 +1501,125 @@ void NDatabase::setUserLevel(const QString &)
     // TODO
 }
 
-bool NDatabase::registerUser(const QString & firstName, const QString & lastName,
-                             const QString & email, const QString & password)
+int NDatabase::addUser(const QString & name, const QString & email, const QString & password)
+{
+    if (name.isEmpty() || email.isEmpty() || password.isEmpty())
+        return DB_USER_ERROR_INVALID_PARAMS;
+
+    QSqlQuery query(m_db);
+    if (!query.prepare("INSERT INTO user (email, name, password) "\
+                       "VALUES(:email, :name, :password)"))
+    {
+        debugLastQuery("addUser prepare failed", query);
+        return DB_USER_ERROR_QUERY;
+    }
+
+    query.bindValue(":name", name);
+    query.bindValue(":email", email);
+    query.bindValue(":password", password);
+    if (!query.exec())
+    {
+        debugLastQuery("addUser failed", query);
+        return DB_USER_ERROR_QUERY;
+    }
+    return query.lastInsertId().toInt();
+}
+
+bool NDatabase::updateUser(int id, const QString & email, const QString & password,
+                           const QString & name, const QString & preferences,
+                           bool enabled)
 {
     // TODO
-    if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty())
+    if (name.isEmpty() || email.isEmpty() || password.isEmpty())
         return false;
 
     QSqlQuery query(m_db);
-    if (!query.prepare("INSERT INTO users (lastName, firstName, email, password) "\
-                       "VALUES(:lastName, :firstName, :email, :password)"))
+    if (!query.prepare("UPDATE user "
+                       "SET email=:email,"\
+                       "password=:password,"\
+                       "name=:name,"\
+                       "preferences=:preferences,"\
+                       "enabled=:enabled "\
+                       "WHERE id=:id"))
     {
-        debugLastQuery("registerUser prepare failed", query);
+        debugLastQuery("updateUser prepare failed", query);
         return false;
     }
 
-    QCryptographicHash hash(QCryptographicHash::Md5);
-    hash.addData(password.toUtf8());
-    hash.addData(NCONFIG.dbPwdHashKey());
-
-    query.bindValue(":lastName", lastName);
-    query.bindValue(":firstName", firstName);
+    query.bindValue(":id", id);
     query.bindValue(":email", email);
-    query.bindValue(":password", QString(hash.result().toHex()));
+    query.bindValue(":password", password);
+    query.bindValue(":name", name);
+    query.bindValue(":preferences", preferences);
+    query.bindValue(":enabled", enabled);
+
     if (!query.exec())
     {
-        debugLastQuery("registerUser failed", query);
+        debugLastQuery("updateUser failed", query);
         return false;
     }
     return true;
 }
 
-const NStringMap NDatabase::getUser(const QString & email)
-{	
-    // TODO
+const NStringMap NDatabase::getUserById(int id)
+{
+    NStringMap user;
+    if (id < 0)
+        return user;
+
+    QSqlQuery query(m_db);
+    QString sql = "SELECT * " \
+                  "FROM user " \
+                  "WHERE id = :id";
+
+    if (!query.prepare(sql))
+    {
+        debugLastQuery("getUserById prepare failed", query);
+        return user;
+    }
+
+    query.bindValue(":id", id);
+
+    if (!query.exec())
+    {
+        debugLastQuery("getUserById failed", query);
+        return user;
+    }
+
+    int fieldId = query.record().indexOf("id");
+    int fieldEmail = query.record().indexOf("email");
+    int fieldPassword = query.record().indexOf("password");
+    int fieldName = query.record().indexOf("name");
+    int fieldPreferences = query.record().indexOf("preferences");
+    int fieldEnabled = query.record().indexOf("enabled");
+
+    if (!query.first())
+        return user;
+
+    user["id"] = query.value(fieldId).toString();
+    user["email"] = query.value(fieldEmail).toString();
+    user["password"] = query.value(fieldPassword).toString();
+    user["name"] = query.value(fieldName).toString();
+    user["preferences"] = query.value(fieldPreferences).toString();
+    user["enabled"] = query.value(fieldEnabled).toBool();
+
+    return user;
+}
+
+const NStringMap NDatabase::getUserByEmail(const QString & email)
+{
     NStringMap user;
     if (email.isEmpty())
         return user;
 
     QSqlQuery query(m_db);
-    QString sql = "SELECT lastName, firstName, email, password,"\
-                  "passwordRequested level, registered " \
-                  "FROM users " \
+    QString sql = "SELECT * " \
+                  "FROM user " \
                   "WHERE email = :email";
 
     if (!query.prepare(sql))
     {
-        debugLastQuery("getUser prepare failed", query);
+        debugLastQuery("getUserByEmail prepare failed", query);
         return user;
     }
 
@@ -1566,60 +1627,37 @@ const NStringMap NDatabase::getUser(const QString & email)
 
     if (!query.exec())
     {
-        debugLastQuery("getUser failed", query);
+        debugLastQuery("getUserByEmail failed", query);
         return user;
     }
 
-    int fieldLastName = query.record().indexOf("lastName");
-    int fieldFirstName = query.record().indexOf("firstName");
+    int fieldId = query.record().indexOf("id");
     int fieldEmail = query.record().indexOf("email");
     int fieldPassword = query.record().indexOf("password");
-    int fieldpasswordRequested = query.record().indexOf("passwordRequested");
-    int fieldLevel = query.record().indexOf("level");
-    int fieldRegistered = query.record().indexOf("registered");
+    int fieldName = query.record().indexOf("name");
+    int fieldPreferences = query.record().indexOf("preferences");
+    int fieldEnabled = query.record().indexOf("enabled");
 
     if (!query.first())
         return user;
 
-    user["lastName"] = query.value(fieldLastName).toString();
-    user["firstName"] = query.value(fieldFirstName).toString();
+    user["id"] = query.value(fieldId).toString();
     user["email"] = query.value(fieldEmail).toString();
     user["password"] = query.value(fieldPassword).toString();
-    user["passwordRequested"] = query.value(fieldpasswordRequested).toString();
-    user["level"] = query.value(fieldLevel).toString();
-    user["registered"] = query.value(fieldRegistered).toString();
+    user["name"] = query.value(fieldName).toString();
+    user["preferences"] = query.value(fieldPreferences).toString();
+    user["enabled"] = query.value(fieldEnabled).toBool();
 
     return user;
 }
 
-/*bool NDatabase::deleteUser(const QString & email)
-{
-	if (email.isEmpty())
-		return false;
-
-	QSqlQuery query(m_db);
-	if (!query.prepare("DELETE FROM users WHERE email=:email"))
-	{
-		debugLastQuery("deleteUser prepare failed", query);
-		return false;
-	}
-	query.bindValue(":email", email);
-	if (!query.exec())
-	{
-		debugLastQuery("deleteUser failed", query);
-		return false;
-	} 
-	return true;
-}*/
-
 bool NDatabase::deleteUser(const QString & id)
 {
-    // TODO
     if (id.isEmpty())
         return false;
 
     QSqlQuery query(m_db);
-    if (!query.prepare("DELETE FROM users WHERE id=:id"))
+    if (!query.prepare("DELETE FROM user WHERE id=:id"))
     {
         debugLastQuery("deleteUser prepare failed", query);
         return false;
@@ -1630,26 +1668,5 @@ bool NDatabase::deleteUser(const QString & id)
         debugLastQuery("deleteUser failed", query);
         return false;
     }
-    return true;
-}
-
-bool NDatabase::requestUserPassord(const QString & email)
-{
-    // TODO
-    if (email.isEmpty())
-        return false;
-
-    QSqlQuery query(m_db);
-    if (!query.prepare("UPDATE users SET passwordRequested = 1 WHERE email=:email"))
-    {
-        debugLastQuery("requestUserPassord prepare failed", query);
-        return false;
-    }
-    query.bindValue(":email", email);
-    if (!query.exec())
-    {
-        debugLastQuery("requestUserPassord failed", query);
-        return false;
-    }
-    return true;
+    return query.numRowsAffected() == 1;
 }

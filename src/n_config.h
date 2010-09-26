@@ -71,7 +71,9 @@ public:
     void setDirFingerPrint(const QString & fp);
     void clearDirUpdateData();
 
-    const QByteArray & dbPwdHashKey();
+    // Returns a password generated with dbPwdHashKey (cf config file)
+    // Return an empty string if password is empty
+    const QString toPasswordHash(const QString & password);
 
     const QSslConfiguration & sslCfg();
     quint64 fileBufferSize();
@@ -113,6 +115,7 @@ private:
     void save();
     void writeDefaultConfigFile();
     void genSslCfg();
+    const QByteArray & dbPwdHashKey();
 
 private slots:
     void onConfigFileChanged();

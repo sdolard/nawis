@@ -8,8 +8,9 @@ Ext.namespace('NMod.Preferences.Ui.Log');
 */
 NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT = 100; //100
 NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE = 300; // 300
+// TODO: use global event on ajax request to manage nop
 NMod.Preferences.NOP_SLEEPING_DELAY = function(){
-    return 30000;
+    return 60000;
 };
 
 NMod.Preferences.NOP_WORKING_DELAY = function(){
@@ -27,40 +28,34 @@ NMod.Preferences.Ui.Log.autoRefreshPeriod = 0; // value is mseconds, 0 equals to
 *
 */
 NMod.Preferences.Ui.showWindow = function(){		 
-    // sharedDirProxy
-    var sharedDirProxy = new Ext.data.HttpProxy({
-    		url: NLib.Path.root('api/cfg/shareddir')
-    });
-    
-    var sharedDirReader = new Ext.data.JsonReader({
-    		idProperty: 'id',
-    		root: 'data',
-    		totalProperty: 'totalcount', 
-    		fields: [{
-    				name: 'id'
-    		},{
-    			name: 'path'
-    		}, {
-    			name: 'shared'
-    		}, {
-    			name: 'recursive'
-    		}, {
-    			name: 'exists'
-    		}]
-    });
-    
-    var sharedDirWriter = new Ext.data.JsonWriter({
-    		encode: false
-    });
     
     
     // Directory store and reader
     var sharedDirStore = new Ext.data.Store({
     		id: 'sharedDirectory',
     		restful: true,
-    		proxy: sharedDirProxy,
-    		reader: sharedDirReader,
-    		writer: sharedDirWriter,
+    		proxy: new Ext.data.HttpProxy({
+    				url: NLib.Path.root('api/cfg/shareddir')
+    		}),
+    		reader: new Ext.data.JsonReader({
+    				idProperty: 'id',
+    				root: 'data',
+    				totalProperty: 'totalcount', 
+    				fields: [{
+    						name: 'id'
+    				},{
+    					name: 'path'
+    				}, {
+    					name: 'shared'
+    				}, {
+    					name: 'recursive'
+    				}, {
+    					name: 'exists'
+    				}]
+    		}),
+    		writer: new Ext.data.JsonWriter({
+    				encode: false
+    		}),
     		sortInfo: {
     			field: 'path',
     			direction: 'ASC'

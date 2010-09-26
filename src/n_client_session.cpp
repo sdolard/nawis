@@ -32,9 +32,9 @@
 
 
 NClientSession::NClientSession(const QHttpRequestHeader & request,
-                               const QByteArray & postData, QAbstractSocket *socket,
+                               const QByteArray & content, QAbstractSocket *socket,
                                bool ssl)
-                                   :m_request(request), m_postData(postData),
+                                   :m_request(request), m_content(content),
                                    m_socket(socket), m_ssl(ssl)
 {
     Q_ASSERT(socket);
@@ -54,7 +54,7 @@ NClientSession::NClientSession(const QHttpRequestHeader & request,
 NClientSession::NClientSession(const NClientSession & session)
 {
     this->m_request = session.m_request;
-    this->m_postData = session.m_postData;
+    this->m_content = session.m_content;
     this->m_socket = session.m_socket;
     this->m_url = session.m_url;
     this->m_sessionId = session.m_sessionId;
@@ -64,6 +64,7 @@ NClientSession::NClientSession(const NClientSession & session)
 }
 
 const QString NClientSession::getSessionId() const {
+    // TODO: put session id in URL?
     QStringList cookieList = QString(m_request.value("Cookie")).split("; ", QString::SkipEmptyParts);
     for(int i = 0; i < cookieList.count(); ++i)
     {
@@ -96,9 +97,9 @@ const QUrl & NClientSession::url() const
     return m_url;
 }
 
-const QByteArray & NClientSession::postData() const
+const QByteArray & NClientSession::content() const
 {
-    return m_postData;
+    return m_content;
 }
 
 const QAbstractSocket * NClientSession::socket() const
@@ -128,8 +129,7 @@ const QStringList NClientSession::paths() const
 
 const QString NClientSession::resource() const
 {
-    QStringList list = m_url.path().split("/");
-    return list.last();
+    return m_url.path().split("/").last();
 }
 
 bool NClientSession::supportCompression(NCompress_n::CompressionType ct) const
@@ -157,13 +157,13 @@ const QString NClientSession::contentTypeCharset() const
     return "";
 }
 
-const NStringMap NClientSession::postDataToMap() const
+const NStringMap NClientSession::contentToMap() const
 {
     QStringList stringList;
     if (contentTypeCharset() == "UTF8")
-        stringList = QString::fromUtf8(m_postData).split("&");
+        stringList = QString::fromUtf8(m_content).split("&");
     else
-        stringList = QString(m_postData).split("&");
+        stringList = QString(m_content).split("&");
     NStringMap postParamList;
     for(int i = 0; i < stringList.count(); i++)
     {

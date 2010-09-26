@@ -17,150 +17,157 @@ NMod.User.Ui.load = function(){
     */
     var emptySearchText = 'Filter...';
     
-    /**
-    * Search reader
-    */
-    var userReader = new Ext.data.JsonReader({
-    		idProperty: 'id',
-    		root: 'data',
-    		totalProperty: 'totalcount', 
-    		fields: [{
-    				name: 'lastName'
-    		}, {
-    			name: 'firstName'
-    		}, {
-    			name: 'email'
-    		}, {
-    			name: 'passwordRequested'
-    		}, {
-    			name: 'level'
-    		}, {
-    			name: 'registered'
-    		}]
-    });
     
     /**
     * Create the request Data Store
     */
     var userStore = new Ext.ux.grid.livegrid.Store({
+    		restful: true,
     		autoLoad: true,
     		bufferSize: NMod.Preferences.LIVEGRID_STORE_BUFFER_SIZE,
-    		reader: userReader,
     		sortInfo: {
-    			field: 'lastName',
+    			field: 'email',
     			direction: 'DESC'
     		},
     		remoteSort: true,
     		proxy: new Ext.data.HttpProxy({
     				url: NLib.Path.root('api/user'),
-    				method: 'GET'
-    		}),
-    		listeners: {
-    			beforeload: function(store, options){
-    				var NModUserSearchTextField = Ext.getCmp("NModUserSearchTextField");
-    				if (NModUserSearchTextField === undefined || NModUserSearchTextField === null) {
-    					return;
-    				}
-    				var searchUserValue = NModUserSearchTextField.value;
-    				if (searchUserValue === emptySearchText) {
-    					searchUserValue = "";
-    				}
-    				searchUserValue = NLib.Convert.toParamValue(searchUserValue);	
-    				store.proxy.setUrl(NLib.Path.root('api/user' + "?search=" + searchUserValue), true);
-    				
-    			},
-    			remove: function(s, r, i){
-    				Ext.Ajax.request({
-    						waitMsg: 'Please wait...',
-    						url: NLib.Path.root('api/user/') + r.id,
-    						method: 'DELETE',
-    						success: function(response){
-    							userStore.reload();
-    						},
-    						failure: function(response){
-    							Ext.MessageBox.alert('Error', 'Could not connect to the server.');
+    				method: 'GET',
+    				listeners: {
+    					exception:  function(proxy, type, action, options, res) {
+    						if (type === 'response' && action === 'create') {
+    							rowEditor.stopEditing();
+    							Ext.Msg.show({
+    									title:'Creation error',
+    									msg: 'An error occured when creating a new user. Email already used?',
+    									buttons: Ext.Msg.OK,
+    									fn: search,
+    									icon: Ext.MessageBox.WARNING
+    							});
     						}
-    				});
-    			}
-    		}
+    					},
+    					beforeload: function ( DataProxy , params ) {
+    						var NModUserSearchTextField = Ext.getCmp("NModUserSearchTextField");
+    						if (NModUserSearchTextField === undefined || NModUserSearchTextField === null) {
+    							return;
+    						}
+    						var searchUserValue = NModUserSearchTextField.getValue();
+    						if (searchUserValue === emptySearchText) {
+    							searchUserValue = "";
+    						}
+    						searchUserValue = NLib.Convert.toParamValue(searchUserValue);	
+    						params.search = searchUserValue;
+    						
+    					}
+    				}
+    		}),
+    		reader: new Ext.data.JsonReader({
+    				idProperty: 'id',
+    				root: 'data',
+    				totalProperty: 'totalcount', 
+    				fields: [{
+    						name: 'email'
+    				}, {
+    					name: 'name'
+    				}, {
+    					name: 'enabled'
+    				}, {
+    					name: 'password'
+    				}]
+    		}),
+    		writer: new Ext.data.JsonWriter({
+    				encode: false
+    		})
     });
     
+    
+    // use RowEditor for editing
+    var rowEditor = new Ext.ux.grid.RowEditor({
+    		saveText: 'Update'
+    });
+    
+    
+    // Add user action
+    var actionAddUser = new Ext.Action({
+    		text: 'Add',
+    		handler: function(){
+    			rowEditor.stopEditing();
+    			var user = new userStore.recordType({
+    					email: 'undefined',
+    					name: 'undefined',
+    					password: 'undefined',
+    					enabled: false
+    			});
+    			userStore.insert(0, user);
+    			rowEditor.startEditing(0);
+    		},
+    		disabled: false,
+    		iconCls: 'ks-action-add-icon'
+    });
+    
+    // Remove shared dir action
+    var actionDeleteUser = new Ext.Action({
+    		text: 'Delete',
+    		handler: function(){
+    			var selections = userGrid.selModel.getSelections();
+    			if (selections.length === 0) {
+    				return;
+    			}
+    			var userRecord = selections[0];
+    			if (userRecord === undefined) {
+    				return;
+    			}
+    			Ext.Msg.confirm("Confirm", "Remove selected user?", function(btn, text){
+    					if (btn !== 'yes') {
+    						return;
+    					}
+    					userStore.remove(userRecord);
+    			}, this);
+    		},
+    		disabled: false,
+    		iconCls: 'ks-action-delete-icon'
+    });
+    
+    // Remove shared dir action
+    var actionUpdateUserPassword = new Ext.Action({
+    		text: 'Update user password',
+    		handler: function(){
+    			var selections = userGrid.selModel.getSelections();
+    			if (selections.length === 0) {
+    				return;
+    			}
+    			var userRecord = selections[0];
+    			if (userRecord === undefined) {
+    				return;
+    			}
+    			Ext.Msg.confirm("todo", "todo", function(btn, text){
+    					if (btn !== 'yes') {
+    						return;
+    					}
+    					
+    			}, this);
+    		},
+    		disabled: false,
+    		iconCls: 'ks-action-update-password-icon'
+    });
+    
+
+    
     /**
-    * Grid View
+    * Search user Button
     */
-    var userView = new Ext.ux.grid.livegrid.GridView({
-    		nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+    var searchUserButton = new Ext.Button({
+    		id: 'searchUserButton',
+    		text: 'Refresh',
+    		style: 'padding-left:2px',
+    		scope: this,
+    		icon: NLib.Path.res('database_refresh'),
+    		cls: 'x-btn-text-icon',
     		listeners: {
-    			cursormove: function(view, rowIndex, visibleRows, totalCount){
-    				updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
-    			},
-    			rowsinserted: function(view, start, end){
-    				updateSearchDisplayedText(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows - view.rowClipped), view.ds.totalLength);
-    			},
-    			rowremoved: function(view, index, record){
-    				updateSearchDisplayedText(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows - view.rowClipped), view.ds.totalLength);
-    			},
-    			beforebuffer: function(view, store, rowIndex, visibleRows, totalCount, options){
-    				updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
-    			},
-    			buffer: function(view, store, rowIndex, visibleRows, totalCount){
-    				updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
+    			click: function(b, e){
+    				search();
     			}
     		}
-    });
-    
-    
-    
-    function userNameRenderer(val, p, record){
-        return record.data.firstName + " " + record.data.lastName;
-    }
-    
-    /**
-    * Create the resultGrid
-    */
-    var rowSelectionModel = new Ext.ux.grid.livegrid.RowSelectionModel();
-    var userGrid = new Ext.ux.grid.livegrid.GridPanel({
-    		id: 'userGrid',
-    		//title:'userGrid',
-    		border: false,
-    		region: 'center',
-    		store: userStore,
-    		cm: new Ext.grid.ColumnModel([new Ext.grid.RowNumberer({
-    					header: '#',
-    					width: 30
-    		}), {
-    			header: "User name",
-    			width: 200,
-    			sortable: true,
-    			dataIndex: 'lastName',
-    			renderer: userNameRenderer
-    		}, {
-    			header: "Email address",
-    			width: 140,
-    			sortable: true,
-    			dataIndex: 'email'
-    		}, {
-    			header: "Password requested",
-    			width: 140,
-    			sortable: true,
-    			dataIndex: 'passwordRequested'
-    		}, {
-    			header: "level",
-    			width: 120,
-    			sortable: true,
-    			dataIndex: 'level'
-    		}, {
-    			id: 'registeredCol',
-    			header: "Accredited",
-    			width: 70,
-    			sortable: true,
-    			dataIndex: 'registered'
-    		}]),
-    		stripeRows: true,
-    		autoExpandColumn: 'registeredCol',
-    		loadMask: true,
-    		selModel: rowSelectionModel,
-    		view: userView
     });
     
     /**
@@ -201,60 +208,6 @@ NMod.User.Ui.load = function(){
     
     
     /**
-    * Search user Button
-    */
-    var searchUserButton = new Ext.Button({
-    		id: 'searchUserButton',
-    		text: 'Refresh',
-    		style: 'padding-left:2px',
-    		scope: this,
-    		icon: NLib.Path.res('database_refresh'),
-    		cls: 'x-btn-text-icon',
-    		listeners: {
-    			click: function(b, e){
-    				search();
-    			}
-    		}
-    });
-    
-    
-    /** 
-    * Delete user action
-    */
-    var actionDeleteUser = new Ext.Action({
-    		text: 'Delete',
-    		handler: function(){
-    			var selections = userGrid.selModel.getSelections();
-    			if (selections.length === 0) {
-    				return;
-    			}
-    			var userRecord = selections[0];
-    			if (userRecord === undefined) {
-    				return;
-    			}
-    			Ext.Msg.confirm("Confirm", "Delete selected user from list? He could no more connect to nawis.", function(btn, text){
-    					if (btn !== 'yes') {
-    						return;
-    					}
-    					userStore.remove(userRecord);
-    			}, this);
-    		},
-    		disabled: false,
-    		iconCls: 'ks-action-delete-icon'
-    });
-    
-    /** 
-    * Add user action
-    */
-    var actionAddUser = new Ext.Action({
-    		text: 'Add',
-    		handler: function(){
-    		},
-    		disabled: false,
-    		iconCls: 'ks-action-add-icon'
-    });
-    
-    /**
     * Used in top toolbar
     */
     var searchDisplayedText = new Ext.Toolbar.TextItem({
@@ -267,8 +220,80 @@ NMod.User.Ui.load = function(){
     
     var userToolBar = new Ext.Toolbar({
     		id: 'userToolBar',
-    		items: [searchUserTextField, ' ', searchUserButton, ' ', actionAddUser, actionDeleteUser, '->', searchDisplayedText]
+    		items: [searchUserTextField, ' ', searchUserButton, ' ', actionAddUser, actionDeleteUser, actionUpdateUserPassword,  '->', searchDisplayedText]
     });
+    
+    
+    /**
+    * Create the resultGrid
+    */
+    var userGrid = new Ext.ux.grid.livegrid.GridPanel({
+    		id: 'userGrid',
+    		border: false,
+    		region: 'center',
+    		store: userStore,
+    		cm: new Ext.grid.ColumnModel([
+    				{
+    					id: 'email',
+    					header: "Email",
+    					dataIndex: 'email',
+    					width: 300,
+    					sortable: true,
+    					editor: {
+    						xtype: 'textfield',
+    						allowBlank: false
+    					}
+    				},
+    				{
+    					header: "Name",
+    					dataIndex: 'name',
+    					sortable: true,
+    					width: 300,
+    					editor: {
+    						xtype: 'textfield',
+    						allowBlank: false
+    					}
+    				},
+    				{
+    					xtype: 'booleancolumn',
+    					header: "State",
+    					dataIndex: 'enabled',
+    					sortable: true,
+    					width: 100,
+    					trueText: 'enabled',
+    					falseText: 'disabled',
+    					align: 'center',
+    					editor: {
+    						xtype: 'checkbox'
+    					}		
+    		}]),
+    		plugins: [rowEditor],
+    		stripeRows: true,
+    		//autoExpandColumn: 'email',
+    		loadMask: true,
+    		selModel: new Ext.ux.grid.livegrid.RowSelectionModel(),
+    		view: new Ext.ux.grid.livegrid.GridView({
+    				nearLimit: NMod.Preferences.LIVEGRID_VIEW_DEFAULT_NEAR_LIMIT,
+    				listeners: {
+    					cursormove: function(view, rowIndex, visibleRows, totalCount){
+    						updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
+    					},
+    					rowsinserted: function(view, start, end){
+    						updateSearchDisplayedText(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows - view.rowClipped), view.ds.totalLength);
+    					},
+    					rowremoved: function(view, index, record){
+    						updateSearchDisplayedText(view.rowIndex, Math.min(view.ds.totalLength, view.visibleRows - view.rowClipped), view.ds.totalLength);
+    					},
+    					beforebuffer: function(view, store, rowIndex, visibleRows, totalCount, options){
+    						updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
+    					},
+    					buffer: function(view, store, rowIndex, visibleRows, totalCount){
+    						updateSearchDisplayedText(rowIndex, visibleRows, totalCount);
+    					}
+    				}
+    		})
+    });
+    
     
     NMod.User.Ui.toolBar = userToolBar;
     NMod.User.Ui.mainPanel = userGrid;

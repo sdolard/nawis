@@ -177,8 +177,8 @@ bool NServer::startTcpServer()
     }
 
     NLOGMD("Server", tr("TCP server not able to listen on %1: %2\n").
-                     arg(NCONFIG.serverPort()).
-                     arg(m_server->errorString()));
+           arg(NCONFIG.serverPort()).
+           arg(m_server->errorString()));
 
     NLOGMD("Solution: ", socketErrorToString(m_server->serverError()));
     return false;
@@ -200,8 +200,8 @@ bool NServer::startSslTcpServer()
     }
 
     NLOGMD("Server", tr("SSL TCP server not able to listen on %1: %2\n").
-                     arg(NCONFIG.serverSslPort()).
-                     arg(m_sslServer->errorString()));
+           arg(NCONFIG.serverSslPort()).
+           arg(m_sslServer->errorString()));
 
     NLOGMD("Solution: ", socketErrorToString(m_sslServer->serverError()));
     return false;
@@ -355,7 +355,7 @@ void NServer::startJob(int job)
     connect((*pJob), SIGNAL(finished()),
             this, SLOT(onJobTerminated()), Qt::QueuedConnection);
     NLOGD("NServer", QString("%1 starting ...").arg(jobToString(job)));
-    (*pJob)->start(QThread::IdlePriority);
+    (*pJob)->start();
 }
 
 void NServer::stopJobs()
@@ -439,26 +439,30 @@ void NServer::onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs)
 void NServer::onConfigFileChanged()
 {
     if ((m_server && NCONFIG.isOnlySslServerEnabled()) ||
-          (!m_server && !NCONFIG.isOnlySslServerEnabled()) ||
-          (m_server && NCONFIG.serverPort() != m_server->serverPort())
-        )
+        (!m_server && !NCONFIG.isOnlySslServerEnabled()) ||
+        (m_server && NCONFIG.serverPort() != m_server->serverPort())
+        ) {
         restartTcpServer();
+    }
 
     if ((m_sslServer && !NCONFIG.isSslServerEnabled()) ||
-         (!m_sslServer && NCONFIG.isSslServerEnabled()) ||
-         (m_sslServer && NCONFIG.serverSslPort() != m_sslServer->serverPort())
-        )
+        (!m_sslServer && NCONFIG.isSslServerEnabled()) ||
+        (m_sslServer && NCONFIG.serverSslPort() != m_sslServer->serverPort())
+        ) {
         restartSslTcpServer();
+    }
 
     bool sharedDirectoriesChanged = NCONFIG.sharedDirectories() != m_sharedDirectories;
 
-    if (sharedDirectoriesChanged)
+    if (sharedDirectoriesChanged) {
         NCONFIG.dumpSharedDirectoriesConfig();
+    }
 
     bool fileSuffixesChanged = NCONFIG.fileSuffixes() != m_fileSuffixes;
     if (!sharedDirectoriesChanged &&
-        !fileSuffixesChanged)
+        !fileSuffixesChanged) {
         return;
+    }
 
     NLOGM("Server", "Configuration changed");
     m_configFileChanged = true;

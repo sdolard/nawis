@@ -51,13 +51,13 @@ private:
     bool                     m_keepAlive;
     bool                     m_canBeDeleted;
     uint                     m_dataToRead;
-    QByteArray               m_postData;
+    QByteArray               m_content;
 
     // Return hostName if exists, ip address otherwise
     const QString peerString();
 
     void addLine(const QString & line);
-    void addData(const QByteArray & data);
+    void addContent(const QByteArray & data);
     bool requestIsComplete();
     void sendResponse();
     void prepareResponse();

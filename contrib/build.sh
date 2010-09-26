@@ -31,7 +31,7 @@ if [ $OSTYPE = darwin9.0 -o $OSTYPE = darwin10.0 -o $OSTYPE = cygwin ]; then
 	#next line for native platform build
 	#./configure && make && sudo make install
 	#next line for 32-bit build
-	#./configure CXXFLAGS="-m32 -arch i386" CFLAGS="-m32 -arch i386" LDFLAGS="-arch i386" && make && sudo make install
+	./configure CXXFLAGS="-m32 -arch i386" CFLAGS="-m32 -arch i386" LDFLAGS="-arch i386" && make && sudo make install
        
 	cd "$CONTRIB_DIR"
 	echo "exiv2 build done."

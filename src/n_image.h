@@ -37,10 +37,10 @@ public:
     // Return JPG data
     const QByteArray resize(const QSize & size);
 
-    /*
-	 * Only available after preview call
-	 * return an empty string other wise 
-	 */
+    /**
+    * Only available after preview call
+    * return an empty string other wise
+    */
     const QString mimeType() const;
 
 private:

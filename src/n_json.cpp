@@ -12,25 +12,48 @@ const QString NJson::serialize(const QScriptValue & sv)
 {
     if (!sv.isValid())
         return QString();
-
-    if (sv.isArray())
+    /**
+    * JSON value are:
+    *    string
+    *    number
+    *    object
+    *    array
+    *    true
+    *    false
+    *    null
+    */
+    // Order is important!
+    if (sv.isString())
+        return serializeString(sv);
+    if (sv.isNumber())
+        return serializeNumber(sv);
+    if (sv.isArray()) // array IS an object, isArray test must be done before is Objet test
         return serializeArray(sv);
     if (sv.isObject())
         return serializeObject(sv);
     if (sv.isBool())
         return serializeBool(sv);
-    if (sv.isDate())
-        return serializeDate(sv);
     if (sv.isNull())
         return serializeNull(sv);
-    if (sv.isNumber())
-        return serializeNumber(sv);
-    if (sv.isString())
-        return serializeString(sv);
-    if (sv.isUndefined())
-        return serializeUndefined(sv);
 
-    Q_ASSERT(false);
+    if (sv.isDate())
+        Q_ASSERT_X("NJson::serialize", "sv.isDate()", false);
+    if (sv.isError())
+        Q_ASSERT_X("NJson::serialize", "sv.isError()", false);
+    if (sv.isFunction())
+        Q_ASSERT_X("NJson::serialize", "sv.isFunction()", false);
+    if (sv.isQMetaObject())
+        Q_ASSERT_X("NJson::serialize", "sv.isQMetaObject()", false);
+    if (sv.isQObject())
+        Q_ASSERT_X("NJson::serialize", "sv.isQObject()", false);
+    if (sv.isRegExp())
+        Q_ASSERT_X("NJson::serialize", "sv.isRegExp()", false);
+    if (sv.isUndefined())
+        Q_ASSERT_X("NJson::serialize", "sv.isUndefined()", false);
+    if (sv.isVariant())
+        Q_ASSERT_X("NJson::serialize", "sv.isVariant()", false);
+
+    Q_ASSERT(false); //?
     return "";
 }
 
@@ -58,8 +81,11 @@ const QString NJson::serializeArray(const QScriptValue & sv)
     QScriptValueIterator it(sv);
     while (it.hasNext()) {
         it.next();
-        if (!it.value().isObject())
-            json += QString("\"%1\":").arg(it.name());
+        if (!it.hasNext() && it.name().compare("length") == 0) { // reserved word/property on array
+            if (json.endsWith(","))
+                json.remove(json.length() - 1, 1);
+            break;
+        }
         json += serialize(it.value());
         if (it.hasNext())
             json += ",";
@@ -70,12 +96,6 @@ const QString NJson::serializeArray(const QScriptValue & sv)
 const QString NJson::serializeBool(const QScriptValue & sv)
 {
     return sv.toVariant().toString();
-}
-
-const QString NJson::serializeDate(const QScriptValue & )
-{
-    Q_ASSERT(false);
-    return "";
 }
 
 const QString NJson::serializeNull(const QScriptValue & )
@@ -110,20 +130,14 @@ const QString NJson::serializeString(const QScriptValue & sv)
 	*/
     Q_ASSERT(sv.isString());
     QString value = sv.toString();
-    value = value.replace(QString("\\"), QString("\\\\"));
-    value = value.replace(QString("\""), QString("\\\""));
-    value = value.replace(QString("//"), QString("\\//"));
-    value = value.replace(QString("\b"), QString("\\b"));
-    value = value.replace(QString("\f"), QString("\\f"));
-    value = value.replace(QString("\n"), QString("\\n"));
-    value = value.replace(QString("\r"), QString("\\r"));
-    value = value.replace(QString("\t"), QString("\\t"));
+    value.replace(QString("\\"), QString("\\\\"));
+    value.replace(QString("\""), QString("\\\""));
+    value.replace(QString("//"), QString("\\//"));
+    value.replace(QString("\b"), QString("\\b"));
+    value.replace(QString("\f"), QString("\\f"));
+    value.replace(QString("\n"), QString("\\n"));
+    value.replace(QString("\r"), QString("\\r"));
+    value.replace(QString("\t"), QString("\\t"));
     //value = value.replace(QString("\u"), QString("\\u"));
     return QString("\"%1\"").arg(value);
-}
-
-const QString NJson::serializeUndefined(const QScriptValue & )
-{
-    Q_ASSERT(false);
-    return "";
 }

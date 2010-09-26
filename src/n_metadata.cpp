@@ -14,7 +14,7 @@
 #include <QImage>
 #include <QBuffer>
 
-// tatglib
+// taglib
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 

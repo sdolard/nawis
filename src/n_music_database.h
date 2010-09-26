@@ -33,7 +33,7 @@
 // App
 #include "n_file_suffix.h"
 #include "n_file_category.h"
-#include "n_map.h"
+#include "n_string_map.h"
 #include "n_date.h"
 #include "n_metadata.h"
 

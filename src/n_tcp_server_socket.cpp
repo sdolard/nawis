@@ -98,7 +98,7 @@ void NTcpServerSocket::read()
         case NTcpServerSocket::ssReadingData:
             data = m_sslSocket.read(m_dataToRead);
             m_dataToRead = m_dataToRead - data.length();
-            addData(data);
+            addContent(data);
             break;
         default:
             break;
@@ -167,7 +167,7 @@ void NTcpServerSocket::addLine(const QString & line)
             m_dataToRead = m_request.contentLength();
             m_state = NTcpServerSocket::ssReadingData;
         } else {
-            m_postData.clear();
+            m_content.clear();
             m_request = QHttpRequestHeader();
             disconnect();
         }
@@ -176,14 +176,14 @@ void NTcpServerSocket::addLine(const QString & line)
 }
 
 
-void NTcpServerSocket::addData(const QByteArray & data)
+void NTcpServerSocket::addContent(const QByteArray & data)
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssReadingData);
 
-    m_postData += data;
+    m_content += data;
     if (m_dataToRead == 0) {
         m_response.data().clear();
-        m_postData = QByteArray::fromPercentEncoding(m_postData);
+        m_content = QByteArray::fromPercentEncoding(m_content);
         m_state = NTcpServerSocket::ssWriting;
     }
 
@@ -198,8 +198,8 @@ bool NTcpServerSocket::requestIsComplete()
 void NTcpServerSocket::prepareResponse()
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssWriting);
-    m_response =  NTSSERVICES.response(NClientSession(m_request, m_postData, &m_sslSocket, m_ssl));
-    m_postData.clear();
+    m_response =  NTSSERVICES.response(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
+    m_content.clear();
     m_request = QHttpRequestHeader();
 }
 

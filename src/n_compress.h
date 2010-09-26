@@ -12,16 +12,12 @@ namespace NCompress_n {
         ctDeflate
     };
 
-    /*
-	* Compress a QByteArray
-	*/
+
+    // Compress a QByteArray
     QByteArray deflateData(const QByteArray & data, bool ieCompat);
 
-    /*
-	* Return string value of a compression tpe
-	*/
-    QString toString(CompressionType ct);
-
+    //Return string value of a compression tpe
+    QString toString(CompressionType ct);    
 };
 
 #endif // N_COMPRESS_H

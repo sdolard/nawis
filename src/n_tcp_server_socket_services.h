@@ -67,6 +67,7 @@ private:
     // User
     NResponse & svcUser(const NClientSession & session, NResponse & response);
     NResponse & svcPostUser(const NClientSession & session, NResponse & response);
+    NResponse & svcPutUser(const NClientSession & session, NResponse & response);
     NResponse & svcDeleteUser(const NClientSession & session, NResponse & response);
     NResponse & svcGetUser(const NClientSession & session, NResponse & response);
 

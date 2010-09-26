@@ -23,6 +23,7 @@
 //#include <QApplication>
 #include <QFile>
 #include <QSslKey>
+#include <QCryptographicHash>
 //#include <QDesktopServices>
 
 // App
@@ -354,7 +355,7 @@ void NConfig::writeDefaultConfigFile()
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_PORT_SSL_KEY, NCONFIG_SERVER_PORT_SSL_VALUE);
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY).toString().isEmpty())
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_WEB_UI_KEY, "");
-    //Login & pwd
+    //Login & password
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY, "").toString().isEmpty() )
         m_settings.setValue(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_USER_KEY, NCONFIG_SERVER_ADMIN_USER_VALUE);
     if (m_settings.value(NCONFIG_SERVER, NCONFIG_SERVER_ADMIN_PASSWORD_KEY, "").toString().isEmpty() )
@@ -738,6 +739,16 @@ const QByteArray & NConfig::dbPwdHashKey()
 {
     QMutexLocker locker(&m_dataMutex);
     return m_dbPwdHashKey;
+}
+
+const QString NConfig::toPasswordHash(const QString & password)
+{
+    if (password.isEmpty())
+        return "";
+    QCryptographicHash hash(QCryptographicHash::Md5);
+    hash.addData(password.toUtf8());
+    hash.addData(dbPwdHashKey());
+    return QString(hash.result().toHex());
 }
 
 const QSslConfiguration & NConfig::sslCfg()

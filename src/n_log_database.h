@@ -32,7 +32,7 @@
 #include <QScriptValue>
 
 // App
-#include "n_map.h"
+#include "n_string_map.h"
 
 #define NLOGDB (NLogDatabase::instance())
 

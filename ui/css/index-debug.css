@@ -202,6 +202,11 @@ a:hover {
 	background-image: url(../res/famfamfam_silk_icons_v013/icons/images.png) !important;
 }
 
+.ks-action-update-password-icon  {
+	background-image: url(../res/famfamfam_silk_icons_v013/icons/key.png)  !important;
+}
+
+
 /**
 * End -- Ext action css
 */ 

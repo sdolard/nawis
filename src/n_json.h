@@ -5,6 +5,18 @@
 #include <QString>
 #include <QByteArray>
 
+/**
+* http://www.json.org
+* JSON value are:
+*    string
+*    number
+*    object
+*    array
+*    true
+*    false
+*    null
+*/
+
 class NJson
 {
 public:
@@ -12,14 +24,11 @@ public:
     static const QByteArray serializeToQByteArray(const QScriptValue & sv);
 
 private:
+    static const QString serializeString(const QScriptValue & sv);
+    static const QString serializeNumber(const QScriptValue & sv);
     static const QString serializeObject(const QScriptValue & sv);
     static const QString serializeArray(const QScriptValue & sv);
     static const QString serializeBool(const QScriptValue & sv);
-    static const QString serializeDate(const QScriptValue & sv);
-    static const QString serializeNull(const QScriptValue & sv);
-    static const QString serializeNumber(const QScriptValue & sv);
-    static const QString serializeString(const QScriptValue & sv);
-    static const QString serializeUndefined(const QScriptValue & sv);
+    static const QString serializeNull(const QScriptValue & sv);   
 };
-
 #endif // N_JSON_H

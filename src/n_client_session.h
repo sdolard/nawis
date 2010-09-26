@@ -32,18 +32,18 @@
 
 // APP
 #include "n_compress.h"
-#include "n_map.h"
+#include "n_string_map.h"
 #include "n_services.h"
 
 class NClientSession
 {
 public:
-    NClientSession(const QHttpRequestHeader & request, const QByteArray & postData,
+    NClientSession(const QHttpRequestHeader & request, const QByteArray & content,
                    QAbstractSocket *socket, bool ssl);
     NClientSession(const NClientSession & session);
 
     const QHttpRequestHeader & request() const;
-    const QByteArray         & postData() const;
+    const QByteArray         & content() const;
     const QAbstractSocket    * socket() const;
     const QUrl               & url() const;
 
@@ -64,10 +64,11 @@ public:
     // Return true if we can compress (gzip or deflate)
     bool supportCompression(NCompress_n::CompressionType ct) const;
 
-    // Return post data to a NStringMap
-    const NStringMap postDataToMap() const;
+    // Return post content to a NStringMap
+    const NStringMap contentToMap() const;
 
     const QString host() const;
+
     int port() const;
 
     const QString urlPath() const;
@@ -84,7 +85,7 @@ public:
 
 private:
     QHttpRequestHeader m_request;
-    QByteArray         m_postData;
+    QByteArray         m_content;
     QAbstractSocket   *m_socket;
     QUrl               m_url;
     QString            m_sessionId;
