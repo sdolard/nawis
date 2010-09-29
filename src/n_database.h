@@ -96,7 +96,6 @@ public:
                      const QStringList & searches, int start = 0, int limit = 25,
                      const QString & sort = "", const QString & dir= "");
     int getUserListCount(const QStringList & searches);
-    void setUserLevel(const QString & level);
 
     // See DB_USER_ERROR_*
     int addUser(const QString & name, const QString & email, const QString & password);
@@ -105,7 +104,7 @@ public:
     bool deleteUser(const QString & id);
     bool updateUser(int id, const QString & email, const QString & password,
                     const QString & name, const QString & preferences,
-                    bool enabled);
+                    bool enabled, const QString & level);
 
 private:
     static NDatabase    *m_instance;

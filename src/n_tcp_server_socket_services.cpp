@@ -1206,20 +1206,25 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     QString name = svReadUser.property("name").toString();
     QString preferences = svReadUser.property("preferences").toString();
     QString enabled = svReadUser.property("enabled").toString();
+    QString level = svReadUser.property("level").toString();
+
 
     email = email.isEmpty() ? user["email"] : email;
     password = password.isEmpty() ? user["password"] : password;
     name = name.isEmpty() ? user["name"] : name;
     preferences = preferences.isEmpty() ? user["preferences"] : preferences;
     enabled = enabled.isEmpty() ? user["enabled"] : enabled;
+    level = level.isEmpty() ? user["level"] : level;
 
     NLOGD("email", email);
     NLOGD("password", password);
     NLOGD("name", name);
     NLOGD("preferences", preferences);
     NLOGD("enabled", enabled);
+    NLOGD("level", level);
 
-    if (!NDB.updateUser(id, email, password, name, preferences, QVariant(enabled).toBool())) {
+    if (!NDB.updateUser(id, email, password, name, preferences,
+                        QVariant(enabled).toBool(),level)) {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_ERROR_OCCURRED));
         response.setData(NJson::serializeToQByteArray(svRoot));
@@ -1236,7 +1241,8 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     svDir.setProperty("email", email);
     svDir.setProperty("name", name);
     svDir.setProperty("preferences", preferences);
-    svDir.setProperty("enabled", enabled);
+    svDir.setProperty("enabled", QVariant(enabled).toBool());
+    svDir.setProperty("level", level);
 
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;

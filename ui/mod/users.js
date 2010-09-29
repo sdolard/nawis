@@ -69,7 +69,9 @@ NMod.User.Ui.load = function(){
     						name: 'email'
     				}, {
     					name: 'name'
-    				}, {
+    				},  {
+    					name: 'level'
+    				},{
     					name: 'enabled'
     				}, {
     					name: 'password'
@@ -96,6 +98,7 @@ NMod.User.Ui.load = function(){
     					email: 'undefined',
     					name: 'undefined',
     					password: 'undefined',
+    					level: '',
     					enabled: false
     			});
     			userStore.insert(0, user);
@@ -140,18 +143,21 @@ NMod.User.Ui.load = function(){
     			if (userRecord === undefined) {
     				return;
     			}
-    			Ext.Msg.confirm("todo", "todo", function(btn, text){
-    					if (btn !== 'yes') {
-    						return;
+    			Ext.MessageBox.prompt(
+    				'Define a password', 
+    				'User password', 
+    				function(btn, text){
+    					if (btn ==='ok') {
+    						userRecord.set('password', text);
+    						userRecord.commit();
     					}
-    					
-    			}, this);
+    				}); 
     		},
     		disabled: false,
     		iconCls: 'ks-action-update-password-icon'
     });
     
-
+    
     
     /**
     * Search user Button
@@ -230,6 +236,7 @@ NMod.User.Ui.load = function(){
     var userGrid = new Ext.ux.grid.livegrid.GridPanel({
     		id: 'userGrid',
     		border: false,
+    		clicksToEdit: 2,
     		region: 'center',
     		store: userStore,
     		cm: new Ext.grid.ColumnModel([
@@ -243,8 +250,7 @@ NMod.User.Ui.load = function(){
     						xtype: 'textfield',
     						allowBlank: false
     					}
-    				},
-    				{
+    				},{
     					header: "Name",
     					dataIndex: 'name',
     					sortable: true,
@@ -253,8 +259,16 @@ NMod.User.Ui.load = function(){
     						xtype: 'textfield',
     						allowBlank: false
     					}
-    				},
-    				{
+    				},{
+    					header: "Levels",
+    					dataIndex: 'level',
+    					sortable: true,
+    					width: 300,
+    					editor: {
+    						xtype: 'textfield',
+    						allowBlank: true
+    					}
+    				}, {
     					xtype: 'booleancolumn',
     					header: "State",
     					dataIndex: 'enabled',
@@ -266,10 +280,10 @@ NMod.User.Ui.load = function(){
     					editor: {
     						xtype: 'checkbox'
     					}		
-    		}]),
+    				}
+    		]),
     		plugins: [rowEditor],
     		stripeRows: true,
-    		//autoExpandColumn: 'email',
     		loadMask: true,
     		selModel: new Ext.ux.grid.livegrid.RowSelectionModel(),
     		view: new Ext.ux.grid.livegrid.GridView({

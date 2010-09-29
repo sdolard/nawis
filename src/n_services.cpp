@@ -346,6 +346,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"email\":\"&lt;user email&gt;\", // string<br>"\
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
+         "    \"level\":\"&lt;account level&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -390,7 +391,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
-        "    \"id\":&lt;id to update&gt; // number <br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
+        "    \"password\":\"&lt;user password&gt;\",// string<br>"\
         "  }<br>"\
         "}</pre>", // content
         "JSON"\
@@ -403,6 +405,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
         "  }]<br>"\
         "}</pre>", // returns
         NULL
@@ -435,6 +438,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
         "  }<br>"\
         "]}</pre>", // returns
         NULL
@@ -546,7 +550,6 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "    \"path\":\"&lt;absolute directory path&gt;\", // optionnal, string<br>"\
         "    \"shared\":true&#124;false, // optionnal, boolean<br>"\
         "    \"recursive\":true&#124;false, // optionnal, boolean<br>"\
-        "    \"id\":&lt;id to update&gt; // number <br>"\
         "  }<br>"\
         "}</pre>", // content
         "JSON"\

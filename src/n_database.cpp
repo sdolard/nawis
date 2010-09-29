@@ -228,7 +228,8 @@ void NDatabase::createUserTable()
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS user (" \
             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "email TEXT UNIQUE NOT NULL," \
+            "email TEXT NOT NULL," \
+            "level TEXT," \
             "password TEXT NOT NULL," \
             "name TEXT NOT NULL," \
             "preferences TEXT," \
@@ -236,6 +237,7 @@ void NDatabase::createUserTable()
             ")"))
         debugLastQuery("user table creation failed", query);
 }
+
 
 void NDatabase::createTables()
 {
@@ -1381,6 +1383,7 @@ QString NDatabase::stringToUserField(const QString & field)
     if (field.isEmpty() ||
         (field != "id" &&
          field != "email"&&
+         field != "level"&&
          field != "name")
         )
         return "email";
@@ -1398,7 +1401,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
     bool selector = false;
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
-        sql += QString("(name LIKE :name%1 OR email LIKE :email%1) ").arg(i);
+        sql += QString("(name LIKE :name%1 OR email LIKE :email%1 OR level LIKE :level%1) ").arg(i);
     }
 
     // Sort and limit
@@ -1425,6 +1428,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
         QString s = searches.at(i);
         query.bindValue(QString(":email%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":name%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":level%1").arg(i), QString("%%1%").arg(s));
     }
 
     // Limit
@@ -1446,6 +1450,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
     int fieldName = query.record().indexOf("name");
     int fieldPreferences = query.record().indexOf("preferences");
     int fieldEnabled = query.record().indexOf("enabled");
+    int fieldLevel = query.record().indexOf("level");
 
     int i = 0;
     while (query.next()) {
@@ -1457,6 +1462,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
         svUser.setProperty("name", query.value(fieldName).toString());
         svUser.setProperty("preferences", query.value(fieldPreferences).toString());
         svUser.setProperty("enabled", query.value(fieldEnabled).toBool());
+        svUser.setProperty("level", query.value(fieldLevel).toString());
     }
     return true;
 }
@@ -1469,7 +1475,7 @@ int NDatabase::getUserListCount(const QStringList & searches)
     bool selector = false;
     for (int i = 0; i < searches.count(); ++i){
         addAND(sql, &selector);
-        sql += QString("(name LIKE :name%1 OR email LIKE :email%1) ").arg(i);
+        sql += QString("(name LIKE :name%1 OR email LIKE :email%1 OR level LIKE :level%1) ").arg(i);
     }
 
     if (!query.prepare(sql))
@@ -1483,6 +1489,7 @@ int NDatabase::getUserListCount(const QStringList & searches)
         QString s = searches.at(i);
         query.bindValue(QString(":email%1").arg(i), QString("%%1%").arg(s));
         query.bindValue(QString(":name%1").arg(i), QString("%%1%").arg(s));
+        query.bindValue(QString(":level%1").arg(i), QString("%%1%").arg(s));
     }
 
     if (!query.exec())
@@ -1496,10 +1503,6 @@ int NDatabase::getUserListCount(const QStringList & searches)
     return query.value(0).toInt();
 }
 
-void NDatabase::setUserLevel(const QString &)
-{
-    // TODO
-}
 
 int NDatabase::addUser(const QString & name, const QString & email, const QString & password)
 {
@@ -1527,7 +1530,7 @@ int NDatabase::addUser(const QString & name, const QString & email, const QStrin
 
 bool NDatabase::updateUser(int id, const QString & email, const QString & password,
                            const QString & name, const QString & preferences,
-                           bool enabled)
+                           bool enabled, const QString & level)
 {
     // TODO
     if (name.isEmpty() || email.isEmpty() || password.isEmpty())
@@ -1539,7 +1542,8 @@ bool NDatabase::updateUser(int id, const QString & email, const QString & passwo
                        "password=:password,"\
                        "name=:name,"\
                        "preferences=:preferences,"\
-                       "enabled=:enabled "\
+                       "enabled=:enabled, "\
+                       "level=:level "\
                        "WHERE id=:id"))
     {
         debugLastQuery("updateUser prepare failed", query);
@@ -1552,6 +1556,7 @@ bool NDatabase::updateUser(int id, const QString & email, const QString & passwo
     query.bindValue(":name", name);
     query.bindValue(":preferences", preferences);
     query.bindValue(":enabled", enabled);
+    query.bindValue(":level", level);
 
     if (!query.exec())
     {
@@ -1592,6 +1597,7 @@ const NStringMap NDatabase::getUserById(int id)
     int fieldName = query.record().indexOf("name");
     int fieldPreferences = query.record().indexOf("preferences");
     int fieldEnabled = query.record().indexOf("enabled");
+    int fieldLevel = query.record().indexOf("level");
 
     if (!query.first())
         return user;
@@ -1602,6 +1608,7 @@ const NStringMap NDatabase::getUserById(int id)
     user["name"] = query.value(fieldName).toString();
     user["preferences"] = query.value(fieldPreferences).toString();
     user["enabled"] = query.value(fieldEnabled).toBool();
+    user["level"] = query.value(fieldLevel).toString();
 
     return user;
 }
@@ -1637,6 +1644,7 @@ const NStringMap NDatabase::getUserByEmail(const QString & email)
     int fieldName = query.record().indexOf("name");
     int fieldPreferences = query.record().indexOf("preferences");
     int fieldEnabled = query.record().indexOf("enabled");
+    int fieldLevel = query.record().indexOf("level");
 
     if (!query.first())
         return user;
@@ -1647,6 +1655,7 @@ const NStringMap NDatabase::getUserByEmail(const QString & email)
     user["name"] = query.value(fieldName).toString();
     user["preferences"] = query.value(fieldPreferences).toString();
     user["enabled"] = query.value(fieldEnabled).toBool();
+    user["level"] = query.value(fieldLevel).toString();
 
     return user;
 }
