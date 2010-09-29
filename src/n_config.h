@@ -47,36 +47,36 @@ public:
     // TODO: disable auth, but listen only on localhost/127.0.0.1
     int serverPort();
     int serverSslPort();
-    const QDir serverPub();
-    bool isSslServerEnabled();
-    bool isOnlySslServerEnabled();
-    const QString AdminUser();
-    const QString AdminPassword();
-    const NDirList sharedDirectories();
-    int addSharedDirectory(const NDir & dir);
+    const QDir serverPub() const;
+    bool isSslServerEnabled()const;
+    bool isOnlySslServerEnabled() const;
+    const QString AdminUser() const;
+    const QString AdminPassword() const;
+    const NDirList sharedDirectories() const;
+    int addSharedDirectory(const NDir & dir) ;
     const NDir modifySharedDirectory(int id, const NDir & dir);
     void removeSharedDirectory(int id);
-    void dumpSharedDirectoriesConfig();
+    void dumpSharedDirectoriesConfig() const;
 
-    const NFileSuffixList & fileSuffixes();
-    const QString & referenceServer();
+    const NFileSuffixList & fileSuffixes() const;
+    const QString & referenceServer() const;
 
-    int dirUpdateDelay();
-    const QDateTime lastDirUpdate();
+    int dirUpdateDelay() const;
+    const QDateTime lastDirUpdate() const;
     void setLastDirUpdateDone();
     void invalidLastDirUpdate();
-    bool isLastDirUpdateValid();
+    bool isLastDirUpdateValid() const;
 
-    const QString dirFingerPrint();
+    const QString dirFingerPrint() const;
     void setDirFingerPrint(const QString & fp);
     void clearDirUpdateData();
 
     // Returns a password generated with dbPwdHashKey (cf config file)
     // Return an empty string if password is empty
-    const QString toPasswordHash(const QString & password);
+    const QString toPasswordHash(const QString & password) const;
 
-    const QSslConfiguration & sslCfg();
-    quint64 fileBufferSize();
+    const QSslConfiguration & sslCfg() const;
+    quint64 fileBufferSize() const;
 
 signals:
     void configFileChanged();
@@ -98,7 +98,7 @@ private:
     QString                m_serverAdminPassword;
     NDirList               m_sharedDirectories;
     NFileSuffixList        m_fileSuffixes;
-    QMutex                 m_dataMutex;
+    mutable QMutex         m_dataMutex;
     QString                m_referenceServer;
     int                    m_dirUpdateDelay;
     int                    m_dirWatchDelay;
@@ -115,7 +115,7 @@ private:
     void save();
     void writeDefaultConfigFile();
     void genSslCfg();
-    const QByteArray & dbPwdHashKey();
+    const QByteArray & dbPwdHashKey() const;
 
 private slots:
     void onConfigFileChanged();

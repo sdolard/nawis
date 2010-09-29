@@ -24,9 +24,7 @@
 // Qt
 #include <QString>
 #include <QStringList>
-#include <QMutex>
 #include <QThread>
-
 
 #define NLOGM(a, b)         NLog::log(a, b, NLog::ltMsg)
 #define NLOGMD(a, b)        NLog::directLog(a, b, NLog::ltMsg)
@@ -109,5 +107,24 @@ private:
     NLog *m_log;
 };
 
+inline void logMessage(const QString & context, const QString & msg) {
+    NLog::log(context, msg, NLog::ltMsg);
+}
+
+inline void logMessageDirect(const QString & context, const QString & msg) {
+    NLog::directLog(context, msg, NLog::ltMsg);
+}
+
+inline void logDebug(const QString & context, const QString & msg) {
+#ifdef DEBUG
+    NLog::log(context, msg, NLog::ltDebug);
+#endif DEBUG
+}
+
+inline void logDebugDirect(const QString & context, const QString & msg) {
+#ifdef DEBUG
+    NLog::directLog(context, msg, NLog::ltDebug);
+#endif DEBUG
+}
 
 #endif // N_LOG_H

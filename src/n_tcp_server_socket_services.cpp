@@ -897,16 +897,32 @@ NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session
 
 
     int level = AUTH_LEVEL_USER;
+    bool authSucceed = false;
+    if (NCONFIG.AdminUser() == login) { // Admin auth
+        // Admin level login can only work with NCONFIG.AdminUser() (cf another account with same login)
+        if (NCONFIG.AdminPassword() == password)
+        {
+            level = level | AUTH_LEVEL_ADMIN;
+            authSucceed = true;
+        }
+    } else { // User auth
+        NStringMap user = NDB.getUserByEmail(login);
+        logDebug("svcPostAuth", QString("password: %1").arg(password));
+        logDebug("svcPostAuth", QString("user[\"password\"]: %1").arg(user["password"]));
+        logDebug("svcPostAuth", QString("NCONFIG.toPasswordHash(user[\"password\"]): %1").arg(NCONFIG.toPasswordHash(user["password"])));
+        authSucceed = user.count() > 0 && user["password"] == NCONFIG.toPasswordHash(password);
+    }
+
     QScriptValue svRoot = se.newObject();
+    if (!authSucceed){
+        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
+        svRoot.setProperty(RSP_MSG, QScriptValue("Authentication failed"));
 
-    // TODO: implement non admin auth
-
-    // Admin auth
-    if (NCONFIG.AdminUser() == login &&
-        NCONFIG.AdminPassword() == password)
-    {
-        level = level | AUTH_LEVEL_ADMIN;
-
+        NLOGM("Authentication login failed", QString("%1@%2; user agent: %3").
+              arg(login).
+              arg(session.peerAddress()).
+              arg(session.userAgent()));
+    } else {
         // Some one try to auth many time on the same IP
         // Other browser, IP nat ? So access is granted, but we log
         QString sessionId = m_authSessionHash.sessionId(session.peerAddress(), login);
@@ -935,15 +951,8 @@ NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session
               arg(authSession.address()).
               arg(NTcpServerAuthSession::levelToString(authSession.level())).
               arg(authSession.userAgent()));
-    } else {
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-        svRoot.setProperty(RSP_MSG, QScriptValue("Authentication failed"));
-
-        NLOGM("Authentication login failed", QString("%1@%2; user agent: %3").
-              arg(login).
-              arg(session.peerAddress()).
-              arg(session.userAgent()));
     }
+
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
@@ -1208,6 +1217,7 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     QString enabled = svReadUser.property("enabled").toString();
     QString level = svReadUser.property("level").toString();
 
+    logDebug("svcPutUser", QString("NCONFIG.toPasswordHash(svReadUser.property(\"password\").toString()): %1").arg(password));
 
     email = email.isEmpty() ? user["email"] : email;
     password = password.isEmpty() ? user["password"] : password;

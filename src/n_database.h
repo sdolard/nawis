@@ -43,7 +43,7 @@
 
 #define NDB (NDatabase::instance())
 
-// TODO: create mutex  cos of thread access on public method only
+// TODO: create mutex cos of thread access on public method only
 class NDatabase: public QObject {
     Q_OBJECT
 public:

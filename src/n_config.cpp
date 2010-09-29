@@ -325,7 +325,8 @@ bool NConfig::load()
                                         NCONFIG_ADV_DIR_UPD_DELAY_VALUE).toInt();
     m_lastDirUpdate = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_LAST_DIR_UPD_KEY).toDateTime();
     m_dirFingerPrint = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_DIR_FINGER_PRINT_KEY).toString();
-    m_dbPwdHashKey = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_DB_PWD_HASH_KEY).toByteArray();
+    m_dbPwdHashKey = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_DB_PWD_HASH_KEY,
+                                      NCONFIG_ADV_DB_PWD_HASH_VALUE).toByteArray();
     m_fileBufferSize = m_settings.value(NCONFIG_ADV, NCONFIG_ADV_FILE_BUFFER_SIZE_KEY,
                                         NCONFIG_ADV_FILE_BUFFER_SIZE_VALUE).toLongLong();
 
@@ -560,38 +561,38 @@ int NConfig::serverSslPort()
     return m_serverSslPort;
 }
 
-const QDir NConfig::serverPub()
+const QDir NConfig::serverPub() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_serverPub;
 }
 
-bool NConfig::isSslServerEnabled()
+bool NConfig::isSslServerEnabled() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_sslServerEnabled;
 }
 
-bool NConfig::isOnlySslServerEnabled()
+bool NConfig::isOnlySslServerEnabled() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_onlySslServerEnabled;
 }
 
-const QString NConfig::AdminUser()
+const QString NConfig::AdminUser() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_serverAdminUser;
 }
 
-const QString NConfig::AdminPassword()
+const QString NConfig::AdminPassword() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig", "m_dataMutex NConfig::AdminPassword");
     return m_serverAdminPassword;
 }
 
-const NDirList NConfig::sharedDirectories()
+const NDirList NConfig::sharedDirectories() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_sharedDirectories;
@@ -625,34 +626,34 @@ void NConfig::removeSharedDirectory(int id)
     }
 }
 
-const NFileSuffixList & NConfig::fileSuffixes()
+const NFileSuffixList & NConfig::fileSuffixes() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::fileSuffixes");
     return m_fileSuffixes;
 }
 
-const QString & NConfig::referenceServer()
+const QString & NConfig::referenceServer() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::referenceServer");
     return m_referenceServer;
 }
 
-int NConfig::dirUpdateDelay()
+int NConfig::dirUpdateDelay() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::dirUpdateDelay");
     return m_dirUpdateDelay;
 }
 
-const QDateTime NConfig::lastDirUpdate()
+const QDateTime NConfig::lastDirUpdate() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::lastDirUpdate");
     return m_lastDirUpdate;
 }
-bool NConfig::isLastDirUpdateValid()
+bool NConfig::isLastDirUpdateValid() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::isLastDirUpdateValid");
@@ -675,7 +676,7 @@ void NConfig::invalidLastDirUpdate()
     save();
 }
 
-const QString NConfig::dirFingerPrint()
+const QString NConfig::dirFingerPrint() const
 {
     QMutexLocker locker(&m_dataMutex);
     //NLOGD("NConfig","m_dataMutex NConfig::dirFingerPrint");
@@ -700,7 +701,7 @@ void NConfig::clearDirUpdateData()
 }
 
 
-quint64 NConfig::fileBufferSize()
+quint64 NConfig::fileBufferSize() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_fileBufferSize;
@@ -716,7 +717,7 @@ void NConfig::onConfigFileChanged()
         emit configFileChanged();
 }
 
-void NConfig::dumpSharedDirectoriesConfig()
+void NConfig::dumpSharedDirectoriesConfig() const
 {
     QMutexLocker locker(&m_dataMutex);
     NLOGD("NConfig","m_dataMutex NConfig::dumpSharedDirectoriesConfig");
@@ -735,13 +736,13 @@ void NConfig::dumpSharedDirectoriesConfig()
               );
 }
 
-const QByteArray & NConfig::dbPwdHashKey()
+const QByteArray & NConfig::dbPwdHashKey() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_dbPwdHashKey;
 }
 
-const QString NConfig::toPasswordHash(const QString & password)
+const QString NConfig::toPasswordHash(const QString & password) const
 {
     if (password.isEmpty())
         return "";
@@ -751,7 +752,7 @@ const QString NConfig::toPasswordHash(const QString & password)
     return QString(hash.result().toHex());
 }
 
-const QSslConfiguration & NConfig::sslCfg()
+const QSslConfiguration & NConfig::sslCfg() const
 {
     QMutexLocker locker(&m_dataMutex);
     return m_sslCfg;

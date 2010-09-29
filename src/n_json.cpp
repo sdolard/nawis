@@ -36,6 +36,7 @@ const QString NJson::serialize(const QScriptValue & sv)
     if (sv.isNull())
         return serializeNull(sv);
 
+    // Those are not defined in json
     if (sv.isDate())
         Q_ASSERT_X("NJson::serialize", "sv.isDate()", false);
     if (sv.isError())

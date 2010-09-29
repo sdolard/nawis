@@ -18,15 +18,10 @@
  *
  */
 // std
-#include <iostream> 
+#include <iostream>
 
 // Qt
-#include <QMutexLocker>
 #include <QDateTime>
-#include <QtGlobal>
-#include <QPair>
-#include <QHostInfo>
-#include <QThread>
 #include <QApplication>
 
 #include "n_log_database.h"

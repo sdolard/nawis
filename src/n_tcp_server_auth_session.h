@@ -50,6 +50,7 @@ private:
 
 };
 
+// TODO: limit session number?
 class NTcpServerAuthSessionHash: public QHash<QString, NTcpServerAuthSession>
 {
 public:
