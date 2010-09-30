@@ -54,15 +54,15 @@ NFileSuffix NFileSuffixList::category(const QFileInfo & fi) const
 
 void NFileSuffixList::dump() const
 {
-    NLOGD("NFileSuffixList", "Managed suffix:");
+    logDebug("NFileSuffixList", "Managed suffix:");
     QHashIterator<QString, NFileSuffix> i(*this);
     while (i.hasNext()) {
         i.next();
         NFileSuffix suffix = i.value();
-        NLOGD("NFileSuffixList", QString("  key:%1").arg(i.key()));
-        NLOGD("NFileSuffixList", QString("  name:%1").arg(suffix.name()));
-        NLOGD("NFileSuffixList", QString("    shared:%1").arg(QVariant(suffix.shared()).toString()));
-        NLOGD("NFileSuffixList", QString("    category:%1").arg(NFileCategory_n::fileCategoryName(suffix.category())));
+        logDebug("NFileSuffixList", QString("  key:%1").arg(i.key()));
+        logDebug("NFileSuffixList", QString("  name:%1").arg(suffix.name()));
+        logDebug("NFileSuffixList", QString("    shared:%1").arg(QVariant(suffix.shared()).toString()));
+        logDebug("NFileSuffixList", QString("    category:%1").arg(NFileCategory_n::fileCategoryName(suffix.category())));
     }
 }
 

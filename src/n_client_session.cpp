@@ -68,7 +68,7 @@ const QString NClientSession::getSessionId() const {
     QStringList cookieList = QString(m_request.value("Cookie")).split("; ", QString::SkipEmptyParts);
     for(int i = 0; i < cookieList.count(); ++i)
     {
-        //NLOGD("getSessionId(), cookiePair", cookieList.at(i));
+        //logDebug("getSessionId(), cookiePair", cookieList.at(i));
         QStringList cookie = cookieList.at(i).split("=");
         if (cookie.count() > 2 || cookie.count() == 0)
             return "";

@@ -15,7 +15,7 @@ bool NTcpServerAuthSession::isExpired() const
 {
     int lastActivity = m_lastUsed.secsTo ( QDateTime::currentDateTime() );
     if (lastActivity >= 300) {
-        NLOGM("Authentication expired", QString("%1@%2; user agent: %3").
+        logMessage("Authentication expired", QString("%1@%2; user agent: %3").
               arg(m_login).
               arg(m_address).
               arg(m_userAgent));

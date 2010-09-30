@@ -11,6 +11,7 @@
 #include "n_log.h"
 #include "n_tcp_server_socket.h"
 #include "n_tcp_server_socket_services.h"
+#include "n_tcp_server_socket_auth_services.h"
 
 #include "n_tcp_server.h"
 
@@ -81,7 +82,7 @@ void NSocketManager::newConnection(int socketDescriptor)
     NTcpServerSocket *socket = new NTcpServerSocket(m_ssl);
     if (!socket->setSocketDescriptor(socketDescriptor))
     {
-        NLOGM("NTcpServerThread",
+        logMessage("NTcpServerThread",
               QString("bindSocketDescriptors() setSocketDescriptor failed (ssl: %1)").
               arg(QVariant(m_ssl).toString()));
         delete socket;
@@ -90,5 +91,5 @@ void NSocketManager::newConnection(int socketDescriptor)
 
 void NSocketManager::onTimeToChechAuth()
 {
-    NTSSERVICES.removeExpiredSession();
+    getAuthServices().removeExpiredSession();
 }

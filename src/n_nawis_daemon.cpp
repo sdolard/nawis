@@ -38,7 +38,7 @@ void NDaemon::start()
 
     NLog::start(); // log thead init
 
-    NLOGM("Server", "--------------- new session ---------------");
+    NLog::log("Server", "--------------- new session ---------------");
 
     if (!NSERVER.start())
         app->quit();
@@ -61,7 +61,7 @@ void NDaemon::resume()
 
 void NDaemon::processCommand(int code)
 {
-    NLOGDD("processCommand", QString::number(code));
+    logDebugDirect("processCommand", QString::number(code));
 }
 
 
@@ -76,5 +76,5 @@ NSingleAppMsgHandler::NSingleAppMsgHandler()
 
 void NSingleAppMsgHandler::newMessage(const QString & message)
 {
-    NLOGD("NSingleAppMsgHandler::newMessage", message);
+    logDebug("NSingleAppMsgHandler::newMessage", message);
 }

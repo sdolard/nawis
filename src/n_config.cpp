@@ -165,7 +165,7 @@ void NConfig::save()
 bool NConfig::load()
 {
     QMutexLocker locker(&m_dataMutex);
-    NLOGD("NConfig", "m_dataMutex NConfig::load");
+    logDebug("NConfig", "m_dataMutex NConfig::load");
     if (!m_settings.loadFromFile())
     {
         m_fileLoaded = false;
@@ -588,7 +588,7 @@ const QString NConfig::AdminUser() const
 const QString NConfig::AdminPassword() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::AdminPassword");
+    //logDebug("NConfig", "m_dataMutex NConfig::AdminPassword");
     return m_serverAdminPassword;
 }
 
@@ -618,7 +618,7 @@ const NDir NConfig::modifySharedDirectory(int id, const NDir & dir)
 void NConfig::removeSharedDirectory(int id)
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig", "m_dataMutex NConfig::removeSharedDirectory");
+    //logDebug("NConfig", "m_dataMutex NConfig::removeSharedDirectory");
     if (id < m_sharedDirectories.count())
     {
         m_sharedDirectories.removeAt(id);
@@ -629,34 +629,34 @@ void NConfig::removeSharedDirectory(int id)
 const NFileSuffixList & NConfig::fileSuffixes() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::fileSuffixes");
+    //logDebug("NConfig","m_dataMutex NConfig::fileSuffixes");
     return m_fileSuffixes;
 }
 
 const QString & NConfig::referenceServer() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::referenceServer");
+    //logDebug("NConfig","m_dataMutex NConfig::referenceServer");
     return m_referenceServer;
 }
 
 int NConfig::dirUpdateDelay() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::dirUpdateDelay");
+    //logDebug("NConfig","m_dataMutex NConfig::dirUpdateDelay");
     return m_dirUpdateDelay;
 }
 
 const QDateTime NConfig::lastDirUpdate() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::lastDirUpdate");
+    //logDebug("NConfig","m_dataMutex NConfig::lastDirUpdate");
     return m_lastDirUpdate;
 }
 bool NConfig::isLastDirUpdateValid() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::isLastDirUpdateValid");
+    //logDebug("NConfig","m_dataMutex NConfig::isLastDirUpdateValid");
     return m_lastDirUpdate.isValid() &&
             m_lastDirUpdate.addMSecs(m_dirUpdateDelay) > QDateTime::currentDateTime();
 }
@@ -664,14 +664,14 @@ bool NConfig::isLastDirUpdateValid() const
 void NConfig::setLastDirUpdateDone()
 {
     QMutexLocker locker(&m_dataMutex);
-    NLOGD("NConfig","m_dataMutex NConfig::setLastDirUpdateDone");
+    logDebug("NConfig","m_dataMutex NConfig::setLastDirUpdateDone");
     m_lastDirUpdate = QDateTime::currentDateTime();
     save();
 }
 void NConfig::invalidLastDirUpdate()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::invalidLastDirUpdate");
+    //logDebug("NConfig","m_dataMutex NConfig::invalidLastDirUpdate");
     m_lastDirUpdate = QDateTime();
     save();
 }
@@ -679,14 +679,14 @@ void NConfig::invalidLastDirUpdate()
 const QString NConfig::dirFingerPrint() const
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::dirFingerPrint");
+    //logDebug("NConfig","m_dataMutex NConfig::dirFingerPrint");
     return m_dirFingerPrint;
 }
 
 void NConfig::setDirFingerPrint(const QString & fp)
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::setDirFingerPrint");
+    //logDebug("NConfig","m_dataMutex NConfig::setDirFingerPrint");
     m_dirFingerPrint = fp;
     save();
 }
@@ -694,7 +694,7 @@ void NConfig::setDirFingerPrint(const QString & fp)
 void NConfig::clearDirUpdateData()
 {
     QMutexLocker locker(&m_dataMutex);
-    //NLOGD("NConfig","m_dataMutex NConfig::clearDirUpdateData");
+    //logDebug("NConfig","m_dataMutex NConfig::clearDirUpdateData");
     m_dirFingerPrint.clear();
     m_lastDirUpdate = QDateTime();
     save();
@@ -720,15 +720,15 @@ void NConfig::onConfigFileChanged()
 void NConfig::dumpSharedDirectoriesConfig() const
 {
     QMutexLocker locker(&m_dataMutex);
-    NLOGD("NConfig","m_dataMutex NConfig::dumpSharedDirectoriesConfig");
+    logDebug("NConfig","m_dataMutex NConfig::dumpSharedDirectoriesConfig");
     if (m_sharedDirectories.isEmpty())
     {
-        NLOGM("Server", tr("There is no shared directory"));
+        logMessage("Server", tr("There is no shared directory"));
         return;
     }
-    NLOGM("NServer", tr("Shared directories are: "));
+    logMessage("NServer", tr("Shared directories are: "));
     foreach (NDir NDir, m_sharedDirectories)
-        NLOGM("Server", tr("  %1, %2, %3, %4").
+        logMessage("Server", tr("  %1, %2, %3, %4").
               arg(NDir.dir().absolutePath()).
               arg(NDir.shared() ? "shared": "not shared").
               arg(NDir.recursive()? "recursive": "not recursive").
@@ -771,18 +771,18 @@ void NConfig::genSslCfg()
     * Ca certificate
     */
     // "/Users/sebastiend/Documents/dev/nawis/ca/sebastiend.crt"
-    /*NLOGD("genSslCfg", m_serverSslCaCertificate);
-	 NLOGD("genSslCfg", m_serverSslLocalCertificate);
-	 NLOGD("genSslCfg", m_serverSslPrivateKey);
-	 NLOGD("genSslCfg", m_serverSslPrivateKeyPwd);*/
+    /*logDebug("genSslCfg", m_serverSslCaCertificate);
+         logDebug("genSslCfg", m_serverSslLocalCertificate);
+         logDebug("genSslCfg", m_serverSslPrivateKey);
+         logDebug("genSslCfg", m_serverSslPrivateKeyPwd);*/
     m_sslCfg.setCaCertificates(QSslCertificate::fromPath(m_serverSslCaCertificate));
     foreach (QSslCertificate cert, m_sslCfg.caCertificates())
     {
-        NLOGD("NConfig::genSslCfg",
+        logDebug("NConfig::genSslCfg",
               QString("Certificat found > Organization: %1").arg(cert.issuerInfo(QSslCertificate::Organization)));
     }
     if (m_sslCfg.caCertificates().count() == 0 ){
-        NLOGM("NConfig::genSslCfg",
+        logMessage("NConfig::genSslCfg",
               QString("No ssl certificat valid found: %1").arg(m_serverSslCaCertificate));
         m_sslCfg = QSslConfiguration();
         return;
@@ -795,7 +795,7 @@ void NConfig::genSslCfg()
     QFile file(m_serverSslPrivateKey);
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {
-        NLOGM("NConfig::genSslCfg",
+        logMessage("NConfig::genSslCfg",
               QString("Could not open private key: %1").arg(file.fileName()));
         m_sslCfg = QSslConfiguration();
         return;
@@ -806,7 +806,7 @@ void NConfig::genSslCfg()
     */
     QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, m_serverSslPrivateKeyPwd.toUtf8());
     if (key.isNull()){
-        NLOGM("NConfig::genSslCfg", QString("No ssl private key valid found: %1").arg(m_serverSslPrivateKey));
+        logMessage("NConfig::genSslCfg", QString("No ssl private key valid found: %1").arg(m_serverSslPrivateKey));
         m_sslCfg = QSslConfiguration();
         return;
     }
@@ -821,7 +821,7 @@ void NConfig::genSslCfg()
     file.setFileName(m_serverSslLocalCertificate);
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen()) {
-        NLOGM("NConfig::genSslCfg",
+        logMessage("NConfig::genSslCfg",
               QString("Could not open local certificate: %1").arg(file.fileName()));
         m_sslCfg = QSslConfiguration();
         return;
@@ -832,7 +832,7 @@ void NConfig::genSslCfg()
     */
     QSslCertificate localCertificate(&file);
     if (!localCertificate.isValid()){
-        NLOGM("NConfig::genSslCfg", "Local certificate is not valid: %1.");
+        logMessage("NConfig::genSslCfg", "Local certificate is not valid: %1.");
         m_sslCfg = QSslConfiguration();
         return;
     }

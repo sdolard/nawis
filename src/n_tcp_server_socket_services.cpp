@@ -43,28 +43,13 @@
 #include "n_image.h"
 #include "n_config.h"
 #include "n_server.h"
-//#include "n_stream_writer.h"
 #include "n_json.h"
 #include "n_file_category.h"
+#include "n_tcp_server_socket_auth_services.h"
 
 #include "n_tcp_server_socket_services.h"
 
 // See http://www.w3schools.com/XML/xml_xsl.asp for formating xml in browser
-
-#define RSP_SUCCESS                    "success"
-#define RSP_MSG                        "message"
-#define RSP_MSG_LOADED                 "Data loaded"
-#define RSP_MSG_NO_RESULTS             "No results"
-#define RSP_MSG_N_DELETED              "%1 deleted"
-#define RSP_MSG_N_UPDATED              "Data %1 updated"
-#define RSP_MSG_INVALID_JSON           "invalid JSON"
-#define RSP_MSG_INVALID_INDEX          "invalid index"
-#define RSP_MSG_INVALID_INDEX_PROPERTY "invalid index property"
-#define RSP_MSG_INVALID_USER           "invalid user"
-#define RSP_MSG_ERROR_OCCURRED         "An error occured"
-#define RSP_COUNT                      "totalcount"
-#define RSP_DATA                       "data"
-#define RSP_RESULT                     "result"
 
 
 NTcpServerSocketServices * NTcpServerSocketServices::m_instance = NULL;
@@ -152,28 +137,28 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         // POST, GET, DELETE, PUT, END > five elements in array
         NService_n::NService services[5];
         session.getServices(services);
-        return svcGetServiceHelp(services, response);
+        return NTcpServerSocketService::getHelp(services, response);
     }
 
     switch (service.id)
     {
     case SVC_API:
-        return svcGetFullServiceHelp(NService_n::nsAPIServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIServices, response);
 
     case SVC_API_CFG:
-        return svcGetFullServiceHelp(NService_n::nsAPICfgServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPICfgServices, response);
 
     case SVC_API_CFG_SHARED_DIR:
         return svcSharedDir(session, response);
 
     case SVC_API_FILE:
-        return svcGetFullServiceHelp(NService_n::nsAPIFileServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIFileServices, response);
 
     case SVC_API_DOWNLOAD:
         return svcGetFileDownload(statusCode, session, response);
 
     case SVC_API_DUPLICATED:
-        return svcGetFullServiceHelp(NService_n::nsAPIDuplicatedServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIDuplicatedServices, response);
 
     case SVC_API_DUPLICATED_FILE:
         return svcGetDuplicatedFile(session, response, NFileCategory_n::fcAll);
@@ -209,7 +194,7 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return svcLog(session, response);
 
     case SVC_API_MUSIC:
-        return svcGetFullServiceHelp(NService_n::nsAPIMusicServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIMusicServices, response);
 
     case SVC_API_MUSIC_ALBUM:
         return svcGetMusicAlbum(session, response);
@@ -233,7 +218,7 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return svcGetNop(response);
 
     case SVC_API_AUTH:
-        return svcAuth(session, response);
+        return NTcpServerSocketAuthServices::instance().auth(session, response);
 
     case SVC_API_USER:
         return svcUser(session, response);
@@ -242,10 +227,10 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return svcGetFavicon(response);
 
     case SVC_HELP:
-        return svcGetFullServiceHelp(NService_n::nsServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsServices, response);
 
     case SVC_API_SEARCH:
-        return svcGetFullServiceHelp(NService_n::nsAPISearchServices, response);
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPISearchServices, response);
 
     case SVC_API_SEARCH_FILE:
         return svcGetSearch(session, response, NFileCategory_n::fcAll);
@@ -280,53 +265,6 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
 }
 
 
-NResponse & NTcpServerSocketServices::svcGetFullServiceHelp(NService_n::NService* rootServices, NResponse & response)
-{
-    int size = 0;
-    NService_n::NService services[999];
-    NService_n::getAllServices(rootServices, services, &size);
-    return svcGetServiceHelp(services, response);
-}
-
-NResponse & NTcpServerSocketServices::svcGetServiceHelp(NService_n::NService* services, NResponse & response)
-{
-    Q_ASSERT(services);
-
-    QString htmlHelpTemplate = "<html><head><title>%1</title>"\
-                               "</head><body>%2</body></html>";
-    htmlHelpTemplate = htmlHelpTemplate.arg(QString("nawis server api %1 %2").arg(NAWIS_VERSION).arg(NAWIS_BUILD));
-    QString htmlCommandTemplate = "<h2>Command: %1</h2>";
-    QString servicesHelp;
-    int i = 0;
-    while (true)
-    {
-        if (services[i].id == SVC_NONE)
-            break;
-        servicesHelp += htmlCommandTemplate.arg(services[i].fullService);
-        servicesHelp += QString("<p>%1<br><b>Appears in</b>: %2<br>"\
-                                "<b>Authentication required</b>: %3<br>"\
-                                "<b>Required level</b>: \"%4\"<br>"\
-                                "<b>HTTP method</b>: %5<br>"\
-                                "<b>URL params</b>:<br> %6<br>"\
-                                "<b>Post data</b>: %7<br>"\
-                                "<b>Return</b>: %8</p>").
-                arg(services[i].comment).
-                arg(services[i].history).
-                arg(services[i].authRequired ? "yes" : "no").
-                arg(NTcpServerAuthSession::levelToString(services[i].requiredLevel)).
-                arg(services[i].httpMethod).
-                arg(services[i].params.isEmpty() ? "none": services[i].params).
-                arg(services[i].content.isEmpty() ? "none": services[i].content).
-                arg(services[i].returns);
-
-        servicesHelp += "<hr />";
-        ++i;
-    }
-    response.setData(htmlHelpTemplate.arg(servicesHelp).toUtf8());
-    response.httpHeader().setContentType("text/html");
-    return response;
-}
-
 NResponse & NTcpServerSocketServices::svcGetFavicon(NResponse & response)
 {
     response.httpHeader().setContentType("image/x-icon");
@@ -358,7 +296,7 @@ NResponse & NTcpServerSocketServices::svcGetUI(int *statusCode,
     QString filename("/index.html");
     QString uiPath = filename;
     QString path = session.urlPath();
-    //NLOGD("path", path);
+    //logDebug("path", path);
 
     path.remove(0, 3); // We remove wanted "/ui" begin path chars
     if (!path.isEmpty())
@@ -366,7 +304,7 @@ NResponse & NTcpServerSocketServices::svcGetUI(int *statusCode,
         filename = path;
         uiPath = filename;
     }
-    //NLOGD("uiPath", uiPath);
+    //logDebug("uiPath", uiPath);
 
     // Directory traversal test
     filename.prepend(NCONFIG.serverPub().absolutePath()); // to local file
@@ -395,20 +333,20 @@ NResponse & NTcpServerSocketServices::svcGetUI(int *statusCode,
     QString fileSuffix = fi.suffix();
 
     // Redirection to ui/index.hlml if not authenticated
-    //NLOGD("fileSuffix", fileSuffix);
-    //NLOGD("nawis_sessionid", session.sessionId());
-    //NLOGD("path", path);
-    //NLOGD("m_authSessionHash.isValid(session)", QVariant(m_authSessionHash.isValid(session)).toString());
+    //logDebug("fileSuffix", fileSuffix);
+    //logDebug("nawis_sessionid", session.sessionId());
+    //logDebug("path", path);
+    //logDebug("m_authSessionHash.isValid(session)", QVariant(m_authSessionHash.isValid(session)).toString());
     if (fileSuffix == "html" &&
         uiPath != "/index.html" &&
-        !m_authSessionHash.isValid(session))
+        !getAuthServices().isSessionValid(session))
     {
         return svcRedirectToTUI(statusCode, session, response);
     }
 
     QString gzippedFilename = filename + ".gz";
     QFileInfo gzipFi(gzippedFilename);
-    //NLOGD("NTcpServerSocketServices::svcUI filename", filename);
+    //logDebug("NTcpServerSocketServices::svcUI filename", filename);
     if (session.supportCompression(NCompress_n::ctGZip) && gzipFi.exists())
     {
         fi = gzipFi;
@@ -454,8 +392,8 @@ NResponse & NTcpServerSocketServices::svcGetSearch(const NClientSession & sessio
     QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for file: \"%2\"; category: \"%3\"; start: %4; limit: %5, sort:\"%6\", dir:\"%7\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
@@ -489,8 +427,8 @@ NResponse & NTcpServerSocketServices::svcGetDuplicatedFile(const NClientSession 
     QString sort = session.url().queryItemValue("sort");
     QString dir = session.url().queryItemValue("dir");
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for (duplicated) \"%2\"; category: \"%3\"; start: %4; limit: %5, sort:\"%6\", dir:\"%7\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(category).arg(start).arg(limit).arg(sort).arg(dir));
 
@@ -605,7 +543,7 @@ NResponse & NTcpServerSocketServices::svcGetPictureThumb(const NClientSession & 
 
 NResponse & NTcpServerSocketServices::setResponseStatus(int statusCode, NResponse & response)
 {		
-    /*NLOGD("NTcpServerSocketServices", QString("setResponseStatus: %1").
+    /*logDebug("NTcpServerSocketServices", QString("setResponseStatus: %1").
 	 arg(NHttp_n::statusCodeToString(statusCode)));
 	 */
     response.httpHeader().setStatusLine(statusCode, NHttp_n::statusCodeToString(statusCode));
@@ -701,7 +639,7 @@ NResponse & NTcpServerSocketServices::svcGetSharedDir(const NClientSession &, NR
 
 NResponse & NTcpServerSocketServices::svcPostSharedDir(const NClientSession & session, NResponse & response)
 {		
-    //NLOGD("NTcpServerSocketServices::svcPostSharedDir", session.postData());
+    //logDebug("NTcpServerSocketServices::svcPostSharedDir", session.postData());
 
     QScriptEngine se;
     se.evaluate("var data = " + QString::fromUtf8(session.content()));
@@ -726,26 +664,26 @@ NResponse & NTcpServerSocketServices::svcPostSharedDir(const NClientSession & se
     svDir.setProperty("recursive", dir.recursive());
     svDir.setProperty("shared", dir.shared());
     svDir.setProperty("exists", dir.exists());
-    //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+    //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
 
 NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & session, NResponse & response)
 {
-    //NLOGD("NTcpServerSocketServices::svcPutSharedDir", session.postData());
+    //logDebug("NTcpServerSocketServices::svcPutSharedDir", session.postData());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
 
     QString strId = session.resource();
-    NLOGD("svcPutSharedDir strId", strId);
+    logDebug("svcPutSharedDir strId", strId);
     bool ok;
     int id = strId.toInt(&ok);
     if (!ok)
     {
         svRoot.setProperty(RSP_SUCCESS, QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_INDEX_PROPERTY));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -754,8 +692,8 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
     if (se.hasUncaughtException()){
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-        NLOGD("NTcpServerSocketServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
-        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        logDebug("NTcpServerSocketServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
+        logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -765,7 +703,7 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_INDEX));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -775,9 +713,9 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
     QString recursive = svReadDir.property("recursive").toString();
     QString shared = svReadDir.property("shared").toString();
 
-    NLOGD("path", path);
-    NLOGD("recursive", recursive);
-    NLOGD("shared", shared);
+    logDebug("path", path);
+    logDebug("recursive", recursive);
+    logDebug("shared", shared);
 
     NDir dir = sharedDirs.at(id);
     NDir modifiedDir = NDir(path.isEmpty() ? dir.path() : path,
@@ -796,14 +734,14 @@ NResponse & NTcpServerSocketServices::svcPutSharedDir(const NClientSession & ses
     svDir.setProperty("recursive", modifiedDir.recursive());
     svDir.setProperty("shared", modifiedDir.shared());
     svDir.setProperty("exists", modifiedDir.exists());
-    //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+    //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
 
 NResponse & NTcpServerSocketServices::svcDeleteSharedDir(const NClientSession & session, NResponse & response)
 {
-    NLOGD("NTcpServerSocketServices::svcDeleteSharedDir", session.resource());
+    logDebug("NTcpServerSocketServices::svcDeleteSharedDir", session.resource());
     int id = 0;
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
@@ -814,7 +752,7 @@ NResponse & NTcpServerSocketServices::svcDeleteSharedDir(const NClientSession & 
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_INDEX));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -824,7 +762,7 @@ NResponse & NTcpServerSocketServices::svcDeleteSharedDir(const NClientSession & 
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_INDEX));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -832,174 +770,12 @@ NResponse & NTcpServerSocketServices::svcDeleteSharedDir(const NClientSession & 
 
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_DELETED).arg(id)));
-    //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+    //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }
 
-void NTcpServerSocketServices::removeExpiredSession()
-{
-    m_authSessionHash.removeExpired();
-}
 
-NResponse & NTcpServerSocketServices::svcAuth(const NClientSession & session, NResponse & response)
-{
-    if (session.request().method() == "POST") {
-        return svcPostAuth(session, response);
-    }
-
-    if (session.request().method() == "DELETE") {
-        return svcDeleteAuth(session, response);
-    }
-
-    if (session.request().method() == "GET")
-    {
-        // POST, GET, DELETE, PUT, END > five elements in array
-        NService_n::NService services[5];
-        session.getServices(services);
-        return svcGetServiceHelp(services, response);
-    }
-
-    Q_ASSERT(false);
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcPostAuth(const NClientSession & session, NResponse & response)
-{
-    // TODO: do automated test
-
-    QScriptEngine se;
-    QString login;
-    QString password;
-    // "json" contentType
-    if (session.request().contentType() == NMimeType_n::fileSuffixToMIME("json")){
-        QScriptValue svReadRoot = se.newObject();
-        se.evaluate("var data = " + QString::fromUtf8(session.content()));
-        if (se.hasUncaughtException()){
-            svReadRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-            svReadRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-            NLOGD("NTcpServerSocketServices::svcPostAuths", se.uncaughtExceptionBacktrace());
-            NLOGD("NJson::serialize(svRoot)", NJson::serialize(svReadRoot));
-            response.setData(NJson::serializeToQByteArray(svReadRoot));
-            return response;
-        }
-        QScriptValue svReadData = se.globalObject().property("data").property("data");
-        login = svReadData.property("username").toString();
-        password = svReadData.property("password").toString();
-    }
-    // "form" contentType
-    if (session.request().contentType() == NMimeType_n::fileSuffixToMIME("form"))
-    {
-        const NStringMap data = session.contentToMap();
-        login = data["username"];
-        password = data["password"];
-    }
-
-
-    int level = AUTH_LEVEL_USER;
-    bool authSucceed = false;
-    if (NCONFIG.AdminUser() == login) { // Admin auth
-        // Admin level login can only work with NCONFIG.AdminUser() (cf another account with same login)
-        if (NCONFIG.AdminPassword() == password)
-        {
-            level = level | AUTH_LEVEL_ADMIN;
-            authSucceed = true;
-        }
-    } else { // User auth
-        NStringMap user = NDB.getUserByEmail(login);
-        logDebug("svcPostAuth", QString("password: %1").arg(password));
-        logDebug("svcPostAuth", QString("user[\"password\"]: %1").arg(user["password"]));
-        logDebug("svcPostAuth", QString("NCONFIG.toPasswordHash(user[\"password\"]): %1").arg(NCONFIG.toPasswordHash(user["password"])));
-        authSucceed = user.count() > 0 && user["password"] == NCONFIG.toPasswordHash(password);
-    }
-
-    QScriptValue svRoot = se.newObject();
-    if (!authSucceed){
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-        svRoot.setProperty(RSP_MSG, QScriptValue("Authentication failed"));
-
-        NLOGM("Authentication login failed", QString("%1@%2; user agent: %3").
-              arg(login).
-              arg(session.peerAddress()).
-              arg(session.userAgent()));
-    } else {
-        // Some one try to auth many time on the same IP
-        // Other browser, IP nat ? So access is granted, but we log
-        QString sessionId = m_authSessionHash.sessionId(session.peerAddress(), login);
-        if (!sessionId.isEmpty())
-        {
-            const NTcpServerAuthSession & authSession = m_authSessionHash.value(sessionId);
-            NLOGM("WARNING: Authentication login while already logged in",
-                  QString("From %1@%2; Already logged from %3; level: %4; user agent: %5").
-                  arg(login).
-                  arg(session.peerAddress()).
-                  arg(authSession.address()).
-                  arg(NTcpServerAuthSession::levelToString(authSession.level())).
-                  arg(session.userAgent()));
-        }
-
-        // Administrator level
-        NTcpServerAuthSession authSession;
-        authSession.set(session.peerAddress(), login, session.userAgent(), level);
-        m_authSessionHash.insert(authSession.sessionId(), authSession);
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
-        svRoot.setProperty(RSP_MSG, QScriptValue("Authentication succeed"));
-        svRoot.setProperty("level", QScriptValue(NTcpServerAuthSession::levelToString(authSession.level())));
-        response.setSessionCookie(authSession.sessionId(), session.isSsl());
-        NLOGM("Authentication login succeed", QString("%1@%2; level: %3; user agent: %4").
-              arg(authSession.login()).
-              arg(authSession.address()).
-              arg(NTcpServerAuthSession::levelToString(authSession.level())).
-              arg(authSession.userAgent()));
-    }
-
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcDeleteAuth(const NClientSession & session, NResponse & response)
-{
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-
-    if (m_authSessionHash.contains(session.sessionId()))
-    {
-        const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-        if (authSession.address() == session.peerAddress())
-        {
-            NLOGM("Authentication logout succeed", QString("%1@%2; user agent: %3").
-                  arg(authSession.login()).
-                  arg(session.peerAddress()).
-                  arg(session.userAgent()));
-            svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
-            svRoot.setProperty(RSP_MSG, QScriptValue(QString("%1 unauthenticated").arg(authSession.login())));
-            m_authSessionHash.remove(session.sessionId());
-            response.clearSessionCookie();
-        } else {
-            NLOGM("Authentication logout WARNING",
-                  QString("try to unauth %1@%2 (authentication address is %3); user agent: %4").
-                  arg(authSession.login()).
-                  arg(session.peerAddress()).
-                  arg(authSession.address()).
-                  arg(session.userAgent()));
-
-            svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-            svRoot.setProperty(RSP_MSG, QScriptValue(QString("Try to unauthenticate %1 from a different "\
-                                                             "authenticated address. Your Ip is logged.(%2)").
-                                                     arg(authSession.login()).
-                                                     arg(session.peerAddress())));
-
-        }
-    } else {
-        NLOGM("Authentication logout ERROR", QString("no authentication for %1; user agent: %2").
-              arg(session.peerAddress()).
-              arg(session.userAgent()));
-        svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
-        svRoot.setProperty(RSP_MSG, QScriptValue("You are not authenticated"));
-    }
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
 
 NResponse & NTcpServerSocketServices::svcGetNop(NResponse & response)
 {
@@ -1060,8 +836,8 @@ NResponse & NTcpServerSocketServices::svcGetUser(const NClientSession & session,
     QStringList searches = search.split("+", QString::SkipEmptyParts);
     searches = NConvert_n::fromUTF8PercentEncoding(searches);
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for users: \"%2\"; start: %3; limit: %4, sort:\"%5\", dir:\"%6\"").
          arg(authSession.login()). // 1
          arg(NConvert_n::fromUTF8PercentEncoding(search)).// 2
@@ -1093,8 +869,8 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
     if (se.hasUncaughtException()){
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-        NLOGD("NTcpServerSocketServices::svcPostUser", se.uncaughtExceptionBacktrace());
-        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        logDebug("NTcpServerSocketServices::svcPostUser", se.uncaughtExceptionBacktrace());
+        logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -1104,9 +880,9 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
     QString name = svReadUser.property("name").toString();
     QString password = NCONFIG.toPasswordHash(svReadUser.property("password").toString());
 
-    NLOGD("email", email);
-    NLOGD("name", name);
-    NLOGD("password", password);
+    logDebug("email", email);
+    logDebug("name", name);
+    logDebug("password", password);
 
     // User already exists?
     NStringMap user = NDB.getUserByEmail(email);
@@ -1115,7 +891,7 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, "User already exists");
-        NLOGM("Registration failed", QString("already registered; %1(%2); user agent: %3").
+        logMessage("Registration failed", QString("already registered; %1(%2); user agent: %3").
               arg(email).
               arg(session.peerAddress()).
               arg(session.userAgent()));
@@ -1139,7 +915,7 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
             break;
         }
         svRoot.setProperty(RSP_MSG, errorMsg);
-        NLOGM("User add failed", QString("%1; %2(%3); user agent: %4").
+        logMessage("User add failed", QString("%1; %2(%3); user agent: %4").
               arg(errorMsg).
               arg(email).
               arg(session.peerAddress()).
@@ -1151,7 +927,7 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
 
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QString("User %1 added (account not enabled").arg(email));
-    NLOGM("User add succeed", QString("%1(%2); user agent: %3").
+    logMessage("User add succeed", QString("%1(%2); user agent: %3").
           arg(email).
           arg(session.peerAddress()).
           arg(session.userAgent()));
@@ -1172,19 +948,19 @@ NResponse & NTcpServerSocketServices::svcPostUser(const NClientSession & session
 
 NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session, NResponse & response)
 {
-    //NLOGD("NTcpServerSocketServices::svcPutSharedDir", session.postData());
+    //logDebug("NTcpServerSocketServices::svcPutSharedDir", session.postData());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
 
     QString strId = session.resource();
-    NLOGD("svcPutUser strId", strId);
+    logDebug("svcPutUser strId", strId);
     bool ok;
     int id = strId.toInt(&ok);
     if (!ok)
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_USER));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -1193,8 +969,8 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     if (se.hasUncaughtException()){
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-        NLOGD("NTcpServerSocketServices::svcPutUser", se.uncaughtExceptionBacktrace());
-        NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        logDebug("NTcpServerSocketServices::svcPutUser", se.uncaughtExceptionBacktrace());
+        logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -1204,7 +980,7 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_USER));
-        //NLOGD("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -1217,8 +993,6 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     QString enabled = svReadUser.property("enabled").toString();
     QString level = svReadUser.property("level").toString();
 
-    logDebug("svcPutUser", QString("NCONFIG.toPasswordHash(svReadUser.property(\"password\").toString()): %1").arg(password));
-
     email = email.isEmpty() ? user["email"] : email;
     password = password.isEmpty() ? user["password"] : password;
     name = name.isEmpty() ? user["name"] : name;
@@ -1226,12 +1000,12 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
     enabled = enabled.isEmpty() ? user["enabled"] : enabled;
     level = level.isEmpty() ? user["level"] : level;
 
-    NLOGD("email", email);
-    NLOGD("password", password);
-    NLOGD("name", name);
-    NLOGD("preferences", preferences);
-    NLOGD("enabled", enabled);
-    NLOGD("level", level);
+    logDebug("email", email);
+    logDebug("password", password);
+    logDebug("name", name);
+    logDebug("preferences", preferences);
+    logDebug("enabled", enabled);
+    logDebug("level", level);
 
     if (!NDB.updateUser(id, email, password, name, preferences,
                         QVariant(enabled).toBool(),level)) {
@@ -1260,7 +1034,7 @@ NResponse & NTcpServerSocketServices::svcPutUser(const NClientSession & session,
 
 NResponse & NTcpServerSocketServices::svcDeleteUser(const NClientSession & session, NResponse & response)
 {	
-    NLOGD("NTcpServerSocketServices::svcDeleteUser", session.resource());
+    logDebug("NTcpServerSocketServices::svcDeleteUser", session.resource());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     QString id = session.resource();
@@ -1306,8 +1080,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & se
     if (!ok)
         year = -1;
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for album: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
@@ -1349,8 +1123,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicArtist(const NClientSession & s
         genre = NConvert_n::fromUTF8PercentEncoding(genre);
     }
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for artist: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
@@ -1381,8 +1155,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & se
     if (!ok)
         year = -1;
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession & authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for genre: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
@@ -1441,8 +1215,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & ses
         limit = 25;
     QString dir = session.url().queryItemValue("dir");
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for year: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
           arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
 
@@ -1506,8 +1280,8 @@ NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & se
     if (!ok)
         year = -1;
 
-    const NTcpServerAuthSession & authSession = m_authSessionHash.value(session.sessionId());
-    NLOGM(session.socket()->peerAddress().toString(),
+    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
+    logMessage(session.socket()->peerAddress().toString(),
           tr("%1 is looking for music search:\"%2\"; album:\"%3\"; artist:\"%4\";"\
              "genre:\"%5\"; year:\"%6\"; start:\"%7\"; "\
              "limit:\"%8\"; sort:\"%9\"; dir:\"%10\"").
@@ -1561,7 +1335,7 @@ bool NTcpServerSocketServices::isServiceAvailable(int * statusCode, const NClien
     }
 
     if (service.authRequired &&
-        !m_authSessionHash.isValid(session, service.requiredLevel))
+        !getAuthServices().isSessionValid(session, service.requiredLevel))
     {
         *statusCode = N_HTTP_UNAUTHORIZED;
         return false;

@@ -261,11 +261,11 @@ void NDatabase::enableFk()
 
 void NDatabase::debugLastQuery(const QString & msg, const QSqlQuery & query)
 {
-    NLOGDD("NDatabase", "Data base error:");
-    NLOGDD("NDatabase", QString("  %1").arg(msg));
-    NLOGDD("NDatabase", QString("  %1").arg(query.lastError().number()));
-    NLOGDD("NDatabase", QString("  %1").arg(query.lastError().text()));
-    NLOGDD("NDatabase", QString("  %1").arg(query.lastQuery()));
+    logDebugDirect("NDatabase", "Data base error:");
+    logDebugDirect("NDatabase", QString("  %1").arg(msg));
+    logDebugDirect("NDatabase", QString("  %1").arg(query.lastError().number()));
+    logDebugDirect("NDatabase", QString("  %1").arg(query.lastError().text()));
+    logDebugDirect("NDatabase", QString("  %1").arg(query.lastQuery()));
     Q_ASSERT(false);
 }
 
@@ -717,7 +717,7 @@ bool NDatabase::getFileList(QScriptEngine & se, QScriptValue & dataArray, const 
         debugLastQuery("fileList failed", query);
         return false;
     }/* else {
-        NLOGD("NDatabase", QString("  %1").arg(query.lastQuery()));
+        logDebug("NDatabase", QString("  %1").arg(query.lastQuery()));
     }*/
 
     // Files fields

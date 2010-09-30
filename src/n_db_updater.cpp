@@ -46,10 +46,10 @@ NDbUpdaterThread::NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject 
 void NDbUpdaterThread::run()
 {
     Q_ASSERT_X(NDB.beginTransaction(), "NDbUpdaterThread::run()", "NDB.beginTransaction()");
-    NLOGM("Server", tr("Updating database..."));
+    logMessage("Server", tr("Updating database..."));
     updateDB();
     NDB.commitTransaction();
-    NLOGM("Server", tr("Database update done."));
+    logMessage("Server", tr("Database update done."));
 }
 
 
@@ -64,7 +64,7 @@ void NDbUpdaterThread::updateDB()
 
 void NDbUpdaterThread::parseSharedFiles()
 {
-    NLOGD("NDbUpdaterThread", "parseSharedFiles start");
+    logDebug("NDbUpdaterThread", "parseSharedFiles start");
     m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
     m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     foreach(NDirWatcherThreadItem item, m_dirs)
@@ -74,7 +74,7 @@ void NDbUpdaterThread::parseSharedFiles()
         if (isStopping())
             break;
     }
-    NLOGD("NDbUpdaterThread", "parseSharedFiles stop");
+    logDebug("NDbUpdaterThread", "parseSharedFiles stop");
 }
 
 void NDbUpdaterThread::parseFiles(const QString & path, const QString & rootPath)
@@ -94,7 +94,7 @@ void NDbUpdaterThread::parseFiles(const QString & path, const QString & rootPath
         NFileSuffix suffix = m_fileSuffixes.category(fi); // Optimized
         if (!suffix.isValid())
         {
-            //NLOGM("Not managed file", fi.fileName());
+            //logMessage("Not managed file", fi.fileName());
             continue;
         }
         if (!suffix.shared())

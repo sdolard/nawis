@@ -134,7 +134,7 @@ void NMetadata::getExiv2Data()
 
         Exiv2::ExifData &exifData = image->exifData();
         if (exifData.empty()) {
-            NLOGD("NMetadata::getExiv2Data", QString("%1: No Exif data found").arg(m_fileName));
+            logDebug("NMetadata::getExiv2Data", QString("%1: No Exif data found").arg(m_fileName));
             return;
         }
 
@@ -297,7 +297,7 @@ void NMetadata::getExiv2Data()
         }
     }
     catch (Exiv2::AnyError& e) {
-        NLOGD("Caught Exiv2 exception", QString::fromStdString(e.what()));
+        logDebug("Caught Exiv2 exception", QString::fromStdString(e.what()));
     }
 }
 
@@ -311,7 +311,7 @@ void NMetadata::printExiv2Data()
 
         Exiv2::ExifData &exifData = image->exifData();
         if (exifData.empty()) {
-            NLOGD("NMetadata::printExiv2Data", QString("%1: No Exif data found").arg(m_fileName));
+            logDebug("NMetadata::printExiv2Data", QString("%1: No Exif data found").arg(m_fileName));
             return;
         }
 
@@ -332,7 +332,7 @@ void NMetadata::printExiv2Data()
         }
     }
     catch (Exiv2::AnyError& e) {
-        NLOGD("Caught Exiv2 exception", QString::fromStdString(e.what()));
+        logDebug("Caught Exiv2 exception", QString::fromStdString(e.what()));
     }
 }
 
@@ -389,7 +389,7 @@ void NMetadata::getIptcData()
 
         Exiv2::IptcData &iptcData = image->iptcData();
         if (iptcData.empty()) {
-            NLOGD("NMetadata::getIptcData", QString("%1: No IPTC data found in the file").arg(m_fileName));
+            logDebug("NMetadata::getIptcData", QString("%1: No IPTC data found in the file").arg(m_fileName));
             return;
         }
 
@@ -423,7 +423,7 @@ void NMetadata::getIptcData()
         }
     }
     catch (Exiv2::AnyError& e) {
-        NLOGD("Caught IPTC exception", QString::fromStdString(e.what()));
+        logDebug("Caught IPTC exception", QString::fromStdString(e.what()));
     }
 }
 
@@ -437,7 +437,7 @@ void NMetadata::printIptcData()
 
         Exiv2::IptcData &iptcData = image->iptcData();
         if (iptcData.empty()) {
-            NLOGD("NMetadata::printIptcData", QString("%1: No IPTC data found in the file").arg(m_fileName));
+            logDebug("NMetadata::printIptcData", QString("%1: No IPTC data found in the file").arg(m_fileName));
             return;
         }
 
@@ -457,7 +457,7 @@ void NMetadata::printIptcData()
         }
     }
     catch (Exiv2::AnyError& e) {
-        NLOGD("Caught IPTC exception", QString::fromStdString(e.what()));
+        logDebug("Caught IPTC exception", QString::fromStdString(e.what()));
     }
 }
 

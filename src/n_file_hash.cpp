@@ -41,7 +41,7 @@ const QString NFileHash::hash()
     QFile file(m_fi.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly))
         return "";
-    //NLOGM("(tmp)NFileHash start", m_fi.fileName());
+    //logMessage("(tmp)NFileHash start", m_fi.fileName());
 #ifdef DEBUG
     QTime t;
     t.start();
@@ -59,6 +59,6 @@ const QString NFileHash::hash()
            qPrintable(NConvert_n::rateForOneSecToHuman(m_fi.size(), t.elapsed()))
            );
 #endif
-    //NLOGM("(tmp)NFileHash ends", m_fi.fileName());
+    //logMessage("(tmp)NFileHash ends", m_fi.fileName());
     return hash.result().toHex();
 }

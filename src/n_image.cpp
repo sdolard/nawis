@@ -47,6 +47,7 @@ NImage::NImage(const QFileInfo & fi)
     m_defaultResizeSize = QSize(800, 600);
 }
 
+
 const QByteArray NImage::getThumb()
 {	
     if (!m_fi.exists())
@@ -139,7 +140,7 @@ const QByteArray NImage::exivThumb(bool returnGreater)
         }
     }
     catch (Exiv2::AnyError& e) {
-        NLOGD("Caught Exiv2 exception", e.what());
+        logDebug("Caught Exiv2 exception", e.what());
     }
 
     // Cleanup
@@ -177,7 +178,7 @@ const QByteArray NImage::pResize(const QSize & size)
     QImageReader imageReader(m_fi.absoluteFilePath());
     if (!imageReader.canRead())
     {
-        NLOGM("NTcpServerSocketServices::svcFilePreview error",
+        logMessage("NTcpServerSocketServices::svcFilePreview error",
               QString("loading preview for: %1\nError:%2").
               arg(m_fi.absoluteFilePath()).
               arg(imageReader.errorString()));

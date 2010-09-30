@@ -35,9 +35,6 @@
 #include "n_file_category.h"
 #include "n_tcp_server_auth_session.h"
 
-
-#define NTSSERVICES (NTcpServerSocketServices::instance())
-
 class NTcpServerSocketServices: QObject
 {
     Q_OBJECT
@@ -47,21 +44,15 @@ public:
     ~NTcpServerSocketServices();
 
     NResponse response(const NClientSession & session);
-    void removeExpiredSession();
 
 private:	
     static NTcpServerSocketServices *m_instance;
-    NTcpServerAuthSessionHash        m_authSessionHash;
 
     NTcpServerSocketServices();
     NResponse & setData(int *statusCode,  NResponse & response,
                         const NClientSession & session);
     NResponse & setResponseStatus(int statusCode, NResponse & response);
 
-    // Return services help on the same root
-    NResponse & svcGetServiceHelp(NService_n::NService* services, NResponse & response);
-    // Return sub services help too
-    NResponse & svcGetFullServiceHelp(NService_n::NService* rootServices, NResponse & response);
     NResponse & svcGetFavicon(NResponse & response);
 
     // User
@@ -70,11 +61,6 @@ private:
     NResponse & svcPutUser(const NClientSession & session, NResponse & response);
     NResponse & svcDeleteUser(const NClientSession & session, NResponse & response);
     NResponse & svcGetUser(const NClientSession & session, NResponse & response);
-
-    // Authentication
-    NResponse & svcAuth(const NClientSession & session, NResponse & response);
-    NResponse & svcPostAuth(const NClientSession & session, NResponse & response);
-    NResponse & svcDeleteAuth(const NClientSession & session, NResponse & response);
 
     // Nop
     NResponse & svcGetNop(NResponse & response);
@@ -128,5 +114,6 @@ private:
     // Return, SUCCESS, MSG and totalCount json
     void setJsonRootReponse(QScriptValue & svRoot, int totalCount, bool succeed);
 };
+
 
 #endif //N_TCP_SERVER_SOCKET_SERVICES

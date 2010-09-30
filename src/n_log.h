@@ -26,16 +26,6 @@
 #include <QStringList>
 #include <QThread>
 
-#define NLOGM(a, b)         NLog::log(a, b, NLog::ltMsg)
-#define NLOGMD(a, b)        NLog::directLog(a, b, NLog::ltMsg)
-#ifdef DEBUG
-#define NLOGD(a, b)         NLog::log(a, b, NLog::ltDebug)
-#define NLOGDD(a, b)        NLog::directLog(a, b, NLog::ltDebug)
-#else
-#define NLOGD(a, b)
-#define NLOGDD(a, b)
-#endif
-
 class NLogThread;
 
 class NLog: public QObject
@@ -61,7 +51,7 @@ signals:
 
 private:
     static NLog *m_instance;
-    NLogThread *m_logThread;
+    NLogThread  *m_logThread;
 
     NLog(QObject *parent = 0);
     ~NLog();
@@ -118,13 +108,18 @@ inline void logMessageDirect(const QString & context, const QString & msg) {
 inline void logDebug(const QString & context, const QString & msg) {
 #ifdef DEBUG
     NLog::log(context, msg, NLog::ltDebug);
-#endif DEBUG
+#endif //DEBUG
 }
 
+inline void logDebug(const QString & context, const QStringList & msgList) {
+#ifdef DEBUG
+    NLog::log(context, msgList, NLog::ltDebug);
+#endif //DEBUG
+}
 inline void logDebugDirect(const QString & context, const QString & msg) {
 #ifdef DEBUG
     NLog::directLog(context, msg, NLog::ltDebug);
-#endif DEBUG
+#endif //DEBUG
 }
 
 #endif // N_LOG_H

@@ -126,7 +126,7 @@ void NMusicDatabase::createAlbumTable()
 
 bool NMusicDatabase::updateAlbumTable()
 {
-    NLOGD("NMusicDatabase", "updateAlbumTable start");
+    logDebug("NMusicDatabase", "updateAlbumTable start");
     NDB.beginTransaction();
     if (!setAlbumDeleted())
     {
@@ -147,7 +147,7 @@ bool NMusicDatabase::updateAlbumTable()
     }
 
     NDB.commitTransaction();
-    NLOGD("NMusicDatabase", "updateAlbumTable ends");
+    logDebug("NMusicDatabase", "updateAlbumTable ends");
     return true;
 }
 
@@ -282,7 +282,7 @@ void NMusicDatabase::createArtistTable()
 
 bool NMusicDatabase::updateArtistTable()
 {
-    NLOGD("NMusicDatabase", "updateArtistTable start");
+    logDebug("NMusicDatabase", "updateArtistTable start");
     NDB.beginTransaction();
     if (!setArtistDeleted())
     {
@@ -303,7 +303,7 @@ bool NMusicDatabase::updateArtistTable()
     }
 
     NDB.commitTransaction();
-    NLOGD("NMusicDatabase", "updateArtistTable ends");
+    logDebug("NMusicDatabase", "updateArtistTable ends");
     return true;
 }
 
@@ -426,7 +426,7 @@ void NMusicDatabase::createGenreTable()
 
 bool NMusicDatabase::updateGenreTable()
 {
-    NLOGD("NMusicDatabase", "updateGenreTable start");
+    logDebug("NMusicDatabase", "updateGenreTable start");
     NDB.beginTransaction();
     if (!setGenreDeleted())
     {
@@ -447,7 +447,7 @@ bool NMusicDatabase::updateGenreTable()
     }
 
     NDB.commitTransaction();
-    NLOGD("NMusicDatabase", "updateGenreTable ends");
+    logDebug("NMusicDatabase", "updateGenreTable ends");
     return true;
 }
 
@@ -584,7 +584,7 @@ bool NMusicDatabase::updateTitleTable()
 {
     // Music title are deleted from reference to file table.
     // If a file is deleted, title is too.
-    NLOGD("NMusicDatabase", "updateTitleTable start");
+    logDebug("NMusicDatabase", "updateTitleTable start");
     NDB.beginTransaction();
 
     if (!populateTitle())
@@ -594,7 +594,7 @@ bool NMusicDatabase::updateTitleTable()
     }
 
     NDB.commitTransaction();
-    NLOGD("NMusicDatabase", "updateTitleTable ends");
+    logDebug("NMusicDatabase", "updateTitleTable ends");
     return true;
 }
 
@@ -713,7 +713,7 @@ void NMusicDatabase::createAlbumTitleTable()
 
 bool NMusicDatabase::updateAlbumTitleTable()
 {
-    NLOGD("NMusicDatabase", "updateAlbumTitleTable start");
+    logDebug("NMusicDatabase", "updateAlbumTitleTable start");
     NDB.beginTransaction();
 
     if (!populateAlbumTitle())
@@ -723,7 +723,7 @@ bool NMusicDatabase::updateAlbumTitleTable()
     }
 
     NDB.commitTransaction();
-    NLOGD("NMusicDatabase", "updateAlbumTitleTable ends");
+    logDebug("NMusicDatabase", "updateAlbumTitleTable ends");
     return true;
 }
 
@@ -793,7 +793,7 @@ bool NMusicDatabase::insertAlbumTitle(int titleId, const QString & albumName)
 
 bool NMusicDatabase::updateAlbumCover()
 {
-    NLOGD("NMusicDatabase", "updateAlbumCover start");
+    logDebug("NMusicDatabase", "updateAlbumCover start");
     // TODO: delete file hash reference in music_album table when removing a music
     QSqlQuery query(*m_db);
     QString sql;
@@ -867,7 +867,7 @@ bool NMusicDatabase::updateAlbumCover()
 
             q.bindValue(":fk_file_category_id", NFileCategory_n::fileCategoryId(NFileCategory_n::fcPicture));
             q.bindValue(":absoluteFilePath", QString("%1%").arg(dir.absolutePath()));
-            //NLOGD("dir.absolutePath()", dir.absolutePath());
+            //logDebug("dir.absolutePath()", dir.absolutePath());
 
             if (!q.exec())
             {
@@ -894,7 +894,7 @@ bool NMusicDatabase::updateAlbumCover()
     insertAlbumFrontCoverPictureFileHash(fcpfhHash);
     insertAlbumFrontCoverId3Picture(fcifhHash);
 
-    NLOGD("NMusicDatabase", "updateAlbumCover ends");
+    logDebug("NMusicDatabase", "updateAlbumCover ends");
     return true;
 }
 
@@ -1015,9 +1015,9 @@ bool NMusicDatabase::getAlbumList(QScriptEngine & se, QScriptValue & dataArray, 
         NDatabase::debugLastQuery("getAlbumList failed", query);
         return false;
     }/* else {
-        NLOGD("NMusicDatabase", query.lastQuery());
+        logDebug("NMusicDatabase", query.lastQuery());
     }*/
-    NLOGD("NMusicDatabase", query.lastQuery());
+    logDebug("NMusicDatabase", query.lastQuery());
 
     int fieldId = query.record().indexOf("id");
     int fieldAlbum = query.record().indexOf("album");
@@ -1170,9 +1170,9 @@ int NMusicDatabase::getAlbumListCount(const QStringList & searches, int year, co
         NDatabase::debugLastQuery("getAlbumListCount failed", query);
         return 0;
     }/* else {
-        NLOGD("NMusicDatabase", query.lastQuery());
+        logDebug("NMusicDatabase", query.lastQuery());
     }*/
-    NLOGD("NMusicDatabase", query.lastQuery());
+    logDebug("NMusicDatabase", query.lastQuery());
 
     if (!query.first())
         return 0;
@@ -1925,9 +1925,9 @@ bool NMusicDatabase::getTitleList(QScriptEngine & se, QScriptValue & dataArray,
         NDatabase::debugLastQuery("getTitleList failed", query);
         return false;
     }/* else {
-        //NLOGD("NMusicDatabase", query.lastQuery());
+        //logDebug("NMusicDatabase", query.lastQuery());
     }*/
-    NLOGD("NMusicDatabase", query.lastQuery());
+    logDebug("NMusicDatabase", query.lastQuery());
 
     // Files fields
     int fieldId = query.record().indexOf("id");
@@ -2065,9 +2065,9 @@ int NMusicDatabase::getTitleListCount(const QStringList & searches, const QStrin
         NDatabase::debugLastQuery("getTitleListCount failed", query);
         return 0;
     }/*else {
-        //NLOGD("NMusicDatabase", query.lastQuery());
+        //logDebug("NMusicDatabase", query.lastQuery());
     }*/
-    NLOGD("NMusicDatabase", query.lastQuery());
+    logDebug("NMusicDatabase", query.lastQuery());
 
     if (!query.first())
         return 0;

@@ -6,7 +6,7 @@
 const QString NVersion_n::namedVersion(bool os)
 {
     Q_ASSERT(qApp);
-    QString nawis = QString("%1/%2.%3 ").arg(qApp->applicationName()).arg(NAWIS_VERSION).arg(NAWIS_BUILD);
+    QString nawis = QString("%1/%2.%3 ").arg(qApp->applicationName()).arg(getNawisVersion()).arg(getNawisBuild());
     if (os) {
 #ifdef Q_OS_DARWIN 
 	nawis += "(Macintosh)";

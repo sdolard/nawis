@@ -97,7 +97,7 @@ NDirWatcherThread::~NDirWatcherThread()
 
 void NDirWatcherThread::run()
 {
-    NLOGM("Server", "Looking for files modification...");
+    logMessage("Server", "Looking for files modification...");
     parseSharedDirs();
 
     if (isStopping())
@@ -110,12 +110,12 @@ void NDirWatcherThread::run()
 
     emit hash(m_hash.toHex(), m_dirs);
 
-    NLOGM("Server", "Looking for files modification finished.");
+    logMessage("Server", "Looking for files modification finished.");
 }
 
 void NDirWatcherThread::parseSharedDirs()
 {
-    //NLOGD("NDirWatcherThread", "parseSharedDirs start");
+    //logDebug("NDirWatcherThread", "parseSharedDirs start");
 
     for(int i = 0; i < m_sharedDirectories.count(); i++)
     {
@@ -131,7 +131,7 @@ void NDirWatcherThread::parseSharedDirs()
 
         parseDir(dir.dir().absolutePath(), dir.recursive(), dir.dir().absolutePath());
     }
-    //NLOGD("NDirWatcherThread", "parseSharedDirs stop");
+    //logDebug("NDirWatcherThread", "parseSharedDirs stop");
 }
 
 void NDirWatcherThread::parseDir(const QString & path, bool recursive, const QString & rootPath)

@@ -24,7 +24,7 @@ NMetadataUpdaterThread::~NMetadataUpdaterThread()
 
 void NMetadataUpdaterThread::run()
 {
-    NLOGM("Server", tr("Metadata extraction..."));
+    logMessage("Server", tr("Metadata extraction..."));
     Q_ASSERT(NDB.beginTransaction());
     forever	{
         if (isStopping())
@@ -34,7 +34,7 @@ void NMetadataUpdaterThread::run()
             break;
     }
     NDB.commitTransaction();
-    NLOGM("Server", tr("Metadata extraction done."));
+    logMessage("Server", tr("Metadata extraction done."));
 }
 
 bool NMetadataUpdaterThread::getFile()
@@ -57,7 +57,7 @@ bool NMetadataUpdaterThread::getFile()
         return false;
     }
 
-    //NLOGD("NMetadataUpdaterThread::getFile", fi.absoluteFilePath());
+    //logDebug("NMetadataUpdaterThread::getFile", fi.absoluteFilePath());
     m_metadata.setFileName(fi.absoluteFilePath());
     NDB.setMetadata(fileId, m_metadata);
     return true;

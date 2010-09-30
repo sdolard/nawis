@@ -16,7 +16,7 @@ NMusicDbUpdaterThread::~NMusicDbUpdaterThread()
 
 void NMusicDbUpdaterThread::run()
 {
-    NLOGM("Server", tr("Music db building..."));
+    logMessage("Server", tr("Music db building..."));
     NMDB.updateDb();
-    NLOGM("Server", tr("Music db build done."));
+    logMessage("Server", tr("Music db build done."));
 }

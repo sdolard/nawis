@@ -250,7 +250,7 @@ const QString NMimeType_n::fileSuffixToMIME(const QString & suffix)
     initHashMimeContentType();
     QString lowerSuffix = suffix.toLower();
     if (!HASH_MIME_CONTENT_TYPE.contains(lowerSuffix))
-        NLOGM("NMimeType_n::fileSuffixToMIME: not managed mime type", lowerSuffix);
+        logMessage("NMimeType_n::fileSuffixToMIME: not managed mime type", lowerSuffix);
     return HASH_MIME_CONTENT_TYPE.value(lowerSuffix, "application/octet-stream");
 }
 

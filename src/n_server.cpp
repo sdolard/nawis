@@ -59,7 +59,7 @@ NServer::NServer(QObject *parent)
 
 NServer::~NServer()
 {	
-    NLOGMD("Server", "Stopping...");
+    logMessageDirect("Server", "Stopping...");
     disconnect();
     m_jobTimer.stop();
     m_configFileChanged = false;
@@ -73,7 +73,7 @@ NServer::~NServer()
 
 bool NServer::start()
 {
-    NLOGMD("Server: configuration file path", NPath_n::config());
+    logMessageDirect("Server: configuration file path", NPath_n::config());
 
     // Start DB: must be created as first
     NDatabase::instance();
@@ -86,7 +86,7 @@ bool NServer::start()
 
     if (!started)
     {
-        NLOGMD("Server issue", "Can not start");
+        logMessageDirect("Server issue", "Can not start");
         return false;
     }
     NCONFIG.dumpSharedDirectoriesConfig();
@@ -128,10 +128,10 @@ void NServer::stopTcpServer()
     // It's not a thread, this code is ok
     if (m_server == NULL)
         return;
-    NLOGMD("Server", tr("TCP server is stopping..."));
+    logMessageDirect("Server", tr("TCP server is stopping..."));
     delete m_server;
     m_server = NULL;
-    NLOGMD("Server", tr("TCP server is stopped"));
+    logMessageDirect("Server", tr("TCP server is stopped"));
 }
 
 void NServer::stopSslTcpServer()
@@ -139,10 +139,10 @@ void NServer::stopSslTcpServer()
     // It's not a thread, this code is ok
     if ( m_sslServer == NULL)
         return;
-    NLOGMD("Server", tr("SSL TCP server is stopping..."));
+    logMessageDirect("Server", tr("SSL TCP server is stopping..."));
     delete m_sslServer;
     m_sslServer = NULL;
-    NLOGMD("Server", tr("SSL TCP server is stopped"));
+    logMessageDirect("Server", tr("SSL TCP server is stopped"));
 }
 
 bool NServer::restartTcpServer()
@@ -166,21 +166,21 @@ bool NServer::startTcpServer()
     if (m_server) // already running
         return true;
 
-    NLOGMD("Server", tr("TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
+    logMessageDirect("Server", tr("TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
     m_server = new NTcpServer(NCONFIG.serverPort(), false, this);
 
     if (m_server->start())
     {
-        NLOGMD("Server", tr("TCP Server is listening on %1").arg(m_server->serverPort()));
-        NLOGMD("Server", tr("TCP Server is waiting for connection..."));
+        logMessageDirect("Server", tr("TCP Server is listening on %1").arg(m_server->serverPort()));
+        logMessageDirect("Server", tr("TCP Server is waiting for connection..."));
         return true;
     }
 
-    NLOGMD("Server", tr("TCP server not able to listen on %1: %2\n").
+    logMessageDirect("Server", tr("TCP server not able to listen on %1: %2\n").
            arg(NCONFIG.serverPort()).
            arg(m_server->errorString()));
 
-    NLOGMD("Solution: ", socketErrorToString(m_server->serverError()));
+    logMessageDirect("Solution: ", socketErrorToString(m_server->serverError()));
     return false;
 }
 
@@ -189,21 +189,21 @@ bool NServer::startSslTcpServer()
     if (m_sslServer) // already running
         return true;
 
-    NLOGMD("Server", tr("SSL TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
+    logMessageDirect("Server", tr("SSL TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
     m_sslServer = new NTcpServer(NCONFIG.serverSslPort(), true, this);
 
     if (m_sslServer->start())
     {
-        NLOGMD("Server", tr("SSL TCP Server is listening on %1").arg(m_sslServer->serverPort()));
-        NLOGMD("Server", tr("SSL TCP Server is waiting for connection..."));
+        logMessageDirect("Server", tr("SSL TCP Server is listening on %1").arg(m_sslServer->serverPort()));
+        logMessageDirect("Server", tr("SSL TCP Server is waiting for connection..."));
         return true;
     }
 
-    NLOGMD("Server", tr("SSL TCP server not able to listen on %1: %2\n").
+    logMessageDirect("Server", tr("SSL TCP server not able to listen on %1: %2\n").
            arg(NCONFIG.serverSslPort()).
            arg(m_sslServer->errorString()));
 
-    NLOGMD("Solution: ", socketErrorToString(m_sslServer->serverError()));
+    logMessageDirect("Solution: ", socketErrorToString(m_sslServer->serverError()));
     return false;
 }
 
@@ -354,7 +354,7 @@ void NServer::startJob(int job)
 
     connect((*pJob), SIGNAL(finished()),
             this, SLOT(onJobTerminated()), Qt::QueuedConnection);
-    NLOGD("NServer", QString("%1 starting ...").arg(jobToString(job)));
+    logDebug("NServer", QString("%1 starting ...").arg(jobToString(job)));
     (*pJob)->start();
 }
 
@@ -401,7 +401,7 @@ void NServer::stopJob(int job)
     if (*pJob == NULL)
         return;
 
-    NLOGD("NServer", QString("%1 stopping ...").arg(jobToString(job)));
+    logDebug("NServer", QString("%1 stopping ...").arg(jobToString(job)));
     if ((*pJob)->isRunning())
     {
         (*pJob)->stop();
@@ -411,7 +411,7 @@ void NServer::stopJob(int job)
     (*pJob)->disconnect();
     delete (*pJob);
     (*pJob) = NULL;
-    NLOGD("NServer", QString("%1 stopped").arg(jobToString(job)));
+    logDebug("NServer", QString("%1 stopped").arg(jobToString(job)));
 }
 
 void NServer::onJobTerminated()
@@ -464,7 +464,7 @@ void NServer::onConfigFileChanged()
         return;
     }
 
-    NLOGM("Server", "Configuration changed");
+    logMessage("Server", "Configuration changed");
     m_configFileChanged = true;
     m_jobTimer.stop();
     stopJobs();

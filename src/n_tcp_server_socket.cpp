@@ -138,7 +138,7 @@ void NTcpServerSocket::addLine(const QString & line)
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssReadingLine);
     /*
-    NLOGD("NTcpServerSocket", QString("(%1) addLine: %2").arg(m_sslSocket.socketDescriptor()).
+    logDebug("NTcpServerSocket", QString("(%1) addLine: %2").arg(m_sslSocket.socketDescriptor()).
                    arg(QUrl::fromPercentEncoding(line.toAscii())));
                    */
 
@@ -198,7 +198,7 @@ bool NTcpServerSocket::requestIsComplete()
 void NTcpServerSocket::prepareResponse()
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssWriting);
-    m_response =  NTSSERVICES.response(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
+    m_response =  NTcpServerSocketServices::instance().response(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
     m_content.clear();
     m_request = QHttpRequestHeader();
 }
@@ -282,20 +282,20 @@ void NTcpServerSocket::sslEncryptedBytesWritten ( qint64 )
 
 void NTcpServerSocket::sslEncryptiondReady()
 {
-    NLOGD("NTcpServerSocket", "sslEncryptiondReady");
+    logDebug("NTcpServerSocket", "sslEncryptiondReady");
 }
 
 void NTcpServerSocket::sslModeChanged ( QSslSocket::SslMode mode )
 {
     switch (mode) {
     case QSslSocket::UnencryptedMode:
-        NLOGD("sslModeChanged", "The socket is unencrypted. Its behavior is identical to QTcpSocket.");
+        logDebug("sslModeChanged", "The socket is unencrypted. Its behavior is identical to QTcpSocket.");
         break;
     case QSslSocket::SslClientMode:
-        NLOGD("sslModeChanged", "The socket is a client-side SSL socket. It is either alreayd encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted())");
+        logDebug("sslModeChanged", "The socket is a client-side SSL socket. It is either alreayd encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted())");
         break;
     case QSslSocket::SslServerMode:
-        NLOGD("sslModeChanged", "The socket is a server-side SSL socket. It is either already encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted()).");
+        logDebug("sslModeChanged", "The socket is a server-side SSL socket. It is either already encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted()).");
         break;
     default:
         Q_ASSERT_X(false, "NTcpServerSocket","sslModeChanged: missing ssl mode");
@@ -305,7 +305,7 @@ void NTcpServerSocket::sslModeChanged ( QSslSocket::SslMode mode )
 
 void NTcpServerSocket::sslPeerVerifyError ( const QSslError &  error)
 {
-    NLOGD("sslPeerVerifyError", error.errorString());
+    logDebug("sslPeerVerifyError", error.errorString());
 }
 
 void NTcpServerSocket::sslErrors ( const QList<QSslError> & errors )
@@ -314,7 +314,7 @@ void NTcpServerSocket::sslErrors ( const QList<QSslError> & errors )
     foreach(QSslError error, errors){
         sslErrors.append(error.errorString());
     }
-    NLOGD("sslPeerVerifyError", sslErrors.join("\n"));
+    logDebug("sslPeerVerifyError", sslErrors.join("\n"));
 }
 
 bool NTcpServerSocket::initSsl()

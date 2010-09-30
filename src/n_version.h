@@ -4,8 +4,13 @@
 // Qt
 #include <QString>
 
-#define NAWIS_VERSION        "0.1.0" // release.version.bugfix
-#define NAWIS_BUILD          "alpha"
+inline const QString getNawisVersion() {
+    return "0.1.0"; // release.version.bugfix
+}
+
+inline const QString getNawisBuild() {
+    return "alpha"; // release.version.bugfix
+}
 
 namespace NVersion_n {
 

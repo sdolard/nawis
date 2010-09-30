@@ -127,7 +127,7 @@ const QString NSettingCommand::toString() const
 {
     if (!isValid()) {
 #ifndef UNIT_TEST
-        NLOGD("NSettingCommand::toString(): invalid command",
+        logDebug("NSettingCommand::toString(): invalid command",
               QString("context='%1' type='%2' group='%3' action='%4' key='%5' value='%6' comment='%7'").
               arg(m_context).
               arg(toString(m_type)).
@@ -542,7 +542,7 @@ void NSettings::createFilePath()
     {
         Q_ASSERT_X(false, "NSettings::createFilePath", "!file.open(QIODevice::WriteOnly | QIODevice::Text)");
 #ifndef UNIT_TEST  
-        NLOGM("Config file creation failed", "file.open");
+        logMessage("Config file creation failed", "file.open");
 #endif
     }
 }
@@ -564,7 +564,7 @@ bool NSettings::loadFromFile()
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        NLOGM("NSettings::loadFromFile()", "Unable to open configuration file.");
+        logMessage("NSettings::loadFromFile()", "Unable to open configuration file.");
         return false;
     }
 
@@ -579,18 +579,18 @@ bool NSettings::loadFromFile()
         if (line.isEmpty())
             continue;
         NSettingCommand cmd = NSettingCommand::toNSettingCommand(line);
-        //NLOGD("NSettings::loadFromFile()", cmd.toString());
+        //logDebug("NSettings::loadFromFile()", cmd.toString());
         if (cmd.isValid()){
             /*
              #ifndef UNIT_TEST
-			 NLOGD("NSettings::loadFromFile(), new command context", cmd.context());
-			 NLOGD("NSettings::loadFromFile(), new command", cmd.toString());
+			 logDebug("NSettings::loadFromFile(), new command context", cmd.context());
+			 logDebug("NSettings::loadFromFile(), new command", cmd.toString());
              #endif
              */
             setCommand(cmd);
         } else {
 #ifndef UNIT_TEST
-            NLOGM("NSettings::loadFromFile(), invalid command:",
+            logMessage("NSettings::loadFromFile(), invalid command:",
                   QString("%1 (line %2)").arg(line).arg(lineNumber));
 #endif
         }
@@ -608,7 +608,7 @@ bool NSettings::saveToFile()
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
-        NLOGM("NSettings::saveToFile()", "Unable to open configuration file.");
+        logMessage("NSettings::saveToFile()", "Unable to open configuration file.");
         return false;
     }
 
