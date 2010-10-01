@@ -1,8 +1,6 @@
 #ifndef N_TCP_SERVER_SOCKET_AUTH_SERVICES_H
 #define N_TCP_SERVER_SOCKET_AUTH_SERVICES_H
 
-#include "n_response.h"
-#include "n_client_session.h"
 #include "n_tcp_server_socket_service.h"
 #include "n_tcp_server_auth_session.h"
 

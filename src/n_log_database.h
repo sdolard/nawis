@@ -67,4 +67,8 @@ private:
     QString stringToLogField(const QString & field);
 };
 
+inline NLogDatabase & getLogDb() {
+    return NLogDatabase::instance();
+}
+
 #endif //N_LOG_DATABASE_H

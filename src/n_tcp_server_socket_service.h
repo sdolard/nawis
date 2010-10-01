@@ -1,8 +1,11 @@
 #ifndef N_TCP_SERVER_SOCKET_SERVICE_H
 #define N_TCP_SERVER_SOCKET_SERVICE_H
 
+#include <QScriptValue>
+
 #include "n_response.h"
 #include "n_services.h"
+#include "n_client_session.h"
 
 #define RSP_SUCCESS                    "success"
 #define RSP_MSG                        "message"
@@ -29,6 +32,7 @@ public:
 
     static NResponse & getHelp(NService_n::NService* services, NResponse & response);
     static NResponse & getFullHelp(NService_n::NService* rootServices, NResponse & response);
+    static void setJsonRootReponse(QScriptValue & svRoot, int totalCount, bool succeed);
 };
 
 #endif // N_TCP_SERVER_SOCKET_SERVICE_H

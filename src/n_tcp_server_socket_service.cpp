@@ -63,3 +63,15 @@ NResponse & NTcpServerSocketService::getFullHelp(NService_n::NService* rootServi
     return getHelp(services, response);
 }
 
+void NTcpServerSocketService::setJsonRootReponse(QScriptValue & svRoot, int totalCount,
+                                                  bool succeed)
+{
+    svRoot.setProperty(RSP_SUCCESS, succeed ? QScriptValue(true): QScriptValue(false));
+    svRoot.setProperty(RSP_COUNT, totalCount > 0 && succeed ? QScriptValue(totalCount): QScriptValue(0));
+    if (totalCount == 0)
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_NO_RESULTS));
+    else if (succeed)
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_LOADED));
+    else
+        svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_ERROR_OCCURRED));
+}

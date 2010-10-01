@@ -46,6 +46,7 @@
 #include "n_json.h"
 #include "n_file_category.h"
 #include "n_tcp_server_socket_auth_services.h"
+#include "n_tcp_server_socket_log_services.h"
 
 #include "n_tcp_server_socket_services.h"
 
@@ -191,7 +192,7 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return svcGetPictureThumb(session, response);
 
     case SVC_API_LOG:
-        return svcLog(session, response);
+        return getLogServices().log(session, response);
 
     case SVC_API_MUSIC:
         return NTcpServerSocketService::getFullHelp(NService_n::nsAPIMusicServices, response);
@@ -444,51 +445,7 @@ NResponse & NTcpServerSocketServices::svcGetDuplicatedFile(const NClientSession 
     return response;
 }
 
-NResponse & NTcpServerSocketServices::svcLog(const NClientSession & session, NResponse & response)
-{	
-    if (session.request().method() == "GET")
-        return svcGetLog(session, response);
 
-    if (session.request().method() == "DELETE")
-        return svcDeleteLog(response);
-    Q_ASSERT(false);
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcDeleteLog(NResponse & response)
-{	
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    bool logCleared = NLOGDB.clearLogs();
-    svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
-    svRoot.setProperty(RSP_MSG, logCleared ? "Log cleared" : "Log not cleared");
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetLog(const NClientSession & session,
-                                                NResponse & response)
-{	
-    bool ok;
-    QString search = session.url().queryItemValue("search");
-    int start = session.url().queryItemValue("start").toInt();
-    int limit = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString sort = session.url().queryItemValue("sort");
-    QString dir = session.url().queryItemValue("dir");
-
-    int totalCount = NLOGDB.getLogListCount(search);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NLOGDB.getLogList(se, svData, search, start, limit, sort, dir);
-    setJsonRootReponse(svRoot, totalCount, succeed);
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-
-}
 
 NResponse & NTcpServerSocketServices::svcGetFileDownload(int *statusCode, const NClientSession & session, NResponse & response)
 {

@@ -82,10 +82,7 @@ private:
     NResponse & svcGetDuplicatedFile(const NClientSession & session, NResponse & response,
                                      NFileCategory_n::FileCategory category);
 
-    // log
-    NResponse & svcLog(const NClientSession & session, NResponse & response);
-    NResponse & svcDeleteLog(NResponse & response);
-    NResponse & svcGetLog(const NClientSession & session, NResponse & response);
+
 
     // UI
     NResponse & svcRedirectToTUI(int *statusCode, const NClientSession & session,
