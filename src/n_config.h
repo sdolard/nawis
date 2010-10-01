@@ -121,5 +121,6 @@ private slots:
     void onConfigFileChanged();
 };
 
+
 #endif // N_CONFIG_H
 

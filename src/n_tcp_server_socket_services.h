@@ -82,19 +82,10 @@ private:
     NResponse & svcGetDuplicatedFile(const NClientSession & session, NResponse & response,
                                      NFileCategory_n::FileCategory category);
 
-
-
     // UI
     NResponse & svcRedirectToTUI(int *statusCode, const NClientSession & session,
                                  NResponse & response);
     NResponse & svcGetUI(int *statusCode,	const NClientSession & session, NResponse & response);
-
-    // Shared Dir
-    NResponse & svcSharedDir(const NClientSession & session, NResponse & response);
-    NResponse & svcPostSharedDir(const NClientSession & session, NResponse & response);
-    NResponse & svcPutSharedDir(const NClientSession & session, NResponse & response);
-    NResponse & svcGetSharedDir(const NClientSession & session, NResponse & response);
-    NResponse & svcDeleteSharedDir(const NClientSession & session, NResponse & response);
 
     // Music
     NResponse & svcGetMusicAlbum(const NClientSession & session, NResponse & response);
