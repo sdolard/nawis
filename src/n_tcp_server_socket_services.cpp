@@ -268,7 +268,6 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
     return response;
 }
 
-
 NResponse & NTcpServerSocketServices::svcGetFavicon(NResponse & response)
 {
     response.httpHeader().setContentType("image/x-icon");
@@ -448,8 +447,6 @@ NResponse & NTcpServerSocketServices::svcGetDuplicatedFile(const NClientSession 
     return response;
 }
 
-
-
 NResponse & NTcpServerSocketServices::svcGetFileDownload(int *statusCode, const NClientSession & session, NResponse & response)
 {
     QString fileHash = session.resource();
@@ -465,7 +462,6 @@ NResponse & NTcpServerSocketServices::svcGetFileDownload(int *statusCode, const 
     response.removeDefaultCharset();
     return response;
 }
-
 
 NResponse & NTcpServerSocketServices::svcGetPictureResize(const NClientSession & session,
                                                           NResponse & response)
@@ -552,9 +548,6 @@ NResponse & NTcpServerSocketServices::setResponseStatus(int statusCode, NRespons
 
     return response;
 }
-
-
-
 
 NResponse & NTcpServerSocketServices::svcGetNop(NResponse & response)
 {
