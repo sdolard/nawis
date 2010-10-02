@@ -49,6 +49,7 @@
 #include "n_tcp_server_socket_log_services.h"
 #include "n_tcp_server_socket_shared_dir_services.h"
 #include "n_tcp_server_socket_user_services.h"
+#include "n_tcp_server_socket_music_services.h"
 
 #include "n_tcp_server_socket_services.h"
 
@@ -200,22 +201,22 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return NTcpServerSocketService::getFullHelp(NService_n::nsAPIMusicServices, response);
 
     case SVC_API_MUSIC_ALBUM:
-        return svcGetMusicAlbum(session, response);
+        return getMusicServices().getAlbum(session, response);
 
     case SVC_API_MUSIC_ARTIST:
-        return svcGetMusicArtist(session, response);
+        return getMusicServices().getArtist(session, response);
 
     case SVC_API_MUSIC_GENRE:
-        return svcGetMusicGenre(session, response);
+        return getMusicServices().getGenre(session, response);
 
     case SVC_API_MUSIC_ID3_PICTURE:
-        return svcGetMusicID3Picture(statusCode, session, response);
+        return getMusicServices().getID3Picture(statusCode, session, response);
 
     case SVC_API_MUSIC_TITLE:
-        return svcGetMusicTitle(session, response);
+        return getMusicServices().getTitle(session, response);
 
     case SVC_API_MUSIC_YEAR:
-        return svcGetMusicYear(session, response);
+        return getMusicServices().getYear(session, response);
 
     case SVC_API_NOP:
         return svcGetNop(response);
@@ -579,269 +580,7 @@ NResponse & NTcpServerSocketServices::svcLookForModification(NResponse & respons
 
 
 
-NResponse & NTcpServerSocketServices::svcGetMusicAlbum(const NClientSession & session,
-                                                       NResponse & response)
-{	
-    bool ok;
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
-    int start = session.url().queryItemValue("start").toInt();
-    int limit = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString dir = session.url().queryItemValue("dir");
-    QString artist;
-    if(session.url().hasQueryItem("artist"))// Cos of NULL test
-    {
-        artist = session.url().queryItemValue("artist");
-        if (artist.isNull())
-            artist = "";
-        artist = NConvert_n::fromUTF8PercentEncoding(artist);
-    }
-    QString genre;
-    if(session.url().hasQueryItem("genre"))// Cos of NULL test
-    {
-        genre = session.url().queryItemValue("genre");
-        if (genre.isNull())
-            genre = "";
-        genre = NConvert_n::fromUTF8PercentEncoding(genre);
-    }
 
-    int year = session.url().queryItemValue("year").toInt(&ok);
-    if (!ok)
-        year = -1;
-
-    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
-    logMessage(session.socket()->peerAddress().toString(),
-          tr("%1 is looking for album: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
-          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
-
-    int totalCount = NMDB.getAlbumListCount(searches, year, genre, artist);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-    // TODO: manage limit = -1 to get all album
-    bool succeed = NMDB.getAlbumList(se, svData, totalCount, searches, start,
-                                         limit, dir, year, genre, artist);
-    setJsonRootReponse(svRoot, totalCount, succeed);
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetMusicArtist(const NClientSession & session,
-                                                        NResponse & response)
-{
-    bool ok;
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
-    int start = session.url().queryItemValue("start").toInt();
-    int limit = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString dir = session.url().queryItemValue("dir");
-    int year  = session.url().queryItemValue("year").toInt(&ok);
-    if (!ok)
-        year = -1;
-
-    QString genre;
-    if(session.url().hasQueryItem("genre"))// Cos of NULL test
-    {
-        genre = session.url().queryItemValue("genre");
-        if (genre.isNull())
-            genre = "";
-        genre = NConvert_n::fromUTF8PercentEncoding(genre);
-    }
-
-    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
-    logMessage(session.socket()->peerAddress().toString(),
-          tr("%1 is looking for artist: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
-          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
-
-    int totalCount = NMDB.getArtistListCount(searches, year, genre);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NMDB.getArtistList(se, svData, totalCount, searches, start, limit, dir, year, genre);
-    setJsonRootReponse(svRoot, totalCount, succeed);
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetMusicGenre(const NClientSession & session,
-                                                       NResponse & response)
-{
-    bool ok;
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
-    int start = session.url().queryItemValue("start").toInt();
-    int limit  = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString dir = session.url().queryItemValue("dir");
-    int year  = session.url().queryItemValue("year").toInt(&ok);
-    if (!ok)
-        year = -1;
-
-    const NTcpServerAuthSession & authSession = getAuthServices().getSession(session.sessionId());
-    logMessage(session.socket()->peerAddress().toString(),
-          tr("%1 is looking for genre: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
-          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
-
-    int totalCount = NMDB.getGenreListCount(searches, year);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-    bool succeed = NMDB.getGenreList(se, svData, totalCount, searches, start, limit, dir, year);
-    setJsonRootReponse(svRoot, totalCount, succeed);
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetMusicID3Picture(int *statusCode,
-                                                            const NClientSession & session,
-                                                            NResponse & response)
-{
-    response.removeDefaultCharset();
-
-    QString fileHash = session.resource();
-    QFileInfo fileInfo = NDatabase::instance().file(fileHash);
-
-    // Cache
-    QString lastModified = NDate_n::toHTMLDateTime(fileInfo.lastModified());
-    response.httpHeader().setValue("Last-Modified", lastModified);
-    if (session.request().value("If-Modified-Since") == lastModified)
-    {
-        *statusCode = N_HTTP_NOT_MODIFIED;
-        return response;
-    }
-
-    // File
-    QByteArray ba;
-    QString mimeType;
-    if (NMetadata::getID3Picture(fileInfo.absoluteFilePath(), ba, mimeType))
-    {
-        response.setData(ba);
-        response.httpHeader().setContentType(mimeType);
-        response.add10yExpiresHttpHeader();
-    }
-
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetMusicYear(const NClientSession & session,
-                                                      NResponse & response)
-{
-    bool ok;
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
-    int start = session.url().queryItemValue("start").toInt();
-    int limit  = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString dir = session.url().queryItemValue("dir");
-
-    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
-    logMessage(session.socket()->peerAddress().toString(),
-          tr("%1 is looking for year: \"%2\"; start: %3; limit: %4, dir:\"%5\"").
-          arg(authSession.login()).arg(NConvert_n::fromUTF8PercentEncoding(search)).arg(start).arg(limit).arg(dir));
-
-
-    int totalCount = NMDB.getYearListCount(searches);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-
-    bool succeed = NMDB.getYearList(se, svData, totalCount, searches, start,
-                                        limit, dir);
-    setJsonRootReponse(svRoot, totalCount, succeed);
-
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
-
-NResponse & NTcpServerSocketServices::svcGetMusicTitle(const NClientSession & session,
-                                                       NResponse & response)
-{
-    bool ok;
-    int start = session.url().queryItemValue("start").toInt();
-    if (!ok)
-        start = 0;
-    int limit  = session.url().queryItemValue("limit").toInt(&ok);
-    if (!ok)
-        limit = 25;
-    QString dir = session.url().queryItemValue("dir");
-    QString sort = session.url().queryItemValue("sort");
-    QString search = session.url().queryItemValue("search");
-    QStringList searches = search.split("+", QString::SkipEmptyParts);
-    searches = NConvert_n::fromUTF8PercentEncoding(searches);
-
-    QString album;
-    if(session.url().hasQueryItem("album")) // Cos of NULL test
-    {
-        album = session.url().queryItemValue("album");
-        if (album.isNull())
-            album = "";
-        album = NConvert_n::fromUTF8PercentEncoding(album);
-
-    }
-    QString artist;
-    if(session.url().hasQueryItem("artist"))// Cos of NULL test
-    {
-        artist = session.url().queryItemValue("artist");
-        if (artist.isNull())
-            artist = "";
-        artist = NConvert_n::fromUTF8PercentEncoding(artist);
-    }
-    QString genre;
-    if(session.url().hasQueryItem("genre"))// Cos of NULL test
-    {	genre = session.url().queryItemValue("genre");
-        if (genre.isNull())
-            genre = "";
-        genre = NConvert_n::fromUTF8PercentEncoding(genre);
-    }
-
-    int year  = session.url().queryItemValue("year").toInt(&ok);
-    if (!ok)
-        year = -1;
-
-    const NTcpServerAuthSession authSession = getAuthServices().getSession(session.sessionId());
-    logMessage(session.socket()->peerAddress().toString(),
-          tr("%1 is looking for music search:\"%2\"; album:\"%3\"; artist:\"%4\";"\
-             "genre:\"%5\"; year:\"%6\"; start:\"%7\"; "\
-             "limit:\"%8\"; sort:\"%9\"; dir:\"%10\"").
-          arg(authSession.login()). // 1
-          arg(NConvert_n::fromUTF8PercentEncoding(search)).// 2
-          arg(album).// 3
-          arg(artist).// 4
-          arg(genre).// 5
-          arg(year).// 6
-          arg(start).// 7
-          arg(limit).// 8
-          arg(sort).// 9
-          arg(dir));// 10
-
-    int totalCount = NMDB.getTitleListCount(searches, album, artist, genre, year);
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    QScriptValue svData = se.newArray(totalCount);
-    svRoot.setProperty(RSP_DATA, svData);
-
-    bool succeed = NMDB.getTitleList(se, svData, searches, album, artist, genre, year,
-                                         start, limit, sort, dir);
-
-    setJsonRootReponse(svRoot, totalCount, succeed);
-
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
 
 void NTcpServerSocketServices::setJsonRootReponse(QScriptValue & svRoot, int totalCount,
                                                   bool succeed)
