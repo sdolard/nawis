@@ -198,7 +198,7 @@ bool NTcpServerSocket::requestIsComplete()
 void NTcpServerSocket::prepareResponse()
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssWriting);
-    m_response =  NTcpServerSocketServices::instance().response(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
+    m_response =  NTcpServerSocketServices::instance().getResponse(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
     m_content.clear();
     m_request = QHttpRequestHeader();
 }
@@ -240,7 +240,7 @@ void NTcpServerSocket::sendResponse()
                     disconnectFromHost();
             }
             break;
-			default:
+        default:
             Q_ASSERT(false);
             break;
         }

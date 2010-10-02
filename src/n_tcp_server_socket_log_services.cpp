@@ -7,7 +7,6 @@
 
 #include "n_tcp_server_socket_log_services.h"
 
-
 NTcpServerSocketLogServices * NTcpServerSocketLogServices::m_instance = NULL;
 
 NTcpServerSocketLogServices & NTcpServerSocketLogServices::instance()
@@ -32,8 +31,6 @@ NTcpServerSocketLogServices::NTcpServerSocketLogServices()
 NTcpServerSocketLogServices::~NTcpServerSocketLogServices()
 {
 }
-
-
 
 NResponse & NTcpServerSocketLogServices::log(const NClientSession & session, NResponse & response)
 {

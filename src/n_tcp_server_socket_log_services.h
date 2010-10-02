@@ -26,5 +26,4 @@ inline NTcpServerSocketLogServices & getLogServices(){
     return NTcpServerSocketLogServices::instance();
 }
 
-
 #endif // N_TCP_SERVER_SOCKET_LOG_SERVICES_H

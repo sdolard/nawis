@@ -178,7 +178,7 @@ const QByteArray NImage::pResize(const QSize & size)
     QImageReader imageReader(m_fi.absoluteFilePath());
     if (!imageReader.canRead())
     {
-        logMessage("NTcpServerSocketServices::svcFilePreview error",
+        logMessage("NImage::pResize error",
               QString("loading preview for: %1\nError:%2").
               arg(m_fi.absoluteFilePath()).
               arg(imageReader.errorString()));

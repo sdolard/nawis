@@ -91,7 +91,7 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
         if (se.hasUncaughtException()){
             svReadRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
             svReadRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-            logDebug("NTcpServerSocketServices::svcPostAuths", se.uncaughtExceptionBacktrace());
+            logDebug("NTcpServerSocketAuthServices::postAuth", se.uncaughtExceptionBacktrace());
             logDebug("NJson::serialize(svRoot)", NJson::serialize(svReadRoot));
             response.setData(NJson::serializeToQByteArray(svReadRoot));
             return response;

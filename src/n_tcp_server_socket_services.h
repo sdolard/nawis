@@ -21,19 +21,9 @@
 #ifndef N_TCP_SERVER_SOCKET_SERVICES
 #define N_TCP_SERVER_SOCKET_SERVICES
 
-// Qt
-#include <QHttpRequestHeader>
-#include <QByteArray>
-#include <QString>
-#include <QAbstractSocket>
-#include <QScriptValue>
-
 // App
 #include "n_response.h"
-#include "n_services.h"
 #include "n_client_session.h"
-#include "n_file_category.h"
-#include "n_tcp_server_auth_session.h"
 
 class NTcpServerSocketServices: QObject
 {
@@ -43,7 +33,7 @@ public:
     static void deleteInstance();
     ~NTcpServerSocketServices();
 
-    NResponse response(const NClientSession & session);
+    NResponse getResponse(const NClientSession & session);
 
 private:	
     static NTcpServerSocketServices *m_instance;
@@ -53,39 +43,9 @@ private:
                         const NClientSession & session);
     NResponse & setResponseStatus(int statusCode, NResponse & response);
 
-    NResponse & svcGetFavicon(NResponse & response);
-
-    // Nop
-    NResponse & svcGetNop(NResponse & response);
-
-    // Look for modification
-    NResponse & svcLookForModification(NResponse & response);
-
-    // file
-    NResponse & svcGetSearch(const NClientSession & session, NResponse & response,
-                             NFileCategory_n::FileCategory category);
-    NResponse & svcGetFileDownload(int *statusCode, const NClientSession & session, NResponse & response);
-
-    // Picture
-    NResponse & svcGetPictureResize(const NClientSession & session, NResponse & response);
-    NResponse & svcGetPictureThumb(const NClientSession & session, NResponse & response);
-
-
-    // duplicated files
-    NResponse & svcGetDuplicatedFile(const NClientSession & session, NResponse & response,
-                                     NFileCategory_n::FileCategory category);
-
-    // UI
-    NResponse & svcRedirectToTUI(int *statusCode, const NClientSession & session,
-                                 NResponse & response);
-    NResponse & svcGetUI(int *statusCode,	const NClientSession & session, NResponse & response);
-
-
     // @Return {bool} true, if auth test succeed and httpMethode test succeed
     bool isServiceAvailable(int * statusCode, const NClientSession & session,
                             NService_n::NService service);
-    // Return, SUCCESS, MSG and totalCount json
-    void setJsonRootReponse(QScriptValue & svRoot, int totalCount, bool succeed);
 };
 
 
