@@ -77,7 +77,8 @@ HEADERS += src/n_client_session.h \
     src/n_tcp_server_socket_auth_services.h \
     src/n_tcp_server_socket_service.h \
     src/n_tcp_server_socket_log_services.h \
-    src/n_tcp_server_socket_shared_dir_services.h
+    src/n_tcp_server_socket_shared_dir_services.h \
+    src/n_tcp_server_socket_user_services.h
 
 SOURCES += src/main.cpp \
     src/n_client_session.cpp \
@@ -120,7 +121,8 @@ SOURCES += src/main.cpp \
     src/n_tcp_server_socket_auth_services.cpp \
     src/n_tcp_server_socket_service.cpp \
     src/n_tcp_server_socket_log_services.cpp \
-    src/n_tcp_server_socket_shared_dir_services.cpp
+    src/n_tcp_server_socket_shared_dir_services.cpp \
+    src/n_tcp_server_socket_user_services.cpp
 
 
 # Contrib
