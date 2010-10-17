@@ -48,7 +48,7 @@ NResponse & NTcpServerSocketUIServices::nop(NResponse & response)
 
 NResponse & NTcpServerSocketUIServices::lookForModification(NResponse & response)
 {
-    NCONFIG.clearDirUpdateData();
+    getConfig().clearDirUpdateData();
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
@@ -99,9 +99,9 @@ NResponse & NTcpServerSocketUIServices::getUI(int *statusCode,
     //logDebug("uiPath", uiPath);
 
     // Directory traversal test
-    filename.prepend(NCONFIG.serverPub().absolutePath()); // to local file
+    filename.prepend(getConfig().serverPub().absolutePath()); // to local file
     QFileInfo fi(filename);
-    if (!fi.absoluteFilePath().startsWith(NCONFIG.serverPub().absolutePath()))
+    if (!fi.absoluteFilePath().startsWith(getConfig().serverPub().absolutePath()))
     {
         *statusCode = N_HTTP_FORBIDDEN;
         return response;

@@ -53,7 +53,7 @@ const QByteArray NImage::getThumb()
     if (!m_fi.exists())
         return notExistsImage(m_defaultThumbSize);
 
-    if (!NCONFIG.fileSuffixes().suffixList(NFileCategory_n::fcPicture).
+    if (!getConfig().fileSuffixes().suffixList(NFileCategory_n::fcPicture).
         contains(m_fi.suffix(), Qt::CaseInsensitive))
         return notExistsImage(m_defaultThumbSize);
 
@@ -78,7 +78,7 @@ const QByteArray NImage::resize(const QSize & size)
     if (!m_fi.exists())
         return notExistsImage(s);
 
-    if (!NCONFIG.fileSuffixes().suffixList(NFileCategory_n::fcPicture).contains(m_fi.suffix(), Qt::CaseInsensitive))
+    if (!getConfig().fileSuffixes().suffixList(NFileCategory_n::fcPicture).contains(m_fi.suffix(), Qt::CaseInsensitive))
         return notExistsImage(s);
 
     // heavy

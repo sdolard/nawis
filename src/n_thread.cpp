@@ -6,6 +6,11 @@ NThread::NThread(QObject * parent)
     m_stop = false;
 }
 
+NThread::~NThread(){
+    stop();
+}
+
+
 void NThread::stop()
 {
     QMutexLocker locker(&m_stopMutex);

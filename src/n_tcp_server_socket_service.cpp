@@ -21,8 +21,8 @@ NResponse & NTcpServerSocketService::getHelp(NService_n::NService* services, NRe
     QString htmlHelpTemplate = "<html><head><title>%1</title>"\
                                "</head><body>%2</body></html>";
     htmlHelpTemplate = htmlHelpTemplate.arg(QString("nawis server api %1 %2").
-                                            arg(getNawisVersion()).
-                                            arg(getNawisBuild()));
+                                            arg(NAWIS_VERSION).
+                                            arg(NAWIS_BUILD));
     QString htmlCommandTemplate = "<h2>Command: %1</h2>";
     QString servicesHelp;
     int i = 0;
@@ -41,7 +41,7 @@ NResponse & NTcpServerSocketService::getHelp(NService_n::NService* services, NRe
                 arg(services[i].comment).
                 arg(services[i].history).
                 arg(services[i].authRequired ? "yes" : "no").
-                arg(NTcpServerAuthSession::levelToString(services[i].requiredLevel)).
+                arg(NTcpServerAuthSession::toStringLevel(services[i].requiredLevel)).
                 arg(services[i].httpMethod).
                 arg(services[i].params.isEmpty() ? "none": services[i].params).
                 arg(services[i].content.isEmpty() ? "none": services[i].content).

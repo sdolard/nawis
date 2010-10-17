@@ -1106,7 +1106,7 @@ bool NDatabase::isDuplicatedFile(const QString & hash, const QFileInfo & newFi)
     query.bindValue(":relative_path", newFi.absolutePath().remove(rootPath));
     query.bindValue(":absolute_file_path", newFi.absoluteFilePath());
     query.bindValue(":fk_file_category_id",
-                    NFileCategory_n::fileCategoryId(NCONFIG.fileSuffixes().category(newFi).category()));
+                    NFileCategory_n::fileCategoryId(getConfig().fileSuffixes().category(newFi).category()));
     query.bindValue(":added", QDateTime::currentDateTime().toString(SQLITE_DATETIME));
     query.bindValue(":size", newFi.size());
     query.bindValue(":last_modified", newFi.lastModified().toString(SQLITE_DATETIME));

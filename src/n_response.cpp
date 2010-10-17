@@ -14,7 +14,7 @@
 
 NResponse::NResponse()
 {
-    m_maxFileBufferSize = NCONFIG.fileBufferSize();
+    m_maxFileBufferSize = getConfig().fileBufferSize();
     m_fileFirstBytePos  = 0;
     m_fileLastBytePos   = 0;
     m_fileReadSize      = 0;

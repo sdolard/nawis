@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     You_need_at_least_Qt_4_4_to_compile_this_program
 #endif
 
-            qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState");
+    qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState");
     qRegisterMetaType<QSslSocket::SslMode>("QSslSocket::SslMode");
     qRegisterMetaType<QSslError>("QSslError");
     qRegisterMetaType< QList<QSslError> >("QList<QSslError>");

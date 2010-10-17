@@ -33,8 +33,6 @@
 #include "n_dir.h"
 #include "n_settings.h"
 
-#define NCONFIG (NConfig::instance())
-
 class NConfig: public QObject
 {
     Q_OBJECT
@@ -120,6 +118,10 @@ private:
 private slots:
     void onConfigFileChanged();
 };
+
+inline NConfig & getConfig() {
+    return NConfig::instance();
+}
 
 
 #endif // N_CONFIG_H

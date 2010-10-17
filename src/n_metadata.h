@@ -17,7 +17,7 @@
 #include <QFileInfo>
 
 
-/* TODO: seperate in At least 3 classes
+/* TODO: seperate in at least 3 classes
 *   - NMetadata
 *   - NPictureMetadata
 *   - NMPegMetadata

@@ -86,7 +86,7 @@ NResponse & NTcpServerSocketSharedDirServices::postSharedDir(const NClientSessio
                     svReadData.property("recursive").toBool(),
                     svReadData.property("shared").toBool());
 
-    int id  = NCONFIG.addSharedDirectory(dir);
+    int id  = getConfig().addSharedDirectory(dir);
 
     QScriptValue svRoot = se.newObject();
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
@@ -136,7 +136,7 @@ NResponse & NTcpServerSocketSharedDirServices::putSharedDir(const NClientSession
         return response;
     }
 
-    NDirList sharedDirs = NCONFIG.sharedDirectories();
+    NDirList sharedDirs = getConfig().sharedDirectories();
     if (id >= sharedDirs.count())
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
@@ -160,7 +160,7 @@ NResponse & NTcpServerSocketSharedDirServices::putSharedDir(const NClientSession
                             recursive.isEmpty() ? dir.recursive() : QVariant(recursive).toBool(),
                             shared.isEmpty() ? dir.shared() : QVariant(shared).toBool());
 
-    modifiedDir = NCONFIG.modifySharedDirectory(id, modifiedDir);
+    modifiedDir = getConfig().modifySharedDirectory(id, modifiedDir);
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_UPDATED).arg(id)));
     QScriptValue svData = se.newArray();
@@ -195,7 +195,7 @@ NResponse & NTcpServerSocketSharedDirServices::deleteSharedDir(const NClientSess
         return response;
     }
 
-    NDirList sharedDirs = NCONFIG.sharedDirectories();
+    NDirList sharedDirs = getConfig().sharedDirectories();
     if (id >= sharedDirs.count())
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
@@ -204,7 +204,7 @@ NResponse & NTcpServerSocketSharedDirServices::deleteSharedDir(const NClientSess
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
-    NCONFIG.removeSharedDirectory(id);
+    getConfig().removeSharedDirectory(id);
 
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_DELETED).arg(id)));

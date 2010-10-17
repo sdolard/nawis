@@ -46,12 +46,12 @@ NServer::NServer(QObject *parent)
     m_hasherJob            = NULL;
     m_metadataUpdaterJob   = NULL;
     m_musicDbUpdaterJob    = NULL;
-    m_sharedDirectories    = NCONFIG.sharedDirectories();
-    m_fileSuffixes         = NCONFIG.fileSuffixes();
+    m_sharedDirectories    = getConfig().sharedDirectories();
+    m_fileSuffixes         = getConfig().fileSuffixes();
 
     NConfig::instance();
 
-    connect(&NCONFIG, SIGNAL(configFileChanged()),
+    connect(&getConfig(), SIGNAL(configFileChanged()),
             this, SLOT(onConfigFileChanged()));
     connect(&m_jobTimer, SIGNAL(timeout()),
             this, SLOT(onJobTimerTimeout()));
@@ -79,9 +79,9 @@ bool NServer::start()
     NDatabase::instance();
 
     bool started = false;
-    if (!NCONFIG.isOnlySslServerEnabled())
+    if (!getConfig().isOnlySslServerEnabled())
         started = startTcpServer();
-    if (NCONFIG.isSslServerEnabled())
+    if (getConfig().isSslServerEnabled())
         started = started && startSslTcpServer();
 
     if (!started)
@@ -89,7 +89,7 @@ bool NServer::start()
         logMessageDirect("Server issue", "Can not start");
         return false;
     }
-    NCONFIG.dumpSharedDirectoriesConfig();
+    getConfig().dumpSharedDirectoriesConfig();
 
     m_jobTimer.start(TIMER_INTERVAL);
 
@@ -112,13 +112,13 @@ bool NServer::pause()
 
 bool NServer::resume()
 {
-    if (NCONFIG.isOnlySslServerEnabled() && !NCONFIG.isSslServerEnabled())
+    if (getConfig().isOnlySslServerEnabled() && !getConfig().isSslServerEnabled())
         return true; // None is running (due to config), but everything is ok
 
     bool restarted = false;
-    if (!NCONFIG.isOnlySslServerEnabled())
+    if (!getConfig().isOnlySslServerEnabled())
         restarted = restartTcpServer();
-    if (NCONFIG.isSslServerEnabled())
+    if (getConfig().isSslServerEnabled())
         restarted = restarted && restartSslTcpServer();
     return restarted;
 }
@@ -148,7 +148,7 @@ void NServer::stopSslTcpServer()
 bool NServer::restartTcpServer()
 {	
     stopTcpServer();
-    if (!NCONFIG.isOnlySslServerEnabled())
+    if (!getConfig().isOnlySslServerEnabled())
         return startTcpServer();
     return false;
 }
@@ -156,7 +156,7 @@ bool NServer::restartTcpServer()
 bool NServer::restartSslTcpServer()
 {
     stopSslTcpServer();
-    if (NCONFIG.isSslServerEnabled())
+    if (getConfig().isSslServerEnabled())
         return startSslTcpServer();
     return false;
 }
@@ -167,7 +167,7 @@ bool NServer::startTcpServer()
         return true;
 
     logMessageDirect("Server", tr("TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
-    m_server = new NTcpServer(NCONFIG.serverPort(), false, this);
+    m_server = new NTcpServer(getConfig().serverPort(), false, this);
 
     if (m_server->start())
     {
@@ -177,7 +177,7 @@ bool NServer::startTcpServer()
     }
 
     logMessageDirect("Server", tr("TCP server not able to listen on %1: %2\n").
-           arg(NCONFIG.serverPort()).
+           arg(getConfig().serverPort()).
            arg(m_server->errorString()));
 
     logMessageDirect("Solution: ", socketErrorToString(m_server->serverError()));
@@ -190,7 +190,7 @@ bool NServer::startSslTcpServer()
         return true;
 
     logMessageDirect("Server", tr("SSL TCP server %1 is starting...").arg(NVersion_n::namedVersion(false)));
-    m_sslServer = new NTcpServer(NCONFIG.serverSslPort(), true, this);
+    m_sslServer = new NTcpServer(getConfig().serverSslPort(), true, this);
 
     if (m_sslServer->start())
     {
@@ -200,7 +200,7 @@ bool NServer::startSslTcpServer()
     }
 
     logMessageDirect("Server", tr("SSL TCP server not able to listen on %1: %2\n").
-           arg(NCONFIG.serverSslPort()).
+           arg(getConfig().serverSslPort()).
            arg(m_sslServer->errorString()));
 
     logMessageDirect("Solution: ", socketErrorToString(m_sslServer->serverError()));
@@ -286,7 +286,7 @@ void NServer::onJobTimerTimeout()
     // We check last job execution
     // if last date update is valid AND delais is not overloaded and config has not changed
     // then we have nothing to do.
-    if (NCONFIG.isLastDirUpdateValid())
+    if (getConfig().isLastDirUpdateValid())
         return;
 
     m_jobTimer.stop();
@@ -303,7 +303,7 @@ void NServer::startJobs()
     if (m_currentJob > JT_LAST )
     {
         stopJobs();
-        NCONFIG.setLastDirUpdateDone();
+        getConfig().setLastDirUpdateDone();
         m_jobTimer.start(TIMER_INTERVAL);
         return;
     }
@@ -424,41 +424,41 @@ void NServer::onDirWatcherHash(QString hash, NDirWatcherThreadItems dirs)
 {
     Q_ASSERT(m_currentJob == JT_WATCH_FILES);
 
-    if (NCONFIG.dirFingerPrint() == hash &&
-        NCONFIG.isLastDirUpdateValid())
+    if (getConfig().dirFingerPrint() == hash &&
+        getConfig().isLastDirUpdateValid())
     {
         // No update needed
         m_currentJob = JT_LAST;
         return;
     }
 
-    NCONFIG.setDirFingerPrint(hash);
+    getConfig().setDirFingerPrint(hash);
     m_dirs = dirs;
 }
 
 void NServer::onConfigFileChanged()
 {
-    if ((m_server && NCONFIG.isOnlySslServerEnabled()) ||
-        (!m_server && !NCONFIG.isOnlySslServerEnabled()) ||
-        (m_server && NCONFIG.serverPort() != m_server->serverPort())
+    if ((m_server && getConfig().isOnlySslServerEnabled()) ||
+        (!m_server && !getConfig().isOnlySslServerEnabled()) ||
+        (m_server && getConfig().serverPort() != m_server->serverPort())
         ) {
         restartTcpServer();
     }
 
-    if ((m_sslServer && !NCONFIG.isSslServerEnabled()) ||
-        (!m_sslServer && NCONFIG.isSslServerEnabled()) ||
-        (m_sslServer && NCONFIG.serverSslPort() != m_sslServer->serverPort())
+    if ((m_sslServer && !getConfig().isSslServerEnabled()) ||
+        (!m_sslServer && getConfig().isSslServerEnabled()) ||
+        (m_sslServer && getConfig().serverSslPort() != m_sslServer->serverPort())
         ) {
         restartSslTcpServer();
     }
 
-    bool sharedDirectoriesChanged = NCONFIG.sharedDirectories() != m_sharedDirectories;
+    bool sharedDirectoriesChanged = getConfig().sharedDirectories() != m_sharedDirectories;
 
     if (sharedDirectoriesChanged) {
-        NCONFIG.dumpSharedDirectoriesConfig();
+        getConfig().dumpSharedDirectoriesConfig();
     }
 
-    bool fileSuffixesChanged = NCONFIG.fileSuffixes() != m_fileSuffixes;
+    bool fileSuffixesChanged = getConfig().fileSuffixes() != m_fileSuffixes;
     if (!sharedDirectoriesChanged &&
         !fileSuffixesChanged) {
         return;
@@ -468,15 +468,15 @@ void NServer::onConfigFileChanged()
     m_configFileChanged = true;
     m_jobTimer.stop();
     stopJobs();
-    NCONFIG.invalidLastDirUpdate();
+    getConfig().invalidLastDirUpdate();
     if (sharedDirectoriesChanged)
     {
-        m_sharedDirectories = NCONFIG.sharedDirectories();
-        NCONFIG.dumpSharedDirectoriesConfig();
+        m_sharedDirectories = getConfig().sharedDirectories();
+        getConfig().dumpSharedDirectoriesConfig();
     }
 
     if (fileSuffixesChanged)
-        m_fileSuffixes = NCONFIG.fileSuffixes();
+        m_fileSuffixes = getConfig().fileSuffixes();
 
     m_configFileChanged = false;
     m_jobTimer.start(TIMER_INTERVAL);

@@ -28,7 +28,7 @@ class NTcpServerSocketService
 {
 public:
     NTcpServerSocketService();
-    ~NTcpServerSocketService();
+    virtual ~NTcpServerSocketService();
 
     static NResponse & getHelp(NService_n::NService* services, NResponse & response);
     static NResponse & getFullHelp(NService_n::NService* rootServices, NResponse & response);

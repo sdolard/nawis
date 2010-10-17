@@ -198,6 +198,7 @@ bool NTcpServerSocket::requestIsComplete()
 void NTcpServerSocket::prepareResponse()
 {
     Q_ASSERT(m_state == NTcpServerSocket::ssWriting);
+    // To thread this?
     m_response =  NTcpServerSocketServices::instance().getResponse(NClientSession(m_request, m_content, &m_sslSocket, m_ssl));
     m_content.clear();
     m_request = QHttpRequestHeader();
@@ -319,6 +320,6 @@ void NTcpServerSocket::sslErrors ( const QList<QSslError> & errors )
 
 bool NTcpServerSocket::initSsl()
 {
-    m_sslSocket.setSslConfiguration(NCONFIG.sslCfg());
-    return !NCONFIG.sslCfg().isNull();
+    m_sslSocket.setSslConfiguration(getConfig().sslCfg());
+    return !getConfig().sslCfg().isNull();
 }

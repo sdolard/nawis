@@ -132,9 +132,7 @@ public:
     void deleteGroup(const QString & context);
 
 signals:
-    /*
-	 * Emit when config is updated ( loaded or reloaded )
-	 */
+    /* Emit when config is updated ( loaded or reloaded ) */
     void configFileChanged();
 
 private:

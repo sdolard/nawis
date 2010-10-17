@@ -83,9 +83,9 @@ void NDirWatcherThreadItems::addDir(const QString & path, const QString & rootPa
 NDirWatcherThread::NDirWatcherThread(QObject * parent)
     :NThread(parent)
 {
-    m_sharedDirectories = NCONFIG.sharedDirectories();
+    m_sharedDirectories = getConfig().sharedDirectories();
     m_notSharedDirs = m_sharedDirectories.getNotShared();
-    m_fileSuffixes = NCONFIG.fileSuffixes();
+    m_fileSuffixes = getConfig().fileSuffixes();
 
     m_hasher = new QCryptographicHash(QCryptographicHash::Md5);
 }
@@ -171,7 +171,7 @@ void NDirWatcherThread::parseDir(const QString & path, bool recursive, const QSt
 
 void NDirWatcherThread::updateHash()
 {
-    m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
+    m_dir.setNameFilters(getConfig().fileSuffixes().toDirNameFilters());
     m_dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     QCryptographicHash hash(QCryptographicHash::Md5);
     QMutableHashIterator<QString, NDirWatcherThreadItem> i(m_dirs);

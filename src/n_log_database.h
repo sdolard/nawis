@@ -57,8 +57,8 @@ public:
 
 private:
     static NLogDatabase   *m_instance;
-    QSqlDatabase         m_db;
-    QMutex               m_dbMutex;
+    QSqlDatabase           m_db;
+    QMutex                 m_dbMutex;
     NLogDatabase();
     void create();
     void debugLastQuery(const QString & msg, const QSqlQuery & query);

@@ -40,7 +40,7 @@ NDbUpdaterThread::NDbUpdaterThread(const NDirWatcherThreadItems & dirs, QObject 
     :NThread(parent)
 {
     m_dirs = dirs;
-    m_fileSuffixes = NCONFIG.fileSuffixes();
+    m_fileSuffixes = getConfig().fileSuffixes();
 }
 
 void NDbUpdaterThread::run()
@@ -65,7 +65,7 @@ void NDbUpdaterThread::updateDB()
 void NDbUpdaterThread::parseSharedFiles()
 {
     logDebug("NDbUpdaterThread", "parseSharedFiles start");
-    m_dir.setNameFilters(NCONFIG.fileSuffixes().toDirNameFilters());
+    m_dir.setNameFilters(getConfig().fileSuffixes().toDirNameFilters());
     m_dir.setFilter(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     foreach(NDirWatcherThreadItem item, m_dirs)
     {

@@ -114,7 +114,7 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
     QScriptValue svReadUser = se.globalObject().property("data").property("data");
     QString email = svReadUser.property("email").toString();
     QString name = svReadUser.property("name").toString();
-    QString password = NCONFIG.toPasswordHash(svReadUser.property("password").toString());
+    QString password = getConfig().toPasswordHash(svReadUser.property("password").toString());
 
     logDebug("email", email);
     logDebug("name", name);
@@ -163,10 +163,11 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
 
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QString("User %1 added (account not enabled").arg(email));
-    logMessage("User add succeed", QString("%1(%2); user agent: %3").
-          arg(email).
-          arg(session.peerAddress()).
-          arg(session.userAgent()));
+    logMessage("User add succeed", QString("%1, %2(%3); user agent: %4").
+               arg(userId).
+               arg(email).
+               arg(session.peerAddress()).
+               arg(session.userAgent()));
 
     // We add new user to response
     QScriptValue svData = se.newArray(1);
@@ -184,7 +185,6 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
 
 NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session, NResponse & response)
 {
-    //logDebug("NTcpServerSocketUserServices::svcPutSharedDir", session.postData());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
 
@@ -196,7 +196,6 @@ NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_USER));
-        //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
     }
@@ -223,7 +222,7 @@ NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session
 
     QScriptValue svReadUser = se.globalObject().property("data").property("data");
     QString email = svReadUser.property("email").toString();
-    QString password = NCONFIG.toPasswordHash(svReadUser.property("password").toString());
+    QString password = getConfig().toPasswordHash(svReadUser.property("password").toString());
     QString name = svReadUser.property("name").toString();
     QString preferences = svReadUser.property("preferences").toString();
     QString enabled = svReadUser.property("enabled").toString();
@@ -251,6 +250,12 @@ NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session
         return response;
     }
 
+    logMessage("User update succeed", QString("%1, %2 (%3); user agent: %4").
+               arg(id).
+               arg(email).
+               arg(session.peerAddress()).
+               arg(session.userAgent()));
+
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_UPDATED).arg(id)));
     QScriptValue svData = se.newArray();
@@ -275,6 +280,11 @@ NResponse & NTcpServerSocketUserServices::deleteUser(const NClientSession & sess
     QScriptValue svRoot = se.newObject();
     QString id = session.resource();
     bool userDeleted =  NDB.deleteUser(id);
+    logMessage("User deletion", QString("%1 (%2); user agent: %3").
+          arg(QVariant(id).toString()).
+          arg(session.peerAddress()).
+          arg(session.userAgent()));
+
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(userDeleted));
     svRoot.setProperty(RSP_MSG, userDeleted ?
                        QScriptValue(QString("User %1 deleted").arg(id)) :

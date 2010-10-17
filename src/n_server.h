@@ -24,6 +24,8 @@
 #define JT_BUILD_MUSIC_DB  0x05
 #define JT_LAST            JT_BUILD_MUSIC_DB
 
+
+// TODO: use a state pattern ?
 class NServer: public QObject
 {
     Q_OBJECT

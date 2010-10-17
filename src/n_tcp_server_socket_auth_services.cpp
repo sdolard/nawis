@@ -109,21 +109,24 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
     }
 
 
-    int level = AUTH_LEVEL_USER;
+    int level = AUTH_LEVEL_NONE;
     bool authSucceed = false;
-    if (NCONFIG.AdminUser() == login) { // Admin auth
-        // Admin level login can only work with NCONFIG.AdminUser() (cf another account with same login)
-        if (NCONFIG.AdminPassword() == password)
+    if (getConfig().AdminUser() == login) { // Admin auth
+        // Admin level login can only work with getConfig().AdminUser() (cf another account with same login)
+        if (getConfig().AdminPassword() == password)
         {
-            level = level | AUTH_LEVEL_ADMIN;
+            level = AUTH_LEVEL_ADMIN;
             authSucceed = true;
         }
     } else { // User auth
-        // TODO: check levels...
+
         NStringMap user = NDB.getUserByEmail(login);
-        authSucceed = user.count() > 0 &&
-                      user["password"] == NCONFIG.toPasswordHash(password) &&
-                      QVariant(user["enabled"]).toBool();
+        level =  NTcpServerAuthSession::toIntLevel(user["level"]);
+        if (level != AUTH_LEVEL_NONE) {
+            authSucceed = user.count() > 0 &&
+                          user["password"] == getConfig().toPasswordHash(password) &&
+                          QVariant(user["enabled"]).toBool();
+        }
     }
 
     QScriptValue svRoot = se.newObject();
@@ -147,7 +150,7 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
                        arg(login).
                        arg(session.peerAddress()).
                        arg(authSession.address()).
-                       arg(NTcpServerAuthSession::levelToString(authSession.level())).
+                       arg(NTcpServerAuthSession::toStringLevel(authSession.level())).
                        arg(session.userAgent()));
         }
 
@@ -157,12 +160,12 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
         m_authSessionHash.insert(authSession.sessionId(), authSession);
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
         svRoot.setProperty(RSP_MSG, QScriptValue("Authentication succeed"));
-        svRoot.setProperty("level", QScriptValue(NTcpServerAuthSession::levelToString(authSession.level())));
+        svRoot.setProperty("level", QScriptValue(NTcpServerAuthSession::toStringLevel(authSession.level())));
         response.setSessionCookie(authSession.sessionId(), session.isSsl());
         logMessage("Authentication login succeed", QString("%1@%2; level: %3; user agent: %4").
                    arg(authSession.login()).
                    arg(authSession.address()).
-                   arg(NTcpServerAuthSession::levelToString(authSession.level())).
+                   arg(NTcpServerAuthSession::toStringLevel(authSession.level())).
                    arg(authSession.userAgent()));
     }
 

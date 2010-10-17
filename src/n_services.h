@@ -20,7 +20,6 @@
 #define SVC_HELP                                                    (0x00000003)
 #define SVC_UI                                                      (0x00000004)
 
-
 // SVC_API
 #define   SVC_API_AUTH                                    (SVC_API | 0x00000010)
 #define   SVC_API_CFG                                     (SVC_API | 0x00000020)

@@ -10,6 +10,7 @@ class NThread: public QThread
     Q_OBJECT
 public: 
     NThread(QObject * parent = 0);
+    virtual ~NThread();
 
     void stop();
 

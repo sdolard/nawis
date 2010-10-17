@@ -71,16 +71,34 @@ bool NTcpServerAuthSession::isLevelSet(int level) const
     return (m_level & level) == level;
 }
 
-const QString NTcpServerAuthSession::levelToString(int level)
+const QString NTcpServerAuthSession::toStringLevel(int level, const QString & sep)
 {
     QStringList levelList;
+    if (level == AUTH_LEVEL_ADMIN)
+        return "admin";
+
     if ((level & AUTH_LEVEL_USER) == AUTH_LEVEL_USER)
         levelList << "user";
 
-    if ((level & AUTH_LEVEL_ADMIN) == AUTH_LEVEL_ADMIN)
-        levelList << "admin";
+    return levelList.join(sep);
+}
 
-    return levelList.join(" ");
+int NTcpServerAuthSession::toIntLevel(const QString & level, const QString & sep)
+{
+    int intLevel = AUTH_LEVEL_NONE;
+    QStringList l = level.toLower().split(sep);
+    for(int i = 0; i < l.count(); i++)
+    {
+        /*
+        AUTH_LEVEL_ADMIN is reserved to admin
+        */
+        if (l.at(i) == "user")
+        {
+            intLevel |= AUTH_LEVEL_USER;
+            continue;
+        }
+    }
+    return intLevel;
 }
 
 
