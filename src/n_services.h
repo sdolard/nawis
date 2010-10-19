@@ -25,16 +25,16 @@
 #define   SVC_API_CFG                                     (SVC_API | 0x00000020)
 #define   SVC_API_DOWNLOAD                                (SVC_API | 0x00000030)
 #define   SVC_API_DUPLICATED                              (SVC_API | 0x00000040)
-#define   SVC_API_FILE                                    (SVC_API | 0x00000050)
-#define   SVC_API_LOG                                     (SVC_API | 0x00000060)
-#define   SVC_API_MUSIC                                   (SVC_API | 0x00000070)
-#define   SVC_API_NOP                                     (SVC_API | 0x00000080)
-#define   SVC_API_PICTURE                                 (SVC_API | 0x00000090)
-#define   SVC_API_SEARCH                                  (SVC_API | 0x000000A0)
-#define   SVC_API_USER                                    (SVC_API | 0x000000B0)
+#define   SVC_API_LOG                                     (SVC_API | 0x00000050)
+#define   SVC_API_MUSIC                                   (SVC_API | 0x00000060)
+#define   SVC_API_NOP                                     (SVC_API | 0x00000070)
+#define   SVC_API_PICTURE                                 (SVC_API | 0x00000080)
+#define   SVC_API_SEARCH                                  (SVC_API | 0x00000090)
+#define   SVC_API_USER                                    (SVC_API | 0x000000A0)
 
 // SVC_API_CFG
 #define     SVC_API_CFG_SHARED_DIR                    (SVC_API_CFG | 0x00001000)
+#define     SVC_API_CFG_UPDATE_DB                     (SVC_API_CFG | 0x00002000)
 
 // SVC_API_DUPLICATED
 #define     SVC_API_DUPLICATED_ARCHIVE         (SVC_API_DUPLICATED | 0x00001000)
@@ -46,7 +46,7 @@
 #define     SVC_API_DUPLICATED_PICTURE         (SVC_API_DUPLICATED | 0x00007000)
 
 // SVC_API_FILE
-#define     SVC_API_FILE_UPDATE_DB                   (SVC_API_FILE | 0x00001000)
+
 
 // SVC_API_MUSIC
 #define     SVC_API_MUSIC_ALBUM                     (SVC_API_MUSIC | 0x00001000)
@@ -77,7 +77,7 @@ namespace NService_n
     {
         int      id;
         QString  service;
-        bool     authRequired;
+        bool     sessionRequired;
         int      requiredLevel;
         QString  history;
         QString  comment;
@@ -93,7 +93,6 @@ namespace NService_n
     extern NService nsServices[];
     extern NService nsAPIServices[];
     extern NService nsAPICfgServices[];
-    extern NService nsAPIFileServices[];
     extern NService nsAPIMusicServices[];
     extern NService nsAPIPictureServices[];
     extern NService nsAPISearchServices[];

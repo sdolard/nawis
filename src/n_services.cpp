@@ -20,7 +20,7 @@ NService_n::NService NService_n::nsServiceNone =
 {
     SVC_NONE, // id
     "", // service
-    false, // authRequired
+    false, // sessionRequired
     AUTH_LEVEL_NONE, // requiredLevel
     "0.1.0", // history
     "", // comment
@@ -40,7 +40,7 @@ NService_n::NService NService_n::nsServices[] =
     {
         SVC_API, // id
         "api", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Display API commands", // comment
@@ -54,7 +54,7 @@ NService_n::NService NService_n::nsServices[] =
 {
         SVC_FAVICON, // id
         "favicon.ico", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Download application favicon", // comment
@@ -68,7 +68,7 @@ NService_n::NService NService_n::nsServices[] =
 {
         SVC_HELP, // id
         "help", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Display application API help", // comment
@@ -82,7 +82,7 @@ NService_n::NService NService_n::nsServices[] =
 {
         SVC_UI, // id
         "ui", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Access to server default UI", // comment
@@ -104,7 +104,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
     {
         SVC_API_AUTH, // id
         "auth", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Display authentication help", // comment
@@ -117,7 +117,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_AUTH, // id
         "auth", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Use to auth a user with a login and a password", // comment
@@ -146,8 +146,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_AUTH, // id
         "auth", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Use to unauth a user, based on \"nawis_sessionId\" cookie", // comment
         "api/auth", // fullService
@@ -164,8 +164,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_CFG, // id
         "cfg", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        false, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Display server configuration API", // comment
         "api/cfg", // fullService
@@ -177,8 +177,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_DOWNLOAD, // id
         "download", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DOWNLOAD, // requiredLevel
         "0.1.0", // history
         "Download a resource", // comment
         "api/download/&lt;file hash&gt;", // fullService
@@ -191,8 +191,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_DUPLICATED, // id
         "duplicated", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        false, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Duplicated api help", // comment
         "api/duplicated", // fullService
@@ -202,23 +202,10 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "", // returns
         nsAPIDuplicatedServices
     },{
-        SVC_API_FILE, // id
-        "file", // service
-        false, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
-        "0.1.0", // history
-        "Root file api commands", // comment
-        "api/file", // fullService
-        "GET", // httpMethod
-        "[help]", // params
-        "", // content
-        "File command help", // returns
-        NService_n::nsAPIFileServices
-    },{
         SVC_API_LOG, // id
         "log", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_LOG, // requiredLevel
         "0.1.0", // history
         "Return logs. Various thing a logged.", // comment
         "api/log", // fullService
@@ -243,8 +230,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_LOG, // id
         "log", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_LOG, // requiredLevel
         "0.1.0", // history
         "Use to delete logs", // comment
         "api/log", // fullService
@@ -260,8 +247,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_MUSIC, // id
         "music", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        false, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Music commands.", // comment
         "api/music", // fullService
@@ -273,8 +260,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_NOP, // id
         "nop", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "NOP", // comment
         "api/nop", // fullService
@@ -298,8 +285,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_PICTURE, // id
         "picture", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        false, // sessionRequired
+        AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Picture commands", // comment
         "api/picture", // fullService
@@ -311,7 +298,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_SEARCH, // id
         "search", // service
-        false, // authRequired
+        false, // sessionRequired
         AUTH_LEVEL_NONE, // requiredLevel
         "0.1.0", // history
         "Search root api", // comment
@@ -324,8 +311,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_USER, // id
         "user", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Return user list.", // comment
         "api/user", // fullService
@@ -347,7 +334,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"email\":\"&lt;user email&gt;\", // string<br>"\
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
-         "    \"level\":\"&lt;account level&gt;: available level are: user\", // string<br>"\
+        "    \"level\":\"&lt;account level&gt;: available level are: user\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
@@ -357,8 +344,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     }, {
         SVC_API_USER, // id
         "user", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Delete a user", // comment
         "api/user/&lt;id&gt", // fullService
@@ -376,8 +363,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     },{
         SVC_API_USER, // id
         "user", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Used to modify user properties", // comment
         "api/user/&lt;id&gt;", // fullService
@@ -413,8 +400,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
     }, {
         SVC_API_USER, // id
         "user", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Add a user. Account is default deactivated.", // comment
         "api/user", // fullService
@@ -455,8 +442,8 @@ NService_n::NService NService_n::nsAPICfgServices[] =
     {
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Return list of shared directories, with there sharing properties", // comment
         "api/cfg/shareddir", // fullService
@@ -483,8 +470,8 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 {
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Remove a directory from shared list", // comment
         "api/cfg/shareddir/&lt;id&gt;", // fullService
@@ -503,8 +490,8 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 {
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Add a shared directory", // comment
         "api/cfg/shareddir", // fullService
@@ -536,8 +523,8 @@ NService_n::NService NService_n::nsAPICfgServices[] =
 {
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Used to modify shared directory properties", // comment
         "api/cfg/shareddir/&lt;id&gt;", // fullService
@@ -566,21 +553,11 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "  }]<br>"\
         "}</pre>", // returns
         NULL
-    },
-NService_n::nsServiceNone
-};
-
-
-/*
- * nsAPIFileServices
- */
-NService_n::NService NService_n::nsAPIFileServices[] =
-{
-    {
-        SVC_API_FILE_UPDATE_DB, // id
+    },{
+        SVC_API_CFG_UPDATE_DB, // id
         "updatedb", // service
-        true, // authRequired
-        AUTH_LEVEL_ADMIN, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_CFG, // requiredLevel
         "0.1.0", // history
         "Look for new files and modification then update database with collected<br>"\
         "data and metadata(id3, IPCT, exif...).<br>"\
@@ -600,6 +577,8 @@ NService_n::NService NService_n::nsAPIFileServices[] =
 NService_n::nsServiceNone
 };
 
+
+
 /*
  * nsAPIMusicServices
  */
@@ -608,8 +587,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     {
         SVC_API_MUSIC_ALBUM, // id
         "album", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Album list", // comment
         "api/music/album", // fullService
@@ -644,8 +623,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     },{
         SVC_API_MUSIC_ARTIST, // id
         "artist", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Album list", // comment
         "api/music/artist", // fullService
@@ -674,8 +653,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     },{
         SVC_API_MUSIC_GENRE, // id
         "genre", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Genre list", // comment
         "api/music/genre", // fullService
@@ -703,8 +682,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     },{
         SVC_API_MUSIC_ID3_PICTURE, // id
         "id3picture", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Return a thumbnail picture contained in id3 files", // comment
         "api/music/id3picture/&lt;file hash&gt;", // fullService
@@ -717,8 +696,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     },{
         SVC_API_MUSIC_TITLE, // id
         "title", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Title list", // comment
         "api/music/title", // fullService
@@ -763,8 +742,8 @@ NService_n::NService NService_n::nsAPIMusicServices[] =
     },{
         SVC_API_MUSIC_YEAR, // id
         "year", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_MUSIC, // requiredLevel
         "0.1.0", // history
         "Year list", // comment
         "api/music/year", // fullService
@@ -799,8 +778,8 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
     {
         SVC_API_PICTURE_RESIZE, // id
         "resize", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_PICTURE, // requiredLevel
         "0.1.0", // history
         "Return a resized jpeg picture", // comment
         "api/picture/resize/&lt;file hash&gt;", // fullService
@@ -816,8 +795,8 @@ NService_n::NService NService_n::nsAPIPictureServices[] =
     },{
         SVC_API_PICTURE_THUMB, // id
         "thumb", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_PICTURE, // requiredLevel
         "0.1.0", // history
         "Return a thumbnail jpeg picture", // comment
         "api/picture/thumb/&lt;file hash&gt;", // fullService
@@ -840,8 +819,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     {
         SVC_API_SEARCH_ARCHIVE, // id
         "archive", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search archives", // comment
         "api/search/archive", // fullService
@@ -875,8 +854,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_DOCUMENT, // id
         "document", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search document", // comment
         "api/search/document", // fullService
@@ -910,8 +889,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_FILE, // id
         "file", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search files", // comment
         "api/search/file", // fullService
@@ -966,8 +945,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_MOVIE, // id
         "movie", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search movie", // comment
         "api/search/movie", // fullService
@@ -1001,8 +980,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_MUSIC, // id
         "music", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search music", // comment
         "api/search/music", // fullService
@@ -1045,8 +1024,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_OTHER, // id
         "other", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search other format (see server config file)", // comment
         "api/search/other", // fullService
@@ -1080,8 +1059,8 @@ NService_n::NService NService_n::nsAPISearchServices[]=
     },{
         SVC_API_SEARCH_PICTURE, // id
         "picture", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_SEARCH, // requiredLevel
         "0.1.0", // history
         "Search picture", // comment
         "api/search/picture", // fullService
@@ -1136,8 +1115,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     {
         SVC_API_DUPLICATED_ARCHIVE, // id
         "archive", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated archives", // comment
         "api/duplicated/archive", // fullService
@@ -1174,8 +1153,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_DOCUMENT, // id
         "document", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated document", // comment
         "api/duplicated/document", // fullService
@@ -1209,8 +1188,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_FILE, // id
         "file", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated files", // comment
         "api/duplicated/file", // fullService
@@ -1245,8 +1224,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_MOVIE, // id
         "movie", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated movie", // comment
         "api/duplicated/movie", // fullService
@@ -1281,8 +1260,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_MUSIC, // id
         "music", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated music", // comment
         "api/duplicated/music", // fullService
@@ -1317,8 +1296,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_OTHER, // id
         "other", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated other format (see server config file)", // comment
         "api/duplicated/other", // fullService
@@ -1353,8 +1332,8 @@ NService_n::NService NService_n::nsAPIDuplicatedServices[]=
     },{
         SVC_API_DUPLICATED_PICTURE, // id
         "picture", // service
-        true, // authRequired
-        AUTH_LEVEL_USER, // requiredLevel
+        true, // sessionRequired
+        AUTH_LEVEL_DUPLICATED, // requiredLevel
         "0.1.0", // history
         "Return duplicated picture", // comment
         "api/duplicated/picture", // fullService

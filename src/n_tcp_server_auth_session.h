@@ -10,15 +10,26 @@
 
 #include "n_client_session.h"
 
-// TODO: manage level
-#define AUTH_LEVEL_NONE      0x0000
-#define AUTH_LEVEL_USER      0x0001
-/*
-#define AUTH_LEVEL_...       0x0002
-#define AUTH_LEVEL_...       0x0004
-#define AUTH_LEVEL_...       0x0008
-*/
-#define AUTH_LEVEL_ADMIN     0x9999
+#define AUTH_LEVEL_NONE           0x0000
+// Full levels
+#define AUTH_LEVEL_ADMIN          0xFFFF
+
+
+// Required to access to cfg and user api
+#define AUTH_LEVEL_CFG            0x0001
+// Required to access to download api
+#define AUTH_LEVEL_DOWNLOAD       0x0002
+// Required to access to duplicated api
+#define AUTH_LEVEL_DUPLICATED     0x0004
+// Required to access to log api
+#define AUTH_LEVEL_LOG            0x0008
+// Required  to access to music api
+#define AUTH_LEVEL_MUSIC          0x0010
+// Required  to access to picture api
+#define AUTH_LEVEL_PICTURE        0x0020
+// Required  to access to search api
+#define AUTH_LEVEL_SEARCH         0x0040
+
 
 class NTcpServerAuthSession
 {
@@ -40,8 +51,8 @@ public:
     int level() const;
     bool isLevelSet(int level) const;
     // Return levels space separated
-    static const QString toStringLevel(int level, const QString & sep = " ");
-    static int toIntLevel(const QString & level, const QString & sep = " ");
+    static const QString toStringLevel(int levels, const QString & sep = " ");
+    static int toIntLevel(const QString & levels, const QString & sep = " ");
 
     // Cookie is generated here
     void set(const QString & address, const QString & login, const QString & userAgent, int level);
@@ -63,10 +74,10 @@ public:
     const QString sessionId(const QString & address, const QString & login) const;
     void removeExpired();
 
-    bool isValid(const NClientSession & session, int requiredLevel = AUTH_LEVEL_USER);
+    bool isValid(const NClientSession & session, int requiredLevel);
 
     bool isValid(const QString & sessionId, const QString address,
-                 const QString & userAgent, int requiredLevel = AUTH_LEVEL_USER);
+                 const QString & userAgent, int requiredLevel);
 };
 
 #endif // N_TCP_SERVER_AUTH_SESSION_H

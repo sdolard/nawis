@@ -20,8 +20,6 @@ public:
                                  NResponse & response);
     NResponse & getUI(int *statusCode,	const NClientSession & session, NResponse & response);
 
-    NResponse & lookForModification(NResponse & response);
-
 private:
     static NTcpServerSocketUIServices *m_instance;
     NTcpServerSocketUIServices();

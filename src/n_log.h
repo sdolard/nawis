@@ -26,8 +26,6 @@
 #include <QStringList>
 #include <QThread>
 
-class NLogThread;
-
 class NLog: public QObject
 { 
     Q_OBJECT
@@ -50,6 +48,21 @@ signals:
     void directLogList(const QString & context, const QStringList & msgList, NLog::LogType lt);
 
 private:
+    class NLogThread: public QThread
+    {
+    public:
+        NLogThread(NLog * log)
+            :m_log(log){
+            Q_ASSERT(m_log != NULL);
+        }
+
+    protected:
+        void run();
+
+    private:
+        NLog *m_log;
+    };
+
     static NLog *m_instance;
     NLogThread  *m_logThread;
 
@@ -67,35 +80,21 @@ private:
 class NLogger: public QObject
 {
     Q_OBJECT
-public:
-    void run();
-
 public slots:
     void log(const QString & context, const QString & msg, NLog::LogType lt);
     void log(const QString & context, const QStringList & msgList, NLog::LogType lt);
 
+protected:
+    virtual void writeDebug(const QString & context, const QString & msg);
+    virtual void writeMessage(const QString & context, const QString & msg);
+
 private:
     //syslog date format
     static const QString now();
-
-    void debug(const QString & context, const QString & msg);
-    void message(const QString & context, const QString & msg);
+    QString formatMsg(const QString & msg);
 };
 
-class NLogThread: public QThread
-{
-public:
-    NLogThread(NLog * log)
-        :m_log(log){
-        Q_ASSERT(m_log != NULL);
-    }
 
-protected:
-    void run();
-
-private:
-    NLog *m_log;
-};
 
 inline void logMessage(const QString & context, const QString & msg) {
     NLog::log(context, msg, NLog::ltMsg);

@@ -26,7 +26,7 @@
 #include "n_json.h"
 #include "n_tcp_server_socket_auth_services.h"
 #include "n_tcp_server_socket_log_services.h"
-#include "n_tcp_server_socket_shared_dir_services.h"
+#include "n_tcp_server_socket_cfg_services.h"
 #include "n_tcp_server_socket_user_services.h"
 #include "n_tcp_server_socket_music_services.h"
 #include "n_tcp_server_socket_picture_services.h"
@@ -134,10 +134,10 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
         return NTcpServerSocketService::getFullHelp(NService_n::nsAPICfgServices, response);
 
     case SVC_API_CFG_SHARED_DIR:
-        return getSharedDirServices().sharedDir(session, response);
+        return getCfgServices().sharedDir(session, response);
 
-    case SVC_API_FILE:
-        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIFileServices, response);
+    case SVC_API_CFG_UPDATE_DB:
+        return getCfgServices().lookForModification(response);
 
     case SVC_API_DOWNLOAD:
         return getFileServices().download(statusCode, session, response);
@@ -165,9 +165,6 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
 
     case SVC_API_DUPLICATED_MOVIE:
         return getFileServices().getDuplicated(session, response, NFileCategory_n::fcMovie);
-
-    case SVC_API_FILE_UPDATE_DB:
-        return getUIServices().lookForModification(response);
 
     case SVC_API_PICTURE_RESIZE:
         return getPictureServices().resize(session, response);
@@ -305,14 +302,20 @@ NResponse & NTcpServerSocketServices::setResponseStatus(int statusCode, NRespons
 bool NTcpServerSocketServices::isServiceAvailable(int * statusCode, const NClientSession & session,
                                                   NService_n::NService service)
 {
-    Q_ASSERT(statusCode);
+    Q_ASSERT_X(statusCode,
+               "NTcpServerSocketServices::isServiceAvailable: statusCode must bet set",
+               qPrintable(service.service));
+    Q_ASSERT_X(service.requiredLevel != AUTH_LEVEL_ADMIN,
+               "NTcpServerSocketServices::isServiceAvailable: requiredLevel must not be set to set to AUTH_LEVEL_ADMIN",
+               qPrintable(service.service));
+
     if (service.id == SVC_NONE)
     {
         *statusCode = N_HTTP_BAD_REQUEST;
         return false;
     }
 
-    if (service.authRequired &&
+    if (service.sessionRequired &&
         !getAuthServices().isSessionValid(session, service.requiredLevel))
     {
         *statusCode = N_HTTP_UNAUTHORIZED;

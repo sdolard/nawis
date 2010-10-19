@@ -71,32 +71,94 @@ bool NTcpServerAuthSession::isLevelSet(int level) const
     return (m_level & level) == level;
 }
 
-const QString NTcpServerAuthSession::toStringLevel(int level, const QString & sep)
+const QString NTcpServerAuthSession::toStringLevel(int levels, const QString & sep)
 {
     QStringList levelList;
-    if (level == AUTH_LEVEL_ADMIN)
+    /*
+        AUTH_LEVEL_ADMIN is reserved to "admin" special user,
+        If you've got this level, you've got all others
+    */
+    if (levels == AUTH_LEVEL_ADMIN)
         return "admin";
 
-    if ((level & AUTH_LEVEL_USER) == AUTH_LEVEL_USER)
-        levelList << "user";
+    if ((levels & AUTH_LEVEL_CFG) == AUTH_LEVEL_CFG)
+        levelList << "config";
+
+    if ((levels & AUTH_LEVEL_DOWNLOAD) == AUTH_LEVEL_DOWNLOAD)
+        levelList << "download";
+
+    if ((levels & AUTH_LEVEL_DUPLICATED) == AUTH_LEVEL_DUPLICATED)
+        levelList << "duplicated";
+
+    if ((levels & AUTH_LEVEL_LOG) == AUTH_LEVEL_LOG)
+        levelList << "log";
+
+    if ((levels & AUTH_LEVEL_MUSIC) == AUTH_LEVEL_MUSIC)
+        levelList << "music";
+
+    if ((levels & AUTH_LEVEL_PICTURE) == AUTH_LEVEL_PICTURE)
+        levelList << "picture";
+
+    if ((levels & AUTH_LEVEL_SEARCH) == AUTH_LEVEL_SEARCH)
+        levelList << "search";
 
     return levelList.join(sep);
 }
 
-int NTcpServerAuthSession::toIntLevel(const QString & level, const QString & sep)
+int NTcpServerAuthSession::toIntLevel(const QString & levels, const QString & sep)
 {
     int intLevel = AUTH_LEVEL_NONE;
-    QStringList l = level.toLower().split(sep);
+    if (levels.isEmpty()) {
+        return intLevel;
+    }
+
+    QStringList l = levels.toLower().split(sep);
     for(int i = 0; i < l.count(); i++)
     {
         /*
-        AUTH_LEVEL_ADMIN is reserved to admin
+            AUTH_LEVEL_ADMIN is reserved to "admin" special user,
+            so it's not possible to require explicitly this level
         */
-        if (l.at(i) == "user")
+        const QString & level  = l.at(i);
+        if (level== "config")
         {
-            intLevel |= AUTH_LEVEL_USER;
+            intLevel |= AUTH_LEVEL_CFG;
             continue;
         }
+
+        if (level == "download")
+        {
+            intLevel |= AUTH_LEVEL_DOWNLOAD;
+            continue;
+        }
+
+        if (level == "duplicated")
+        {
+            intLevel |= AUTH_LEVEL_DUPLICATED;
+            continue;
+        }
+        if (level == "log")
+        {
+            intLevel |= AUTH_LEVEL_LOG;
+            continue;
+        }
+        if (level == "music")
+        {
+            intLevel |= AUTH_LEVEL_MUSIC;
+            continue;
+        }
+        if (level == "picture")
+        {
+            intLevel |= AUTH_LEVEL_PICTURE;
+            continue;
+        }
+        if (level == "search")
+        {
+            intLevel |= AUTH_LEVEL_SEARCH;
+            continue;
+        }
+
+        Q_ASSERT_X(false, "NTcpServerAuthSession::toIntLevel: not managed level?", qPrintable(levels));
     }
     return intLevel;
 }

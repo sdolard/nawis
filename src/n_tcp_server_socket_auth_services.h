@@ -15,10 +15,10 @@ public:
 
     const NTcpServerAuthSession getSession(const QString & sessionId) const;
 
-    bool isSessionValid(const NClientSession & session, int requiredLevel = AUTH_LEVEL_USER);
+    bool isSessionValid(const NClientSession & session, int requiredLevel = AUTH_LEVEL_NONE);
 
     bool isSessionValid(const QString & sessionId, const QString address,
-                 const QString & userAgent, int requiredLevel = AUTH_LEVEL_USER);
+                 const QString & userAgent, int requiredLevel = AUTH_LEVEL_NONE);
 
     void removeExpiredSession();
 

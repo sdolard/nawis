@@ -4,18 +4,18 @@
 #include "n_json.h"
 #include "n_config.h"
 
-#include "n_tcp_server_socket_shared_dir_services.h"
+#include "n_tcp_server_socket_cfg_services.h"
 
-NTcpServerSocketSharedDirServices * NTcpServerSocketSharedDirServices::m_instance = NULL;
+NTcpServerSocketCfgServices * NTcpServerSocketCfgServices::m_instance = NULL;
 
-NTcpServerSocketSharedDirServices & NTcpServerSocketSharedDirServices::instance()
+NTcpServerSocketCfgServices & NTcpServerSocketCfgServices::instance()
 {
     if (m_instance == NULL)
-        m_instance = new NTcpServerSocketSharedDirServices();
+        m_instance = new NTcpServerSocketCfgServices();
     return *m_instance;
 }
 
-void NTcpServerSocketSharedDirServices::deleteInstance()
+void NTcpServerSocketCfgServices::deleteInstance()
 {
     if (m_instance == NULL)
         return;
@@ -23,15 +23,15 @@ void NTcpServerSocketSharedDirServices::deleteInstance()
     m_instance = NULL;
 }
 
-NTcpServerSocketSharedDirServices::NTcpServerSocketSharedDirServices()
+NTcpServerSocketCfgServices::NTcpServerSocketCfgServices()
 {
 }
 
-NTcpServerSocketSharedDirServices::~NTcpServerSocketSharedDirServices()
+NTcpServerSocketCfgServices::~NTcpServerSocketCfgServices()
 {
 }
 
-NResponse & NTcpServerSocketSharedDirServices::sharedDir(const NClientSession & session, NResponse & response)
+NResponse & NTcpServerSocketCfgServices::sharedDir(const NClientSession & session, NResponse & response)
 {
     if (session.request().method() == "POST")
         return postSharedDir(session, response);
@@ -47,7 +47,7 @@ NResponse & NTcpServerSocketSharedDirServices::sharedDir(const NClientSession & 
 }
 
 // Configuration
-NResponse & NTcpServerSocketSharedDirServices::getSharedDir(const NClientSession &, NResponse & response)
+NResponse & NTcpServerSocketCfgServices::getSharedDir(const NClientSession &, NResponse & response)
 {
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
@@ -75,9 +75,9 @@ NResponse & NTcpServerSocketSharedDirServices::getSharedDir(const NClientSession
     return response;
 }
 
-NResponse & NTcpServerSocketSharedDirServices::postSharedDir(const NClientSession & session, NResponse & response)
+NResponse & NTcpServerSocketCfgServices::postSharedDir(const NClientSession & session, NResponse & response)
 {
-    //logDebug("NTcpServerSocketSharedDirServices::svcPostSharedDir", session.postData());
+    //logDebug("NTcpServerSocketCfgServices::svcPostSharedDir", session.postData());
 
     QScriptEngine se;
     se.evaluate("var data = " + QString::fromUtf8(session.content()));
@@ -107,9 +107,9 @@ NResponse & NTcpServerSocketSharedDirServices::postSharedDir(const NClientSessio
     return response;
 }
 
-NResponse & NTcpServerSocketSharedDirServices::putSharedDir(const NClientSession & session, NResponse & response)
+NResponse & NTcpServerSocketCfgServices::putSharedDir(const NClientSession & session, NResponse & response)
 {
-    //logDebug("NTcpServerSocketSharedDirServices::svcPutSharedDir", session.postData());
+    //logDebug("NTcpServerSocketCfgServices::svcPutSharedDir", session.postData());
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
 
@@ -130,7 +130,7 @@ NResponse & NTcpServerSocketSharedDirServices::putSharedDir(const NClientSession
     if (se.hasUncaughtException()){
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
         svRoot.setProperty(RSP_MSG, QScriptValue(RSP_MSG_INVALID_JSON));
-        logDebug("NTcpServerSocketSharedDirServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
+        logDebug("NTcpServerSocketCfgServices::svcPutSharedDir", se.uncaughtExceptionBacktrace());
         logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
         response.setData(NJson::serializeToQByteArray(svRoot));
         return response;
@@ -177,9 +177,9 @@ NResponse & NTcpServerSocketSharedDirServices::putSharedDir(const NClientSession
     return response;
 }
 
-NResponse & NTcpServerSocketSharedDirServices::deleteSharedDir(const NClientSession & session, NResponse & response)
+NResponse & NTcpServerSocketCfgServices::deleteSharedDir(const NClientSession & session, NResponse & response)
 {
-    logDebug("NTcpServerSocketSharedDirServices::svcDeleteSharedDir", session.resource());
+    logDebug("NTcpServerSocketCfgServices::svcDeleteSharedDir", session.resource());
     int id = 0;
     QScriptEngine se;
     QScriptValue svRoot = se.newObject();
@@ -209,6 +209,18 @@ NResponse & NTcpServerSocketSharedDirServices::deleteSharedDir(const NClientSess
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_DELETED).arg(id)));
     //logDebug("NJson::serialize(svRoot)", NJson::serialize(svRoot));
+    response.setData(NJson::serializeToQByteArray(svRoot));
+    return response;
+}
+
+
+NResponse & NTcpServerSocketCfgServices::lookForModification(NResponse & response)
+{
+    getConfig().clearDirUpdateData();
+    QScriptEngine se;
+    QScriptValue svRoot = se.newObject();
+    svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
+    svRoot.setProperty(RSP_MSG, QScriptValue("Server will looking for modification"));
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }

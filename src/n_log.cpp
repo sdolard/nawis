@@ -17,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-// std
-#include <iostream>
-
 // Qt
 #include <QDateTime>
 #include <QApplication>
@@ -112,11 +109,11 @@ void NLogger::log(const QString & context, const QString & msg, NLog::LogType lt
     switch (lt)
     {
     case NLog::ltDebug:
-        debug(context, msg);
+        writeDebug(context, msg);
         break;
 
     case NLog::ltMsg:
-        message(context, msg);
+        writeMessage(context, msg);
         break;
     }
 }
@@ -127,27 +124,31 @@ void NLogger::log(const QString & context, const QStringList & msgList, NLog::Lo
         log(context, msgList[i], lt);
 }
 
-void NLogger::debug(const QString & context, const QString & msg)
+QString NLogger::formatMsg(const QString & msg)
 {
     QString rTrimmedMsg = msg;
-    if (msg.endsWith("\r\n"))
-        rTrimmedMsg = rTrimmedMsg.left(msg.length() - 2);
+    if (rTrimmedMsg.endsWith("\n"))
+        rTrimmedMsg = rTrimmedMsg.left(rTrimmedMsg.length() - 1);
+    if (rTrimmedMsg.endsWith("\r"))
+        rTrimmedMsg = rTrimmedMsg.left(rTrimmedMsg.length() - 1);
 
+    return rTrimmedMsg;
+}
+
+void NLogger::writeDebug(const QString & context, const QString & msg)
+{
     // prompt
-    QString prompt = QString("(debug) %1: %2").arg(context).arg(rTrimmedMsg);
+    QString prompt = QString("(debug) %1: %2").arg(context).arg(formatMsg(msg));
     qDebug("%s %s", qPrintable(now()), qPrintable(prompt));
 }
 
-void NLogger::message(const QString & context, const QString & msg)
+void NLogger::writeMessage(const QString & context, const QString & msg)
 {
-    QString rTrimmedMsg = msg;
-    if (msg.endsWith("\r\n"))
-        rTrimmedMsg = rTrimmedMsg.left(msg.length() - 2);
-
     // prompt
-    QString prompt = QString("%1: %2").arg(context).arg(rTrimmedMsg);
-    std::cout << qPrintable(prompt) << std::endl;
+    QString prompt = QString("%1: %2").arg(context).arg(formatMsg(msg));
+    qDebug("%s %s", qPrintable(now()), qPrintable(prompt));
 
+    // TODO: do db writes in deived class
     // database
     NLOGDB.addLog(prompt);
 }
@@ -177,7 +178,7 @@ const QString NLogger::now()
 /*****************************************************************************
 * NLogThread
 *****************************************************************************/
-void NLogThread::run()
+void NLog::NLogThread::run()
 {
     NLogger logger;
     connect(m_log, SIGNAL(logString(const QString &, const QString &, NLog::LogType)),
