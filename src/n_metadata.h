@@ -16,12 +16,12 @@
 #include <QByteArray>
 #include <QFileInfo>
 
-
 /* TODO: seperate in at least 3 classes
 *   - NMetadata
 *   - NPictureMetadata
 *   - NMPegMetadata
 */
+
 
 class NMetadata {
 public:

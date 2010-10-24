@@ -35,7 +35,7 @@ NClientSession::NClientSession(const QHttpRequestHeader & request,
                                const QByteArray & content, QAbstractSocket *socket,
                                bool ssl)
                                    :m_request(request), m_content(content),
-                                   m_socket(socket), m_ssl(ssl)
+                                   m_pSocket(socket), m_ssl(ssl)
 {
     Q_ASSERT(socket);
 
@@ -55,7 +55,7 @@ NClientSession::NClientSession(const NClientSession & session)
 {
     this->m_request = session.m_request;
     this->m_content = session.m_content;
-    this->m_socket = session.m_socket;
+    this->m_pSocket = session.m_pSocket;
     this->m_url = session.m_url;
     this->m_sessionId = session.m_sessionId;
     this->m_userAgent = session.m_userAgent;
@@ -104,18 +104,18 @@ const QByteArray & NClientSession::content() const
 
 const QAbstractSocket * NClientSession::socket() const
 {
-    return m_socket;
+    return m_pSocket;
 }
 
 bool NClientSession::isLocal() const
 {
-    return (m_socket->peerAddress() == QHostAddress::LocalHost) ||
-            (m_socket->peerAddress() == QHostAddress::LocalHostIPv6);
+    return (m_pSocket->peerAddress() == QHostAddress::LocalHost) ||
+            (m_pSocket->peerAddress() == QHostAddress::LocalHostIPv6);
 }
 
 const QString NClientSession::peerAddress() const
 {
-    return m_socket->peerAddress().toString();
+    return m_pSocket->peerAddress().toString();
 }
 
 const QStringList NClientSession::paths() const

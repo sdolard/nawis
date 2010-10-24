@@ -26,6 +26,9 @@
 
 const QString unitByteToHuman(qint64 unit, const QString & unitString, qint64 bytes)
 {
+    if (unit <= 0)
+        return "--";
+
     qint64 remainder = bytes % unit;
     if (remainder > 0)
     {
@@ -39,6 +42,7 @@ const QString unitByteToHuman(qint64 unit, const QString & unitString, qint64 by
         return QString("%1.%2%3").arg(bytes / unit).arg(decimal).arg(unitString);
     }
     return QString("%1%2").arg(bytes / unit).arg(unitString);
+
 }	
 
 const QString NConvert_n::byteToHuman(qint64 bytes)
@@ -97,7 +101,7 @@ const QString NConvert_n::durationToHuman(qint64 ms)
 const QString NConvert_n::rateForOneSecToHuman(qint64 bytes, qint64 ms)
 {
     if (ms <= 0)
-        return "Invalid ms";
+        return QString("%1/ms").arg(byteToHuman(1000 * bytes));
 
     return QString("%1/s").arg(byteToHuman(1000 * bytes / ms));
 }

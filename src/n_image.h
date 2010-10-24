@@ -50,12 +50,10 @@ private:
     QString   m_mimeType;
 
     // Return JPG data
-    const QByteArray notExistsImage(const QSize & size);
+    const QByteArray getNoPreviewImage(const QSize & size);
 
     // Return exiv thumbnail
-    // If many exist, and returnGreater is set to true, biggest one
-    // will be return.
-    const QByteArray exivThumb(bool returnGreater = true);
+    const QByteArray getExivThumb();
 
     // Return JPG data
     const QByteArray pResize(const QSize & size);

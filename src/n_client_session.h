@@ -86,7 +86,7 @@ public:
 private:
     QHttpRequestHeader m_request;
     QByteArray         m_content;
-    QAbstractSocket   *m_socket;
+    QAbstractSocket   *m_pSocket;
     QUrl               m_url;
     QString            m_sessionId;
     QString            m_userAgent;

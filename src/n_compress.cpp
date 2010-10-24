@@ -2,6 +2,12 @@
 
 #include "n_compress.h"
 
+static const char ieCompressionHackChar[] = {
+   0x78, 0x9C
+};
+
+static QByteArray ieCompressionHackBA = QByteArray::fromRawData(ieCompressionHackChar, sizeof(ieCompressionHackChar));
+
 QByteArray NCompress_n::deflateData(const QByteArray & data, bool ieCompat)
 {
     if (data.isEmpty())
@@ -18,11 +24,7 @@ QByteArray NCompress_n::deflateData(const QByteArray & data, bool ieCompat)
     compressedData.resize(size);
     if (ieCompat)
     {
-        static QByteArray ieCompressionHack;
-        ieCompressionHack.resize(2);
-        ieCompressionHack[0] = 0x78;
-        ieCompressionHack[1] = 0x9C;
-        if (compressedData.left(2) == ieCompressionHack)
+        if (compressedData.left(2) == ieCompressionHackBA)
             compressedData.remove(0, 2);
     }
     return compressedData;

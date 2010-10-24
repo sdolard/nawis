@@ -29,6 +29,6 @@ private:
     static const QString serializeObject(const QScriptValue & sv);
     static const QString serializeArray(const QScriptValue & sv);
     static const QString serializeBool(const QScriptValue & sv);
-    static const QString serializeNull(const QScriptValue & sv);   
+    static const QString serializeNull(const QScriptValue & sv);
 };
 #endif // N_JSON_H

@@ -80,7 +80,7 @@ signals:
     void configFileChanged();
 
 private:
-    static NConfig        *m_instance;
+    static NConfig        *m_pInstance;
     NSettings              m_settings;
     int                    m_version;
     int                    m_serverPort;

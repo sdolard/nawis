@@ -37,6 +37,7 @@ public:
     // not data, no file to send
     bool isEmpty();
 
+    // File
     void setFileInfo(const QFileInfo & fileInfo);
     QFileInfo & fileInfo();
     void setFileRange(const QString & byteRange);
@@ -48,7 +49,7 @@ public:
     * Return 0 if buffer is not empty (it will not be updated)
     * Return buffer size if it has been updated
     */
-    int updateFileBuffer();
+    int updateFileBuffer(); //file
 
     /**
     * Add expires header 10 years from now

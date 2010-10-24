@@ -33,7 +33,7 @@ NResponse & NTcpServerSocketService::getHelp(NService_n::NService* services, NRe
         servicesHelp += htmlCommandTemplate.arg(services[i].fullService);
         servicesHelp += QString("<p>%1<br><b>Appears in</b>: %2<br>"\
                                 "<b>Session required</b>: %3<br>"\
-                                "<b>Required level</b>: \"%4\"<br>"\
+                                "<b>Required level</b>: %4<br>"\
                                 "<b>HTTP method</b>: %5<br>"\
                                 "<b>URL params</b>:<br> %6<br>"\
                                 "<b>Post data</b>: %7<br>"\
@@ -41,7 +41,7 @@ NResponse & NTcpServerSocketService::getHelp(NService_n::NService* services, NRe
                 arg(services[i].comment).
                 arg(services[i].history).
                 arg(services[i].sessionRequired ? "yes" : "no").
-                arg(NTcpServerAuthSession::toStringLevel(services[i].requiredLevel)).
+                arg(services[i].requiredLevel == AUTH_LEVEL_NONE ? "None" : QString("\"%1\"").arg(NTcpServerAuthSession::toStringLevel(services[i].requiredLevel))).
                 arg(services[i].httpMethod).
                 arg(services[i].params.isEmpty() ? "none": services[i].params).
                 arg(services[i].content.isEmpty() ? "none": services[i].content).

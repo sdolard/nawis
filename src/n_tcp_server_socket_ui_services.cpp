@@ -46,16 +46,6 @@ NResponse & NTcpServerSocketUIServices::nop(NResponse & response)
     return response;
 }
 
-NResponse & NTcpServerSocketUIServices::lookForModification(NResponse & response)
-{
-    getConfig().clearDirUpdateData();
-    QScriptEngine se;
-    QScriptValue svRoot = se.newObject();
-    svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
-    svRoot.setProperty(RSP_MSG, QScriptValue("Server will looking for modification"));
-    response.setData(NJson::serializeToQByteArray(svRoot));
-    return response;
-}
 
 NResponse & NTcpServerSocketUIServices::getFavicon(NResponse & response)
 {

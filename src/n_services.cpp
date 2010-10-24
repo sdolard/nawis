@@ -140,8 +140,15 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "}</pre>"\
         "In case of success, server will set \"nawis_sessionId\" cookie.<br>"\
         "Available levels are:<ul>"\
-        "<li>user</li>"\
-        "<li>admin</li></ul>", // returns
+        "<li>admin // full levels, it can not be required</li>"\
+        "<li>config // Required to access to cfg and user api</li>"\
+        "<li>download // Required to access to download api</li>"\
+        "<li>duplicated // Required to access to duplicated api</li>"\
+        "<li>log // Required to access to log api</li>"\
+        "<li>music // Required  to access to music api</li>"\
+        "<li>picture // Required  to access to picture api</li>"\
+        "<li>search // Required  to access to search api</li>"\
+        "</ul>", // returns
         NULL
     },{
         SVC_API_AUTH, // id

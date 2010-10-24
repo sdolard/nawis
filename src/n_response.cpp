@@ -221,9 +221,9 @@ void NResponse::setFileRange(const QString & byteRange)
 #ifdef DEBUG
     logDebug("NResponse::setFileRange", byteRange);
     logDebug("NResponse::setFileRange", QString("Content-Range: bytes %1-%2/%3").
-          arg(m_fileFirstBytePos).arg(m_fileLastBytePos).arg(m_fileInfo.size()));
+             arg(m_fileFirstBytePos).arg(m_fileLastBytePos).arg(m_fileInfo.size()));
     logDebug("NResponse::setFileRange", QString("Content-Length: %1").
-          arg(m_fileLastBytePos - m_fileFirstBytePos + 1));
+             arg(m_fileLastBytePos - m_fileFirstBytePos + 1));
 #endif
     m_httpHeader.setStatusLine(N_HTTP_PARTIAL_CONTENT, NHttp_n::statusCodeToString(N_HTTP_PARTIAL_CONTENT));
     m_httpHeader.setValue("Content-Range", QString("bytes %1-%2/%3").

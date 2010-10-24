@@ -84,7 +84,7 @@
 #define NCONFIG_ADV_DB_PWD_HASH_KEY               "db_pwd_hash_key"
 #define NCONFIG_ADV_DB_PWD_HASH_VALUE             "0x6b697373686172652072756c657a"
 #define NCONFIG_ADV_FILE_BUFFER_SIZE_KEY          "file_buffer_size"
-#define NCONFIG_ADV_FILE_BUFFER_SIZE_VALUE        1024*1024*10
+#define NCONFIG_ADV_FILE_BUFFER_SIZE_VALUE        1024*1024*4 // 4Mo
 
 /*
  server def ssl=true
@@ -94,21 +94,21 @@
  server def ssl_privare_key_password=test
  */
 
-NConfig * NConfig::m_instance = NULL;
+NConfig * NConfig::m_pInstance = NULL;
 
 NConfig & NConfig::instance()
 {
-    if (m_instance == NULL)
-        m_instance = new NConfig();
-    return *m_instance;
+    if (m_pInstance == NULL)
+        m_pInstance = new NConfig();
+    return *m_pInstance;
 }
 
 void NConfig::deleteInstance()
 {
-    if (m_instance == NULL)
+    if (m_pInstance == NULL)
         return;
-    delete m_instance;
-    m_instance = NULL;
+    delete m_pInstance;
+    m_pInstance = NULL;
 }
 
 NConfig::NConfig()

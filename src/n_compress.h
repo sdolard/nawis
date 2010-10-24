@@ -12,7 +12,6 @@ namespace NCompress_n {
         ctDeflate
     };
 
-
     // Compress a QByteArray
     QByteArray deflateData(const QByteArray & data, bool ieCompat);
 

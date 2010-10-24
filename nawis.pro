@@ -58,7 +58,6 @@ HEADERS += src/n_client_session.h \
     src/n_music_database.h \
     src/n_music_db_updater_thread.h \
     src/n_nawis_daemon.h \
-    src/n_node.h \
     src/n_path.h \
     src/n_response.h \
     src/n_settings.h \
@@ -109,7 +108,6 @@ SOURCES += src/main.cpp \
     src/n_music_database.cpp \
     src/n_music_db_updater_thread.cpp \
     src/n_nawis_daemon.cpp \
-    src/n_node.cpp \
     src/n_path.cpp \
     src/n_response.cpp \
     src/n_settings.cpp \

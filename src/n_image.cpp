@@ -29,8 +29,7 @@
 #include <exiv2/exif.hpp>
 #include <exiv2/preview.hpp>
 
-// App 
-#include "n_config.h"
+// App
 #include "n_mime_type.h"
 #include "n_log.h"
 
@@ -51,14 +50,10 @@ NImage::NImage(const QFileInfo & fi)
 const QByteArray NImage::getThumb()
 {	
     if (!m_fi.exists())
-        return notExistsImage(m_defaultThumbSize);
-
-    if (!getConfig().fileSuffixes().suffixList(NFileCategory_n::fcPicture).
-        contains(m_fi.suffix(), Qt::CaseInsensitive))
-        return notExistsImage(m_defaultThumbSize);
+        return getNoPreviewImage(m_defaultThumbSize);
 
     // exiv
-    QByteArray ba = exivThumb();
+    QByteArray ba = getExivThumb();
     if (ba.size() != 0)
         return ba;
 
@@ -68,7 +63,7 @@ const QByteArray NImage::getThumb()
         return ba;
 
     // no preview
-    return notExistsImage(m_defaultThumbSize);
+    return getNoPreviewImage(m_defaultThumbSize);
 }
 
 const QByteArray NImage::resize(const QSize & size)
@@ -76,10 +71,7 @@ const QByteArray NImage::resize(const QSize & size)
     const QSize & s = checkSize(size);
 
     if (!m_fi.exists())
-        return notExistsImage(s);
-
-    if (!getConfig().fileSuffixes().suffixList(NFileCategory_n::fcPicture).contains(m_fi.suffix(), Qt::CaseInsensitive))
-        return notExistsImage(s);
+        return getNoPreviewImage(s);
 
     // heavy
     QByteArray ba = pResize(s);
@@ -87,14 +79,12 @@ const QByteArray NImage::resize(const QSize & size)
         return ba;
 
     // no preview
-    return notExistsImage(s);
+    return getNoPreviewImage(s);
 }
 
-const QByteArray NImage::exivThumb(bool returnGreater)
+const QByteArray NImage::getExivThumb()
 {
     QByteArray ba;
-    QBuffer buffer(&ba);
-
     try { //exif thumb
         Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open((const char*)QFile::encodeName(m_fi.absoluteFilePath()));
         if (image.get() == 0)
@@ -102,53 +92,27 @@ const QByteArray NImage::exivThumb(bool returnGreater)
 
         image->readMetadata();
 
-        // Get a list of preview images available in the image. The list is sorted
-        // by the preview image pixel size, starting with the smallest preview.
-        Exiv2::PreviewManager loader(*image);
-        Exiv2::PreviewPropertiesList list = loader.getPreviewProperties();
-
-        if (list.size() == 0)
-        {
-            // Cleanup
-            Exiv2::XmpParser::terminate();
+        Exiv2::ExifThumbC exifThumb(image->exifData());
+        Exiv2::DataBuf thumb = exifThumb.copy();
+        if (thumb.size_ == 0) {
+            //logDebugDirect("NImage::getExivThumb", "failed");
             return ba;
         }
+        //logDebugDirect("NImage::getExivThumb", "success");
 
-        // Some application logic to select one of the previews from the list
-        //			for (Exiv2::PreviewPropertiesList::iterator pos = list.end(); pos != list.begin(); pos--) {
-        //				/* std::cout << pos->mimeType_
-        //			 << " preview, type " << pos->id_ << ", "
-        //			 << pos->size_ << " bytes, "
-        //			 << pos->width_ << 'x' << pos->height_ << " pixels"
-        //			 << "\n";*/
-        //
-        //				Exiv2::PreviewImage preview = loader.getPreviewImage(*pos);
-        //				buffer.setData((const char*)preview.pData(),  preview.size());
-        //				m_mimeType = QString::fromStdString(preview.mimeType());
-        //				break;
-        //			}
-
-        if (returnGreater)
-        {
-            Exiv2::PreviewImage preview = loader.getPreviewImage(list.back());
-            buffer.setData((const char*)preview.pData(),  preview.size());
-            m_mimeType = QString::fromStdString(preview.mimeType());
-        } else {
-            Exiv2::PreviewImage preview = loader.getPreviewImage(list.front());
-            buffer.setData((const char*)preview.pData(),  preview.size());
-            m_mimeType = QString::fromStdString(preview.mimeType());
-        }
+        QBuffer buffer(&ba);
+        buffer.setData((const char*)thumb.pData_,  thumb.size_);
+        m_mimeType = exifThumb.mimeType();
     }
     catch (Exiv2::AnyError& e) {
         logDebug("Caught Exiv2 exception", e.what());
+        return ba;
     }
 
-    // Cleanup
-    Exiv2::XmpParser::terminate();
     return ba;
 }
 
-const QByteArray NImage::notExistsImage(const QSize & size)
+const QByteArray NImage::getNoPreviewImage(const QSize & size)
 {	
     const QSize & s = checkSize(size);
 
@@ -165,23 +129,22 @@ const QByteArray NImage::notExistsImage(const QSize & size)
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
     image.save(&buffer, "JPG"); // writes image into ba in JPG format
-    m_mimeType = NMimeType_n::fileSuffixToMIME("JPG");
+    m_mimeType = "image/jpeg";
     return ba;
 }
 
 const QByteArray NImage::pResize(const QSize & size)
 {
     QByteArray ba;
-    QBuffer buffer(&ba);
 
     // TODO: add this thumb in picture exif ?
     QImageReader imageReader(m_fi.absoluteFilePath());
     if (!imageReader.canRead())
     {
         logMessage("NImage::pResize error",
-              QString("loading preview for: %1\nError:%2").
-              arg(m_fi.absoluteFilePath()).
-              arg(imageReader.errorString()));
+                   QString("loading preview for: %1\nError:%2").
+                   arg(m_fi.absoluteFilePath()).
+                   arg(imageReader.errorString()));
         return ba;
     }
 
@@ -197,9 +160,10 @@ const QByteArray NImage::pResize(const QSize & size)
         image = image.scaled(size.width(), size.height(), Qt::KeepAspectRatio,
                              Qt::SmoothTransformation);
 
+    QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
     image.save(&buffer, "JPG"); // writes image into ba in JPG format
-    m_mimeType = NMimeType_n::fileSuffixToMIME("JPG");
+    m_mimeType = "image/jpeg";
     return ba;
 }
 
@@ -207,15 +171,18 @@ const QSize NImage::checkSize(const QSize & size) const
 {
     if (size.isNull() || !size.isValid())
         return m_defaultResizeSize;
+
     if (size.width() <= MAX_WIDTH &&
         size.height() <= MAX_HEIGHT)
         return size;
-    QSize s;
-    s = size;
+
+    QSize s(size);
     if (s.width() > MAX_WIDTH)
         s.setWidth(MAX_WIDTH);
+
     if (s.height() > MAX_HEIGHT)
         s.setHeight(MAX_HEIGHT);
+
     return s;
 }
 
