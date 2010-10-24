@@ -123,9 +123,10 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
         NStringMap user = NDB.getUserByEmail(login);
         level =  NTcpServerAuthSession::toIntLevel(user["level"]);
         if (level != AUTH_LEVEL_NONE) {
+            logDebug("user['enabled']", user["enabled"]);
             authSucceed = user.count() > 0 &&
-                          user["password"] == getConfig().toPasswordHash(password) &&
-                          QVariant(user["enabled"]).toBool();
+                          QVariant(user["enabled"]).toBool(),
+                          user["password"] == getConfig().toPasswordHash(password);
         }
     }
 

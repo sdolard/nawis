@@ -1607,7 +1607,7 @@ const NStringMap NDatabase::getUserById(int id)
     user["password"] = query.value(fieldPassword).toString();
     user["name"] = query.value(fieldName).toString();
     user["preferences"] = query.value(fieldPreferences).toString();
-    user["enabled"] = query.value(fieldEnabled).toBool();
+    user["enabled"] = query.value(fieldEnabled).toString();
     user["level"] = query.value(fieldLevel).toString();
 
     return user;
@@ -1654,7 +1654,7 @@ const NStringMap NDatabase::getUserByEmail(const QString & email)
     user["password"] = query.value(fieldPassword).toString();
     user["name"] = query.value(fieldName).toString();
     user["preferences"] = query.value(fieldPreferences).toString();
-    user["enabled"] = query.value(fieldEnabled).toBool();
+    user["enabled"] = query.value(fieldEnabled).toString();
     user["level"] = query.value(fieldLevel).toString();
 
     return user;
