@@ -139,6 +139,9 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
     case SVC_API_CFG_UPDATE_DB:
         return getCfgServices().lookForModification(response);
 
+    case SVC_API_CFG_LEVEL_LIST:
+        return getCfgServices().getAvailableLevelList(response);
+
     case SVC_API_DOWNLOAD:
         return getFileServices().download(statusCode, session, response);
 
@@ -304,9 +307,6 @@ bool NTcpServerSocketServices::isServiceAvailable(int * statusCode, const NClien
 {
     Q_ASSERT_X(statusCode,
                "NTcpServerSocketServices::isServiceAvailable: statusCode must bet set",
-               qPrintable(service.service));
-    Q_ASSERT_X(service.requiredLevel != AUTH_LEVEL_ADMIN,
-               "NTcpServerSocketServices::isServiceAvailable: requiredLevel must not be set to set to AUTH_LEVEL_ADMIN",
                qPrintable(service.service));
 
     if (service.id == SVC_NONE)

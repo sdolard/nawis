@@ -14,21 +14,18 @@
 // Full levels
 #define AUTH_LEVEL_ADMIN          0xFFFF
 
-
-// Required to access to cfg and user api
-#define AUTH_LEVEL_CFG            0x0001
 // Required to access to download api
-#define AUTH_LEVEL_DOWNLOAD       0x0002
+#define AUTH_LEVEL_DOWNLOAD       0x0001
 // Required to access to duplicated api
-#define AUTH_LEVEL_DUPLICATED     0x0004
+#define AUTH_LEVEL_DUPLICATED     0x0002
 // Required to access to log api
-#define AUTH_LEVEL_LOG            0x0008
+#define AUTH_LEVEL_LOG            0x0004
 // Required  to access to music api
-#define AUTH_LEVEL_MUSIC          0x0010
+#define AUTH_LEVEL_MUSIC          0x0008
 // Required  to access to picture api
-#define AUTH_LEVEL_PICTURE        0x0020
+#define AUTH_LEVEL_PICTURE        0x0010
 // Required  to access to search api
-#define AUTH_LEVEL_SEARCH         0x0040
+#define AUTH_LEVEL_SEARCH         0x0020
 
 
 class NTcpServerAuthSession

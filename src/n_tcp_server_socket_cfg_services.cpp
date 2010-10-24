@@ -3,6 +3,7 @@
 #include "n_log.h"
 #include "n_json.h"
 #include "n_config.h"
+#include "n_tcp_server_socket_auth_services.h"
 
 #include "n_tcp_server_socket_cfg_services.h"
 
@@ -221,6 +222,30 @@ NResponse & NTcpServerSocketCfgServices::lookForModification(NResponse & respons
     QScriptValue svRoot = se.newObject();
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
     svRoot.setProperty(RSP_MSG, QScriptValue("Server will looking for modification"));
+    response.setData(NJson::serializeToQByteArray(svRoot));
+    return response;
+}
+
+NResponse & NTcpServerSocketCfgServices::getAvailableLevelList(NResponse & response)
+{
+    QScriptEngine se;
+    QScriptValue svRoot = se.newObject();
+
+    QStringList levels  = NTcpServerAuthSession::toStringLevel(AUTH_LEVEL_ADMIN, " ").split(" ");
+
+    svRoot.setProperty(RSP_SUCCESS , QScriptValue(levels.count() > 0));
+    svRoot.setProperty(RSP_MSG, QScriptValue(levels.count() > 0 ? RSP_MSG_LOADED : RSP_MSG_NO_RESULTS));
+    svRoot.setProperty(RSP_COUNT, QScriptValue(levels.count()));
+
+    QScriptValue svData = se.newArray(levels.count());
+    svRoot.setProperty(RSP_DATA, svData);
+    for(int i = 0; i < levels.count(); i++)
+    {
+        QScriptValue svLevel = se.newObject();
+        svData.setProperty(i, svLevel);
+        svLevel.setProperty("id", NTcpServerAuthSession::toIntLevel(levels.at(i)));
+        svLevel.setProperty("level", levels.at(i));
+    }
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
 }

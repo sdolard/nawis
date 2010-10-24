@@ -355,7 +355,7 @@ void NServer::startJob(int job)
     connect((*pJob), SIGNAL(finished()),
             this, SLOT(onJobTerminated()), Qt::QueuedConnection);
     logDebug("NServer", QString("%1 starting ...").arg(jobToString(job)));
-    (*pJob)->start();
+    (*pJob)->start(QThread::LowestPriority);
 }
 
 void NServer::stopJobs()

@@ -16,6 +16,8 @@ public:
 
     NResponse & lookForModification(NResponse & response);
 
+    NResponse & getAvailableLevelList(NResponse & response);
+
 private:
     static NTcpServerSocketCfgServices *m_instance;
     NTcpServerSocketCfgServices();

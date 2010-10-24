@@ -68,7 +68,7 @@ public:
     static bool getID3Picture(const QString & fileName, QByteArray & ba, QString & mimeType);
 
     static bool isTaglibCompat(QFileInfo &fi);
-    static bool isExiv2Compat(QFileInfo &fi);
+    static bool isExifCompat(QFileInfo &fi);
     static bool isIptcCompat(QFileInfo &fi);
 
 private:
@@ -127,8 +127,8 @@ private:
     void getTaglibData();
     void printTaglibData();
 
-    void getExiv2Data();
-    void printExiv2Data();
+    void getExifData();
+    void printExifData();
 
     void printIptcData();
     void getIptcData();

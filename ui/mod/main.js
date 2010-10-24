@@ -147,6 +147,8 @@ NMod.Main.Ui.load = function(){
 		});
 		applicationTabs.add(userTab);
 		
+	}
+	if (NLib.Session.isLevelSet("duplicated")) {
 		
 		/*
 		* Duplicated tab
@@ -160,8 +162,9 @@ NMod.Main.Ui.load = function(){
 				tbar: NMod.Duplicated.Ui.toolBar
 		});
 		applicationTabs.add(duplicatedTab);
-		
-		
+	}
+	
+	if (NLib.Session.isLevelSet("log")) {
 		/*
 		* Log Components are only loaded for local connection on server
 		*/

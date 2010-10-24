@@ -136,19 +136,9 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "<pre>{<br>"\
         "  \"success\":true&#124;false, // boolean<br>"\
         "  \"message\":\"&lt;login message&gt;\", // string<br>"\
-        "  \"level\":\"&lt;level&gt;\"// string: contains levels separated by space \" \" char<br>"\
+        "  \"level\":\"&lt;level&gt;\"// string: contains levels separated by space \" \" char (see api/cfg/level for details)<br>"\
         "}</pre>"\
-        "In case of success, server will set \"nawis_sessionId\" cookie.<br>"\
-        "Available levels are:<ul>"\
-        "<li>admin // full levels, it can not be required</li>"\
-        "<li>config // Required to access to cfg and user api</li>"\
-        "<li>download // Required to access to download api</li>"\
-        "<li>duplicated // Required to access to duplicated api</li>"\
-        "<li>log // Required to access to log api</li>"\
-        "<li>music // Required  to access to music api</li>"\
-        "<li>picture // Required  to access to picture api</li>"\
-        "<li>search // Required  to access to search api</li>"\
-        "</ul>", // returns
+         "In case of success, server will set \"nawis_sessionId\" cookie.<br>", // returns
         NULL
     },{
         SVC_API_AUTH, // id
@@ -319,7 +309,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         SVC_API_USER, // id
         "user", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Return user list.", // comment
         "api/user", // fullService
@@ -352,7 +342,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         SVC_API_USER, // id
         "user", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Delete a user", // comment
         "api/user/&lt;id&gt", // fullService
@@ -371,7 +361,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         SVC_API_USER, // id
         "user", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Used to modify user properties", // comment
         "api/user/&lt;id&gt;", // fullService
@@ -408,7 +398,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         SVC_API_USER, // id
         "user", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Add a user. Account is default deactivated.", // comment
         "api/user", // fullService
@@ -450,7 +440,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Return list of shared directories, with there sharing properties", // comment
         "api/cfg/shareddir", // fullService
@@ -478,7 +468,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Remove a directory from shared list", // comment
         "api/cfg/shareddir/&lt;id&gt;", // fullService
@@ -498,7 +488,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Add a shared directory", // comment
         "api/cfg/shareddir", // fullService
@@ -531,7 +521,7 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         SVC_API_CFG_SHARED_DIR, // id
         "shareddir", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Used to modify shared directory properties", // comment
         "api/cfg/shareddir/&lt;id&gt;", // fullService
@@ -564,13 +554,13 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         SVC_API_CFG_UPDATE_DB, // id
         "updatedb", // service
         true, // sessionRequired
-        AUTH_LEVEL_CFG, // requiredLevel
+        AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
         "Look for new files and modification then update database with collected<br>"\
         "data and metadata(id3, IPCT, exif...).<br>"\
         "First time this operation is done, it could take a long time.<br>"\
         "See <b>api/nop</b> to retreive pending server operation status.", // comment
-        "api/file/updatedb", // fullService
+        "api/cfg/updatedb", // fullService
         "GET", // httpMethod
         "[help]", // params
         "", // content
@@ -579,6 +569,40 @@ NService_n::NService NService_n::nsAPICfgServices[] =
         "  \"success\":true&#124;false, // boolean <br>"\
         "  \"message\":\"&lt;update message&gt;\" // string<br>"\
         "}</pre>", // returns
+        NULL
+    },{
+        SVC_API_CFG_LEVEL_LIST, // id
+        "level", // service
+        true, // sessionRequired
+        AUTH_LEVEL_ADMIN, // requiredLevel
+        "0.1.0", // history
+        "Return list of available levels", // comment
+        "api/cfg/level", // fullService
+        "GET", // httpMethod
+        "[help]", // params
+        "", // content
+        "JSON<pre>{<br>"\
+        "  \"success\":true&#124;false, // boolean<br>"\
+        "  \"totalcount\":&lt;Real total number of available items.&gt;, // number<br>"\
+        "              // This value is not in relation to limit params.<br>"\
+        "              // data.length is the number of items in relation to search and limit.<br>"\
+        "  \"message\":\"&lt;loaded message&gt;\",<br>"\
+        "  \"data\":[{ // array of result<br>"\
+        "    \"id\":\"&lt;level id id&gt;\" // number<br>"\
+        "    \"level\":\"&lt;level name&gt;\" // string<br>"\
+        "  },<br>"\
+        "  ... // other items<br>"\
+        "  ]<br>"\
+        "}</pre>"\
+        "Available levels are:<ul>"\
+        "<li>admin // full levels, it can not be required and is attached to admin user. Required to access to cfg and user api</li>"\
+        "<li>download // Required to access to download api</li>"\
+        "<li>duplicated // Required to access to duplicated api</li>"\
+        "<li>log // Required to access to log api</li>"\
+        "<li>music // Required  to access to music api</li>"\
+        "<li>picture // Required  to access to picture api</li>"\
+        "<li>search // Required  to access to search api</li>"\
+        "</ul>", // returns
         NULL
     },
 NService_n::nsServiceNone

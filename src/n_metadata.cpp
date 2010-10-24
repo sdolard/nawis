@@ -46,9 +46,9 @@ void NMetadata::setFileName(const QString & fileName)
     if (isTaglibCompat(fi))
         getTaglibData();
 
-    if (isExiv2Compat(fi))
+    if (isExifCompat(fi))
     {
-        getExiv2Data();
+        getExifData();
         //printExiv2Data();
     }
 
@@ -82,7 +82,7 @@ void NMetadata::getTaglibData()
 
     // AudioProperties
     TagLib::AudioProperties *properties = f.audioProperties();
-    if(properties)
+    if (properties)
         m_duration = properties->length();
 
     // Attached picture
@@ -124,7 +124,7 @@ void NMetadata::printTaglibData()
     }
 }
 
-void NMetadata::getExiv2Data()
+void NMetadata::getExifData()
 {	
     try
     {
@@ -301,7 +301,7 @@ void NMetadata::getExiv2Data()
     }
 }
 
-void NMetadata::printExiv2Data()
+void NMetadata::printExifData()
 {
     try
     {
@@ -642,7 +642,7 @@ bool NMetadata::isTaglibCompat(QFileInfo &fi)
     return supportedSuffix.contains(fi.suffix().toLower());
 }
 
-bool NMetadata::isExiv2Compat(QFileInfo &fi)
+bool NMetadata::isExifCompat(QFileInfo &fi)
 {
     /*
 	 Supported_image_formats
@@ -679,5 +679,5 @@ bool NMetadata::isExiv2Compat(QFileInfo &fi)
 
 bool NMetadata::isIptcCompat(QFileInfo &fi)
 {
-    return (isExiv2Compat(fi));
+    return isExifCompat(fi);
 }

@@ -16,9 +16,9 @@ bool NTcpServerAuthSession::isExpired() const
     int lastActivity = m_lastUsed.secsTo ( QDateTime::currentDateTime() );
     if (lastActivity >= 300) {
         logMessage("Authentication expired", QString("%1@%2; user agent: %3").
-              arg(m_login).
-              arg(m_address).
-              arg(m_userAgent));
+                   arg(m_login).
+                   arg(m_address).
+                   arg(m_userAgent));
         return true;
     }
     return false;
@@ -74,15 +74,8 @@ bool NTcpServerAuthSession::isLevelSet(int level) const
 const QString NTcpServerAuthSession::toStringLevel(int levels, const QString & sep)
 {
     QStringList levelList;
-    /*
-        AUTH_LEVEL_ADMIN is reserved to "admin" special user,
-        If you've got this level, you've got all others
-    */
     if (levels == AUTH_LEVEL_ADMIN)
-        return "admin";
-
-    if ((levels & AUTH_LEVEL_CFG) == AUTH_LEVEL_CFG)
-        levelList << "config";
+        levelList << "admin";
 
     if ((levels & AUTH_LEVEL_DOWNLOAD) == AUTH_LEVEL_DOWNLOAD)
         levelList << "download";
@@ -115,14 +108,12 @@ int NTcpServerAuthSession::toIntLevel(const QString & levels, const QString & se
     QStringList l = levels.toLower().split(sep);
     for(int i = 0; i < l.count(); i++)
     {
-        /*
-            AUTH_LEVEL_ADMIN is reserved to "admin" special user,
-            so it's not possible to require explicitly this level
-        */
         const QString & level  = l.at(i);
-        if (level== "config")
-        {
-            intLevel |= AUTH_LEVEL_CFG;
+        if (level == "admin") {
+            /*
+                AUTH_LEVEL_ADMIN is reserved to "admin" special user,
+                so it's not possible to require explicitly this level
+            */
             continue;
         }
 
