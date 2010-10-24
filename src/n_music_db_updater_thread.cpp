@@ -18,5 +18,6 @@ void NMusicDbUpdaterThread::run()
 {
     logMessage("Server", tr("Music db building..."));
     NMDB.updateDb();
+    NMDB.vacuum();
     logMessage("Server", tr("Music db build done."));
 }

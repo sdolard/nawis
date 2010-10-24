@@ -180,7 +180,7 @@ NMod.Preferences.Ui.showWindow = function(){
     		text: 'Look for new files now',
     		handler: function(){
     			ajaxConnection.request({
-    					url: NLib.Path.root('api/file/updatedb')
+    					url: NLib.Path.root('api/cfg/updatedb')
     			});
     			actionLookForModification.disable();
     			NMod.Main.Ui.setStatusAsWorking();

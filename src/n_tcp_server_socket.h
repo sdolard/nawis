@@ -61,6 +61,7 @@ private:
     bool requestIsComplete();
     void sendResponse();
     void prepareResponse();
+    void afterResponseSent();
     bool initSsl();
     bool connectSslSignals();
     bool connectSignals();

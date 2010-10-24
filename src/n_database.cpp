@@ -1679,3 +1679,16 @@ bool NDatabase::deleteUser(const QString & id)
     }
     return query.numRowsAffected() == 1;
 }
+
+void NDatabase::vacuum()
+{
+    QSqlQuery query(m_db);
+
+    if (!query.prepare("VACUUM"))
+    {
+        debugLastQuery("NDatabase::vacuum prepare failed", query);
+    }
+
+    if (!query.exec())
+        debugLastQuery("NMusicDatabase::vacuum exec failed", query);
+}

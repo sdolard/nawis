@@ -83,6 +83,7 @@ public:
                           int year);
 
     void updateDb();
+    void vacuum();
 
 private:
     static NMusicDatabase   *m_instance;

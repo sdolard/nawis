@@ -106,6 +106,8 @@ public:
                     const QString & name, const QString & preferences,
                     bool enabled, const QString & level);
 
+    void vacuum();
+
 private:
     static NDatabase    *m_instance;
     QSqlDatabase         m_db;

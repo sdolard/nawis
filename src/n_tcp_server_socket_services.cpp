@@ -169,6 +169,9 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
     case SVC_API_DUPLICATED_MOVIE:
         return getFileServices().getDuplicated(session, response, NFileCategory_n::fcMovie);
 
+    case SVC_API_PICTURE:
+        return NTcpServerSocketService::getFullHelp(NService_n::nsAPIPictureServices, response);
+
     case SVC_API_PICTURE_RESIZE:
         return getPictureServices().resize(session, response);
 
@@ -208,12 +211,6 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
     case SVC_API_USER:
         return getUserServices().user(session, response);
 
-    case SVC_FAVICON:
-        return getUIServices().getFavicon(response);
-
-    case SVC_HELP:
-        return NTcpServerSocketService::getFullHelp(NService_n::nsServices, response);
-
     case SVC_API_SEARCH:
         return NTcpServerSocketService::getFullHelp(NService_n::nsAPISearchServices, response);
 
@@ -237,6 +234,12 @@ NResponse & NTcpServerSocketServices::setData(int *statusCode, NResponse & respo
 
     case SVC_API_SEARCH_MOVIE:
         return getFileServices().search(session, response, NFileCategory_n::fcMovie);
+
+    case SVC_FAVICON:
+        return getUIServices().getFavicon(response);
+
+    case SVC_HELP:
+        return NTcpServerSocketService::getFullHelp(NService_n::nsServices, response);
 
     case SVC_UI:
         return getUIServices().getUI(statusCode, session, response);

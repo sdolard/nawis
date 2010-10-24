@@ -2183,3 +2183,16 @@ bool NMusicDatabase::insertAlbumFrontCoverId3Picture(const QHash<int/*album id*/
     }
     return success;
 }
+
+void NMusicDatabase::vacuum()
+{
+    QSqlQuery query(*m_db);
+
+    if (!query.prepare("VACUUM"))
+    {
+        NDatabase::debugLastQuery("NMusicDatabase::vacuum prepare failed", query);
+    }
+
+    if (!query.exec())
+        NDatabase::debugLastQuery("NMusicDatabase::vacuum exec failed", query);
+}

@@ -49,6 +49,7 @@ void NDbUpdaterThread::run()
     logMessage("Server", tr("Updating database..."));
     updateDB();
     NDB.commitTransaction();
+    NDB.vacuum();
     logMessage("Server", tr("Database update done."));
 }
 

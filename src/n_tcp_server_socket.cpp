@@ -229,24 +229,28 @@ void NTcpServerSocket::sendResponse()
     {
         switch (m_response.dataType()) {
         case NResponse::dtPriorBuffered:
-            m_state = NTcpServerSocket::ssReadingLine;
-            if (!m_keepAlive | !m_response.keepAlive())
-                disconnectFromHost();
+            afterResponseSent();
             break;
+
         case NResponse::dtFile:
             if (m_response.updateFileBuffer() <= 0)
-            {
-                m_state = NTcpServerSocket::ssReadingLine;
-                if (!m_keepAlive | !m_response.keepAlive())
-                    disconnectFromHost();
-            }
+                afterResponseSent();
             break;
+
         default:
             Q_ASSERT(false);
             break;
         }
     }
 }
+
+void NTcpServerSocket::afterResponseSent() {
+    m_state = NTcpServerSocket::ssReadingLine;
+    m_response = NResponse();
+    if (!m_keepAlive | !m_response.keepAlive())
+        disconnectFromHost();
+}
+
 
 bool NTcpServerSocket::isConnected()
 {
