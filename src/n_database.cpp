@@ -38,6 +38,7 @@
 #include "n_convert.h"
 #include "n_music_database.h"
 #include "n_sqlite_error.h"
+#include "n_tcp_server_auth_session.h"
 
 #include "n_database.h"
 
@@ -227,13 +228,13 @@ void NDatabase::createUserTable()
 
     if (!query.exec(
             "CREATE TABLE IF NOT EXISTS user (" \
-            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
-            "email TEXT NOT NULL," \
-            "level TEXT," \
-            "password TEXT NOT NULL," \
-            "name TEXT NOT NULL," \
-            "preferences TEXT," \
-            "enabled BOOLEAN DEFAULT 0 NOT NULL" \
+            "  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
+            "  email TEXT NOT NULL," \
+            "  password TEXT NOT NULL," \
+            "  name TEXT NOT NULL," \
+            "  enabled BOOLEAN DEFAULT 0 NOT NULL," \
+            "  level TEXT," \
+            "  preferences TEXT" \
             ")"))
         debugLastQuery("user table creation failed", query);
 }
@@ -1462,7 +1463,7 @@ bool NDatabase::getUserList(QScriptEngine & se, QScriptValue & dataArray,
         svUser.setProperty("name", query.value(fieldName).toString());
         svUser.setProperty("preferences", query.value(fieldPreferences).toString());
         svUser.setProperty("enabled", query.value(fieldEnabled).toBool());
-        svUser.setProperty("level", query.value(fieldLevel).toString());
+        svUser.setProperty("level",  NTcpServerAuthSession::normalizeLevels(query.value(fieldLevel).toString()));
     }
     return true;
 }
@@ -1504,14 +1505,21 @@ int NDatabase::getUserListCount(const QStringList & searches)
 }
 
 
-int NDatabase::addUser(const QString & name, const QString & email, const QString & password)
+int NDatabase::addUser(const QString & name, const QString & email, const QString & password,
+                       const QString & level, const QString & preferences, bool enabled)
 {
-    if (name.isEmpty() || email.isEmpty() || password.isEmpty())
+    /*
+    "  email TEXT NOT NULL,"
+    "  password TEXT NOT NULL,"
+    "  name TEXT NOT NULL,"
+    */
+    if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
         return DB_USER_ERROR_INVALID_PARAMS;
+    }
 
     QSqlQuery query(m_db);
-    if (!query.prepare("INSERT INTO user (email, name, password) "\
-                       "VALUES(:email, :name, :password)"))
+    if (!query.prepare("INSERT INTO user (email, name, password, level, preferences, enabled) "\
+                       "VALUES(:email, :name, :password, :level, :preferences, :enabled)"))
     {
         debugLastQuery("addUser prepare failed", query);
         return DB_USER_ERROR_QUERY;
@@ -1520,6 +1528,9 @@ int NDatabase::addUser(const QString & name, const QString & email, const QStrin
     query.bindValue(":name", name);
     query.bindValue(":email", email);
     query.bindValue(":password", password);
+    query.bindValue(":preferences", preferences);
+    query.bindValue(":enabled", enabled);
+    query.bindValue(":level",  NTcpServerAuthSession::normalizeLevels(level));
     if (!query.exec())
     {
         debugLastQuery("addUser failed", query);
@@ -1556,7 +1567,7 @@ bool NDatabase::updateUser(int id, const QString & email, const QString & passwo
     query.bindValue(":name", name);
     query.bindValue(":preferences", preferences);
     query.bindValue(":enabled", enabled);
-    query.bindValue(":level", level);
+    query.bindValue(":level",  NTcpServerAuthSession::normalizeLevels(level));
 
     if (!query.exec())
     {
@@ -1608,7 +1619,7 @@ const NStringMap NDatabase::getUserById(int id)
     user["name"] = query.value(fieldName).toString();
     user["preferences"] = query.value(fieldPreferences).toString();
     user["enabled"] = query.value(fieldEnabled).toString();
-    user["level"] = query.value(fieldLevel).toString();
+    user["level"] =  NTcpServerAuthSession::normalizeLevels(query.value(fieldLevel).toString());
 
     return user;
 }

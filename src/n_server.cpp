@@ -312,6 +312,7 @@ void NServer::startJobs()
 
 void NServer::startJob(int job)
 {	
+    // TODO: create a job factory?
     stopJob(job);
     m_currentJob = job;
     NThread **pJob = NULL;

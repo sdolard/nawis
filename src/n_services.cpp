@@ -331,8 +331,8 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"email\":\"&lt;user email&gt;\", // string<br>"\
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
-        "    \"level\":\"&lt;account level&gt;: available level are: user\", // string<br>"\
-        "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\" // boolean<br>"\
         "  },<br>"\
         "  ... // other items<br>"\
         "  ]<br>"\
@@ -376,7 +376,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&lt;user preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
-        "    \"level\":\"&lt;account level&gt;available level are: user\", // string<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
         "    \"password\":\"&lt;user password&gt;\",// string<br>"\
         "  }<br>"\
         "}</pre>", // content
@@ -390,7 +390,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
-        "    \"level\":\"&lt;account level&gt;available level are: user\", // string<br>"\
+        "    \"level\":\"&lt;account level&gt;\" // string<br>"\
         "  }]<br>"\
         "}</pre>", // returns
         NULL
@@ -400,7 +400,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         true, // sessionRequired
         AUTH_LEVEL_ADMIN, // requiredLevel
         "0.1.0", // history
-        "Add a user. Account is default deactivated.", // comment
+        "Add a user.", // comment
         "api/user", // fullService
         "POST", // httpMethod
         "[help]", // params
@@ -411,6 +411,9 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"email\":\"&lt;user email&gt;\", // string<br>"\
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"password\":\"&lt;user password&gt;\",// string<br>"\
+        "    \"disabled\":\"&lt;account state&gt;\", // boolean, default true, optionnal<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string, optionnal<br>"\
+        "    \"password\":\"&lt;user password&gt;\",// string, optionnal<br>"\
         "  }<br>"\
         "}</pre>", // content
         "JSON"\
@@ -423,7 +426,7 @@ NService_n::NService NService_n::nsAPIServices[] = {
         "    \"name\":\"&lt;user name&gt;\",// string<br>"\
         "    \"preferences\":\"&l;tuser preferences&gt;\", // string<br>"\
         "    \"disabled\":\"&lt;account state&gt;\", // boolean<br>"\
-        "    \"level\":\"&lt;account level&gt;available level are: user\", // string<br>"\
+        "    \"level\":\"&lt;account level&gt;\", // string<br>"\
         "  }<br>"\
         "]}</pre>", // returns
         NULL

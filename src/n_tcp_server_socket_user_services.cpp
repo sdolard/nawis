@@ -115,10 +115,16 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
     QString email = svReadUser.property("email").toString();
     QString name = svReadUser.property("name").toString();
     QString password = getConfig().toPasswordHash(svReadUser.property("password").toString());
+    QString preferences = svReadUser.property("preferences").toString();
+    QString enabled = svReadUser.property("enabled").toString();
+    QString level = NTcpServerAuthSession::normalizeLevels(svReadUser.property("level").toString());
 
     logDebug("email", email);
     logDebug("name", name);
     logDebug("password", password);
+    logDebug("preferences", preferences);
+    logDebug("enabled", enabled);
+    logDebug("level", level);
 
     // User already exists?
     NStringMap user = NDB.getUserByEmail(email);
@@ -137,7 +143,7 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
     }
 
     // User do not exists
-    int userId = NDB.addUser(name, email, password);
+    int userId = NDB.addUser(name, email, password, level, preferences, QVariant(enabled).toBool());
     if (userId < 0) // Error
     {
         svRoot.setProperty(RSP_SUCCESS , QScriptValue(false));
@@ -162,7 +168,7 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
     }
 
     svRoot.setProperty(RSP_SUCCESS , QScriptValue(true));
-    svRoot.setProperty(RSP_MSG, QString("User %1 added (account not enabled").arg(email));
+    svRoot.setProperty(RSP_MSG, QString("User %1 added").arg(email));
     logMessage("User add succeed", QString("%1, %2(%3); user agent: %4").
                arg(userId).
                arg(email).
@@ -177,7 +183,9 @@ NResponse & NTcpServerSocketUserServices::postUser(const NClientSession & sessio
     svUser.setProperty("id", userId);
     svUser.setProperty("name", name);
     svUser.setProperty("email", email);
-    svUser.setProperty("enabled", false);
+    svUser.setProperty("preferences", preferences);
+    svUser.setProperty("enabled", QVariant(enabled).toBool());
+    svUser.setProperty("level", level);
 
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;
@@ -226,7 +234,7 @@ NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session
     QString name = svReadUser.property("name").toString();
     QString preferences = svReadUser.property("preferences").toString();
     QString enabled = svReadUser.property("enabled").toString();
-    QString level = svReadUser.property("level").toString();
+    QString level = NTcpServerAuthSession::normalizeLevels(svReadUser.property("level").toString());
 
     email = email.isEmpty() ? user["email"] : email;
     password = password.isEmpty() ? user["password"] : password;
@@ -260,14 +268,14 @@ NResponse & NTcpServerSocketUserServices::putUser(const NClientSession & session
     svRoot.setProperty(RSP_MSG, QScriptValue(QString(RSP_MSG_N_UPDATED).arg(id)));
     QScriptValue svData = se.newArray();
     svRoot.setProperty(RSP_DATA, svData);
-    QScriptValue svDir = se.newObject();
-    svData.setProperty(0, svDir);
-    svDir.setProperty("id", id);
-    svDir.setProperty("email", email);
-    svDir.setProperty("name", name);
-    svDir.setProperty("preferences", preferences);
-    svDir.setProperty("enabled", QVariant(enabled).toBool());
-    svDir.setProperty("level", level);
+    QScriptValue svUser = se.newObject();
+    svData.setProperty(0, svUser);
+    svUser.setProperty("id", id);
+    svUser.setProperty("email", email);
+    svUser.setProperty("name", name);
+    svUser.setProperty("preferences", preferences);
+    svUser.setProperty("enabled", QVariant(enabled).toBool());
+    svUser.setProperty("level", level);
 
     response.setData(NJson::serializeToQByteArray(svRoot));
     return response;

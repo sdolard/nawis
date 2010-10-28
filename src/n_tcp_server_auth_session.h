@@ -50,6 +50,7 @@ public:
     // Return levels space separated
     static const QString toStringLevel(int levels, const QString & sep = " ");
     static int toIntLevel(const QString & levels, const QString & sep = " ");
+    static const QString normalizeLevels(const QString & levels, const QString & sep = " ");
 
     // Cookie is generated here
     void set(const QString & address, const QString & login, const QString & userAgent, int level);

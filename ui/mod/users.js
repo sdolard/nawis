@@ -16,8 +16,24 @@ NMod.User.Ui.load = function(){
     * Global var
     */
     var emptySearchText = 'Filter...';
+    var fullLevel = '';
     
-    
+    Ext.Ajax.request({
+    		url: NLib.Path.root('api/cfg/level'),
+    		method: 'GET',
+    		callback: function(options, success, response){
+    			var data = Ext.util.JSON.decode(response.responseText);	
+    			if (data.totalcount === 0) {
+    				return;
+    			}
+    			var levels = [];
+    			for (var i = 0; i < data.totalcount; i++){
+    				levels.push(data.data[i].level);
+    			}
+    			fullLevel = levels.join(' '); 
+    		}
+    });
+	
     /**
     * Create the request Data Store
     */
@@ -65,17 +81,19 @@ NMod.User.Ui.load = function(){
     				idProperty: 'id',
     				root: 'data',
     				totalProperty: 'totalcount', 
-    				fields: [{
+    				fields: [
+    					{
     						name: 'email'
-    				}, {
-    					name: 'name'
-    				},  {
-    					name: 'level'
-    				},{
-    					name: 'enabled'
-    				}, {
-    					name: 'password'
-    				}]
+    					}, {
+    						name: 'name'
+    					},  {
+    						name: 'level'
+    					},{
+    						name: 'enabled'
+    					}, {
+    						name: 'password'
+    					}
+    				]
     		}),
     		writer: new Ext.data.JsonWriter({
     				encode: false
@@ -98,7 +116,7 @@ NMod.User.Ui.load = function(){
     					email: 'undefined',
     					name: 'undefined',
     					password: 'undefined',
-    					level: '',
+    					level: fullLevel,
     					enabled: false
     			});
     			userStore.insert(0, user);

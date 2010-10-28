@@ -98,7 +98,8 @@ public:
     int getUserListCount(const QStringList & searches);
 
     // See DB_USER_ERROR_*
-    int addUser(const QString & name, const QString & email, const QString & password);
+    int addUser(const QString & name, const QString & email, const QString & password,
+                const QString & level = "", const QString & preferences = "", bool enabled = false);
     const NStringMap getUserById(int id);
     const NStringMap getUserByEmail(const QString & email);
     bool deleteUser(const QString & id);

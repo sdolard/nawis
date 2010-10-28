@@ -104,11 +104,12 @@ int NTcpServerAuthSession::toIntLevel(const QString & levels, const QString & se
     if (levels.isEmpty()) {
         return intLevel;
     }
-
-    QStringList l = levels.toLower().split(sep);
+    //logDebugDirect("levels", levels);
+    QStringList l = levels.toLower().split(sep, QString::SkipEmptyParts);
     for(int i = 0; i < l.count(); i++)
     {
-        const QString & level  = l.at(i);
+        const QString & level = l.at(i);
+        //logDebugDirect("level", level);
         if (level == "admin") {
             /*
                 AUTH_LEVEL_ADMIN is reserved to "admin" special user,
@@ -149,9 +150,16 @@ int NTcpServerAuthSession::toIntLevel(const QString & levels, const QString & se
             continue;
         }
 
-        Q_ASSERT_X(false, "NTcpServerAuthSession::toIntLevel: not managed level?", qPrintable(levels));
+        logDebugDirect("NTcpServerAuthSession::toIntLevel: not managed level?", level);
     }
     return intLevel;
+}
+
+const QString NTcpServerAuthSession::normalizeLevels(const QString & levels, const QString & sep)
+{
+    logDebugDirect("NTcpServerAuthSession::normalizeLevels", levels);
+    logDebugDirect("NTcpServerAuthSession::normalizeLevels sep", QString("'%1'").arg(sep));
+    return toStringLevel(toIntLevel(levels, sep), sep);
 }
 
 
