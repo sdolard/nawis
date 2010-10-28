@@ -48,7 +48,7 @@ bool NTcpServerSocketAuthServices::isSessionValid(const NClientSession & session
 }
 
 bool NTcpServerSocketAuthServices::isSessionValid(const QString & sessionId, const QString address,
-             const QString & userAgent, int requiredLevel)
+                                                  const QString & userAgent, int requiredLevel)
 {
     return m_authSessionHash.isValid(sessionId, address, userAgent, requiredLevel);
 }
@@ -124,8 +124,9 @@ NResponse & NTcpServerSocketAuthServices::postAuth(const NClientSession & sessio
         level =  NTcpServerAuthSession::toIntLevel(user["level"]);
         if (level != AUTH_LEVEL_NONE) {
             authSucceed = user.count() > 0 &&
-                          QVariant(user["enabled"]).toBool(),
-                          user["password"] == getConfig().toPasswordHash(password);
+                          QVariant(user["enabled"]).toBool() &&
+                          user["password"] == getConfig().toPasswordHash(password) &&
+                          !user["password"].isEmpty();
         }
     }
 

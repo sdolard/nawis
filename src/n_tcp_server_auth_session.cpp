@@ -157,8 +157,6 @@ int NTcpServerAuthSession::toIntLevel(const QString & levels, const QString & se
 
 const QString NTcpServerAuthSession::normalizeLevels(const QString & levels, const QString & sep)
 {
-    logDebugDirect("NTcpServerAuthSession::normalizeLevels", levels);
-    logDebugDirect("NTcpServerAuthSession::normalizeLevels sep", QString("'%1'").arg(sep));
     return toStringLevel(toIntLevel(levels, sep), sep);
 }
 
