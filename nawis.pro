@@ -2,7 +2,7 @@
 
 TEMPLATE = app
 # for 64 bits build, replace x86 with x86_64
-CONFIG += x86 console qt thread
+CONFIG += console qt thread
 
 CONFIG-=app_bundle
 QT += network sql script

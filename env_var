@@ -1,32 +1,31 @@
-KISSHARE=$(pwd)
-CONTRIB="$KISSHARE/contrib"
-TOOLS="$KISSHARE/tools"
-UI="$KISSHARE/ui"
+# Paths
+NAWIS=$(pwd)
+CONTRIB="$NAWIS/contrib"
+TOOLS="$NAWIS/tools"
+UI="$NAWIS/ui"
 UI_LIB="$UI/lib"
 UI_RES="$UI/res"
 UI_CSS="$UI/css"
-LIB_EXIV2_VERSION=0.20
-LIB_TAGLIB_VERSION=1.6.3
-CONTRIB_QTSERVICE_VERSION=2.6_1
-CONTRIB_QTSINGLE_APP_VERSION=2.6_1
-UI_LIB_EXTJS_VERSION=3.2.1
-
 
 if [ $TERM = "cygwin" ] ; then
 {
-	KISSHARE=`cygpath -d "$KISSHARE"` 
+	NAWIS=`cygpath -d "$NAWIS"` 
 	CONTRIB=`cygpath -d "$CONTRIB"`
 	TOOLS=`cygpath -d "$TOOLS"`
 	UI=`cygpath -d "$UI"`
 	UI_LIB=`cygpath -d "$UI_LIB"`
 	UI_RES=`cygpath -d "$UI_RES"`
+	UI_CSS=`cygpath -d "$UI_CSS"`
 }  
 fi
 
+# vars
+#UI_LIB_EXTJS_VERSION=3.3.0
+
 # HTTP proxy configuration        
-PROXY="" #  if no proxy
+#PROXY="" #  if no proxy
 #PROXY="http://10.2.0.83:3128"  # if proxy PROXY="http://ipaddress:port"
-[ "$PROXY" != "" ] && export http_proxy="$PROXY"
+#[ "$PROXY" != "" ] && export http_proxy="$PROXY"
 
 # Tools: unrar
 UNRAR="unrar"
@@ -39,4 +38,4 @@ if [ $TERM = "cygwin" ] ; then
 }  
 fi
 
-cd "$KISSHARE"
+cd "$NAWIS"

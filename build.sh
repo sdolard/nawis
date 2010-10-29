@@ -1,12 +1,29 @@
 #!/bin/sh
 # Pass "-d" param for debug build
 #
-# MACHTYPE
+# $MACHTYPE
 # Mac Os  > "x86_64-apple-darwin10.0"
 # Ubuntu  > "i686-pc-linux-gnu"
 # Windows > "i686-pc-msys"
 
-#build type: debug or release
+NAWIS=$(pwd)
+	
+# Programm dependency test
+# Usage: testProgramDependency program
+function testProgramDependency()
+{
+	local BIN_PATH;
+	BIN_PATH=$(which "$1") 
+	if [ ! -x "$BIN_PATH" ]; then
+		echo "Build dependency: $1 is not found"
+		exit 1
+	fi
+}
+testProgramDependency wget
+testProgramDependency unzip
+ 
+	
+# Build type: debug or release
 CONFIG="CONFIG+=release"
 for p in "$@";
 do
@@ -21,11 +38,11 @@ if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
 	QMAKE_BUILD_SPEC="-spec macx-g++"
 fi
 
+# Contrib
+cd contrib && ./build.sh
+cd "$NAWIS"
 
-#contrib
-
-
-#build
+# Build
 qmake -o Makefile $QMAKE_BUILD_SPEC $CONFIG nawis.pro 
 make
 
