@@ -19,6 +19,11 @@ function testProgramDependency()
 		exit 1
 	fi
 }
+
+if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+	testProgramDependency mingw-get && mingw-get install msys-wget msys-unzip msys-sed msys-zlib msys-libiconv msys-gettext
+fi
+           
 testProgramDependency wget
 testProgramDependency unzip
 testProgramDependency sed
@@ -43,17 +48,23 @@ done
 
 # Platform spec
 QMAKE_BUILD_SPEC=""
-if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
-	QMAKE_BUILD_SPEC="-spec macx-g++"
-fi
-if [ ${MACHTYPE#*-} = "pc-msys" ]; then
-	echo "************************************"
-	echo "* Please run build.bat in Qt env *"
-	echo "************************************"
-	exit 0
-fi
+case "${MACHTYPE#*-}" in
+     "apple-darwin10.0")
+           QMAKE_BUILD_SPEC="-spec macx-g++"
+           ;;
+           
+     "pc-msys")
+           echo "************************************"
+           echo "* Please run build.bat in Qt env * "
+           echo "************************************"
+           exit 0
+           ;;
+           
+     "pc-linux-gnu")
+           # Nothing
+           ;;
+esac 
  
-
 # Build
 qmake -o Makefile $QMAKE_BUILD_SPEC $CONFIG nawis.pro 
 make

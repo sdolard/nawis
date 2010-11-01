@@ -2,28 +2,22 @@
 # Contrib download and build 
 CONTRIB_DIR=$(pwd)    
 	
-
 # zlib only for windows > we dwonload binaries
 # On other platform, use distrib contrib
-if [ ${MACHTYPE#*-} = "pc-msys" ]; then
-	[ ! -f "zlib123-dll.zip" ] && wget "http://www.gzip.org/zlib/zlib123-dll.zip"
-	[ ! -d "zlib123-dll" ] && unzip "zlib123-dll.zip" -d "zlib123-dll" 
-fi
+#LIB_ZLIB_VERSION=125
+#if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+#	[ ! -f "zlib$LIB_ZLIB_VERSION-dll.zip" ] && wget "http://zlib.net/zlib$LIB_ZLIB_VERSION-dll.zip"
+#	[ ! -d "zlib$LIB_ZLIB_VERSION-dll" ] && unzip "zlib$LIB_ZLIB_VERSION-dll.zip" -d "zlib$LIB_ZLIB_VERSION-dll" 
+#	#[ ! -f zlib-$LIB_ZLIB_VERSION.tar.gz ] && wget http://zlib.net/zlib-$LIB_ZLIB_VERSION.tar.gz
+#	#[ ! -d zlib-$LIB_ZLIB_VERSION ] && tar -zxvf zlib-$LIB_ZLIB_VERSION.tar.gz && cd zlib-$LIB_ZLIB_VERSION && mingw32-make.exe -f win32/Makefile.gcc && cp -iv zlib1.dll /mingw/bin && cp -iv zconf.h zlib.h /mingw/include && cp -iv libz.a /mingw/lib && cp -iv libzdll.a /mingw/lib/libz.dll.a
+#	cd "$CONTRIB_DIR"
+#fi
 
-#zlib
-LIB_ZLIB_VERSION=1.2.5
-if [ ${MACHTYPE#*-} = "pc-msys" ]; then
-	[ ! -f zlib-$LIB_ZLIB_VERSION.tar.gz ] && wget http://zlib.net/zlib-$LIB_ZLIB_VERSION.tar.gz
-	[ ! -d zlib-$LIB_ZLIB_VERSION ] && tar -zxvf zlib-$LIB_ZLIB_VERSION.tar.gz && cd zlib-$LIB_ZLIB_VERSION && mingw32-make.exe -f win32/Makefile.gcc && cp -iv zlib1.dll /mingw/bin && cp -iv zconf.h zlib.h /mingw/include && cp -iv libz.a /mingw/lib && cp -iv libzdll.a /mingw/lib/libz.dll.a
-	cd "$CONTRIB_DIR"
-fi
-
-#libexpat
+# libexpat
 LIB_EXPAT_VERSION=2.0.1
 if [ ${MACHTYPE#*-} = "pc-msys" ]; then
-	
-	[ ! -f expat-$LIB_EXPAT_VERSION.tar.gz ] && wget http://sourceforge.net/projects/expat/files/expat/$LIB_EXPAT_VERSION/expat-$LIB_EXPAT_VERSION.tar.gz/download
-	[ ! -d expat-$LIB_EXPAT_VERSION ] && tar -zxvf expat-$LIB_EXPAT_VERSION.tar.gz && cd expat-$LIB_EXPAT_VERSION && mingw32-make.exe -f win32/Makefile.gcc
+	[ ! -f expat-$LIB_EXPAT_VERSION.tar.gz ] && wget http://downloads.sourceforge.net/project/expat/expat/$LIB_EXPAT_VERSION/expat-$LIB_EXPAT_VERSION.tar.gz
+ 	[ ! -d expat-$LIB_EXPAT_VERSION ] && tar -zxvf expat-$LIB_EXPAT_VERSION.tar.gz && cd expat-$LIB_EXPAT_VERSION && ./configure --prefix=$CONTRIB_DIR/expat  && make && make install
 	cd "$CONTRIB_DIR"
 fi
 
@@ -38,8 +32,10 @@ if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
 fi
 if [ ${MACHTYPE#*-} = "pc-msys" ]; then
 	[ ! -f exiv2-$LIB_EXIV2_VERSION.tar.gz ] && wget http://www.exiv2.org/exiv2-$LIB_EXIV2_VERSION.tar.gz
-	[ ! -d exiv2-$LIB_EXIV2_VERSION ] && tar -zxvf exiv2-$LIB_EXIV2_VERSION.tar.gz && cd exiv2-$LIB_EXIV2_VERSION && ./configure && make
+	[ ! -d exiv2-$LIB_EXIV2_VERSION ] && tar -zxvf exiv2-$LIB_EXIV2_VERSION.tar.gz 
+ 	[ ! -d exiv2 ] && cd exiv2-$LIB_EXIV2_VERSION && ./configure --prefix=$CONTRIB_DIR/exiv2 --with-expat=$CONTRIB_DIR/expat --with-zlib=/ --with-libiconv-prefix=/ LDFLAGS="-Wl,--enable-auto-import" && make && make install	
 	cd "$CONTRIB_DIR"
+	exit 0
 fi
 
 # taglib

@@ -3,18 +3,17 @@ Build need
 
 1) All platform
     Qt 4.4.x or more > http://qt.nokia.com/downloads
+    git
     wget
     unzip
-    git
-    a java-jre (for the build)
     unrar (for demo gui)
+    a java-jre (for the build)
 
-2) On Windows, install those things:
-    mingw > http://sourceforge.net/projects/mingw/files/
+  
+2) On Windows
+    mingw and msys > http://sourceforge.net/projects/mingw/files/
+    	Every contribs have to been built under msys
     git > http://code.google.com/p/msysgit/downloads/list
-    wget > http://gnuwin32.sourceforge.net/packages/wget.htm
-    unzip > http://gnuwin32.sourceforge.net/packages/unzip.htm
-    sed > http://gnuwin32.sourceforge.net/packages/sed.htm
 
 2') On ubuntu, here what you need
   In a terminal > sudo apt-get install build-essential qt4-dev-tools git qtcreator default-jre unrar libz-dev libexiv2-dev libtag1-dev
@@ -23,7 +22,7 @@ Build need
   git clone git://github.com/sdolard/nawis.git
 
 4) Go in nawis directory
-   Run build.sh script
+   Run build.sh script. 
    Binaries are created in . directory. This is different if you build with QtCreator.
   
 5) Run build binary
@@ -32,13 +31,12 @@ Build need
      "nawis_debug" for debug version
      Read http://wiki.github.com/sdolard/nawis/start-nawis for details
      
-6) A demo web ui i available. 
+6) A demo web ui is available. 
      It's available on "ui" directory on root projet directory.
      You must set this web ui directory in nawis config file.
-       Edit ~/.config/nawis/nawis.ini
-       > server def webui=<your ui absolute path>
-       Ex on my Mac:
-         server def webui=/Users/sebastiend/Documents/dev/nawis/ui
+     	Edit ~/.config/nawis/nawis.ini (
+     	> server def webui=<your ui absolute path>
+     		Ex on my Mac: server def webui=/Users/sebastiend/Documents/dev/nawis/ui
      
 7) By defaut, nawis is listening on 6391 http port
     Open your favorite browser on http://localhost:6391
