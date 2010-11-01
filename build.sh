@@ -21,7 +21,16 @@ function testProgramDependency()
 }
 testProgramDependency wget
 testProgramDependency unzip
+testProgramDependency sed
  
+# Contrib
+cd contrib && ./build.sh
+cd "$NAWIS"
+
+# Ui res
+cd ui/res && ./build.sh
+cd "$NAWIS"
+
 	
 # Build type: debug or release
 CONFIG="CONFIG+=release"
@@ -37,12 +46,14 @@ QMAKE_BUILD_SPEC=""
 if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
 	QMAKE_BUILD_SPEC="-spec macx-g++"
 fi
-
-# Contrib
-cd contrib && ./build.sh
-cd "$NAWIS"
+if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+	echo "************************************"
+	echo "* Please run build.bat in Qt env *"
+	echo "************************************"
+	exit 0
+fi
+ 
 
 # Build
 qmake -o Makefile $QMAKE_BUILD_SPEC $CONFIG nawis.pro 
 make
-

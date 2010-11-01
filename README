@@ -9,11 +9,12 @@ Build need
     a java-jre (for the build)
     unrar (for demo gui)
 
-2) On Windows:
-    install cygwin
-      wget
-      unzip
-      git 
+2) On Windows, install those things:
+    mingw > http://sourceforge.net/projects/mingw/files/
+    git > http://code.google.com/p/msysgit/downloads/list
+    wget > http://gnuwin32.sourceforge.net/packages/wget.htm
+    unzip > http://gnuwin32.sourceforge.net/packages/unzip.htm
+    sed > http://gnuwin32.sourceforge.net/packages/sed.htm
 
 2') On ubuntu, here what you need
   In a terminal > sudo apt-get install build-essential qt4-dev-tools git qtcreator default-jre unrar libz-dev libexiv2-dev libtag1-dev
@@ -22,22 +23,16 @@ Build need
   git clone git://github.com/sdolard/nawis.git
 
 4) Go in nawis directory
-   Run update.sh script
-
-5) Run build_$YOUR_PLATFORM$_$BUILD_TYPE$
-    On windows, for debug build, run "build_windows_mingw_debug.bat"
-    On Mac, for release build, run "build_mac_release.sh"
-    On linux, for release build, run "build_linux_release.sh"
-  
+   Run build.sh script
    Binaries are created in . directory. This is different if you build with QtCreator.
   
-6) Run build binary
+5) Run build binary
      This will create a defaut config file 
      "nawis" for release version.
      "nawis_debug" for debug version
      Read http://wiki.github.com/sdolard/nawis/start-nawis for details
      
-7) A demo web ui i available. 
+6) A demo web ui i available. 
      It's available on "ui" directory on root projet directory.
      You must set this web ui directory in nawis config file.
        Edit ~/.config/nawis/nawis.ini
@@ -45,12 +40,12 @@ Build need
        Ex on my Mac:
          server def webui=/Users/sebastiend/Documents/dev/nawis/ui
      
-8) By defaut, nawis is listening on 6391 http port
+7) By defaut, nawis is listening on 6391 http port
     Open your favorite browser on http://localhost:6391
     If you want to enable ssl, go there:http://wiki.github.com/sdolard/nawis/how-enable-ssl-using-self-signed-certificate
     http and https can be enabled together.
 
-9) Default auth is:
+8) Default auth is:
      login: admin
      pwd: admin
      
@@ -58,9 +53,9 @@ Build need
      > server def admin_password=admin
      > server def admin_user=admin
      
-10) Login
+9) Login
 
-11)Go in preference menu
+10)Go in preference menu
      Add a directory to serve.
      Wait time to get it managed by nawis. it could take few minutes if there is a lot of big files.
      

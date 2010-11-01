@@ -10,21 +10,42 @@ if [ ${MACHTYPE#*-} = "pc-msys" ]; then
 	[ ! -d "zlib123-dll" ] && unzip "zlib123-dll.zip" -d "zlib123-dll" 
 fi
 
+#zlib
+LIB_ZLIB_VERSION=1.2.5
+if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+	[ ! -f zlib-$LIB_ZLIB_VERSION.tar.gz ] && wget http://zlib.net/zlib-$LIB_ZLIB_VERSION.tar.gz
+	[ ! -d zlib-$LIB_ZLIB_VERSION ] && tar -zxvf zlib-$LIB_ZLIB_VERSION.tar.gz && cd zlib-$LIB_ZLIB_VERSION && mingw32-make.exe -f win32/Makefile.gcc && cp -iv zlib1.dll /mingw/bin && cp -iv zconf.h zlib.h /mingw/include && cp -iv libz.a /mingw/lib && cp -iv libzdll.a /mingw/lib/libz.dll.a
+	cd "$CONTRIB_DIR"
+fi
+
+#libexpat
+LIB_EXPAT_VERSION=2.0.1
+if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+	
+	[ ! -f expat-$LIB_EXPAT_VERSION.tar.gz ] && wget http://sourceforge.net/projects/expat/files/expat/$LIB_EXPAT_VERSION/expat-$LIB_EXPAT_VERSION.tar.gz/download
+	[ ! -d expat-$LIB_EXPAT_VERSION ] && tar -zxvf expat-$LIB_EXPAT_VERSION.tar.gz && cd expat-$LIB_EXPAT_VERSION && mingw32-make.exe -f win32/Makefile.gcc
+	cd "$CONTRIB_DIR"
+fi
 
 # exiv2
 # For mac and windows
 # On other platform, use distrib contrib
+LIB_EXIV2_VERSION=0.20
 if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
-	LIB_EXIV2_VERSION=0.20
 	[ ! -f exiv2-$LIB_EXIV2_VERSION.tar.gz ] && wget http://www.exiv2.org/exiv2-$LIB_EXIV2_VERSION.tar.gz
 	[ ! -d exiv2-$LIB_EXIV2_VERSION ] && tar -zxvf exiv2-$LIB_EXIV2_VERSION.tar.gz && cd exiv2-$LIB_EXIV2_VERSION && ./configure && make && sudo make install
+	cd "$CONTRIB_DIR"
+fi
+if [ ${MACHTYPE#*-} = "pc-msys" ]; then
+	[ ! -f exiv2-$LIB_EXIV2_VERSION.tar.gz ] && wget http://www.exiv2.org/exiv2-$LIB_EXIV2_VERSION.tar.gz
+	[ ! -d exiv2-$LIB_EXIV2_VERSION ] && tar -zxvf exiv2-$LIB_EXIV2_VERSION.tar.gz && cd exiv2-$LIB_EXIV2_VERSION && ./configure && make
 	cd "$CONTRIB_DIR"
 fi
 
 # taglib
 # For mac 
+LIB_TAGLIB_VERSION=1.6.3
 if [ ${MACHTYPE#*-} = "apple-darwin10.0" ]; then
-	LIB_TAGLIB_VERSION=1.6.3
 	[ ! -f taglib-$LIB_TAGLIB_VERSION.tar.gz ] && wget http://developer.kde.org/~wheeler/files/src/taglib-$LIB_TAGLIB_VERSION.tar.gz
 	[ ! -d taglib-$LIB_TAGLIB_VERSION ] && tar -zxvf taglib-$LIB_TAGLIB_VERSION.tar.gz && cd taglib-$LIB_TAGLIB_VERSION && ./configure CXXFLAGS="-arch  x86_64" CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" && make && sudo make install
 	cd "$CONTRIB_DIR"
